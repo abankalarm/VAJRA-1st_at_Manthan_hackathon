@@ -44,16 +44,17 @@
 
         var dict = {}; // create an empty array
 
-        var ClientID;
+        var c_ClientID;
         if (getCookie('ClientID')) {
-            ClientID = getCookie('ClientID');
+            c_ClientID = getCookie('ClientID');
         } else {
             setCookie('clientID', murmur)
-            ClientID = murmur
+            c_ClientID = murmur
         }
 
 
-
+        dict['ip'] = "{{ip}}";
+        dict['cookie'] = c_ClientID
         dict['clientID'] = murmur
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
