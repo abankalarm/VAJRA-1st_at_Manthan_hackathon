@@ -1,0 +1,66 @@
+{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+<script src="static/assets/js/fingerprint2.js"></script>
+<script>
+    var d1 = new Date();
+    var options = {};
+    Fingerprint2.get(options, function(components) {
+        var values = components.map(function(component) {
+            return component.value
+        })
+        var murmur = Fingerprint2.x64hash128(values.join(''), 31)
+        var clientfp = "Client browser fingerprint: " + murmur + "\n\n";
+        var d2 = new Date();
+
+        var dict = {}; // create an empty array
+
+
+        var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
+        var details = "Detailed information: \n";
+        if (typeof window.console !== "undefined") {
+            for (var index in components) {
+                var obj = components[index];
+                var value = obj.value;
+                if (value !== null) {
+                    var line = obj.key + " = " + value.toString().substr(0, 150);
+                    details += line + "\n";
+
+                    dict[obj.key] = value;
+
+                }
+            }
+        }
+        console.log(clientfp + timeString + details);
+
+        console.log(JSON.stringify(dict))
+            // for (var key in dict) {
+            //     console.log(key + " : " + dict[key]);
+            // }
+
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("POST", "/js.php");
+        xmlhttp.setRequestHeader("Content-Type", "application/txt");
+        xmlhttp.send(JSON.stringify(dict));
+    });
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">Page Blank</h6>
+                <h4 class="card-title">
+                    This is injection page
+                </h4>
+                <a href="/" class="btn btn-primary btn-round">Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
