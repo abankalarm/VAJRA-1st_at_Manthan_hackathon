@@ -70,7 +70,7 @@ def searchpost():
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
         result = str(html)
-        return render_template('home/search.html', segment='index', result=result)
+        return render_template('home/search.html', segment='index', result=result, ip = search)
     else:
         return render_template('home/search.html', segment='index')
     
