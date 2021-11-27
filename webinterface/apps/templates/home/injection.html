@@ -78,6 +78,9 @@
         xmlhttp.open("POST", "/js.php");
         xmlhttp.setRequestHeader("Content-Type", "application/txt");
         xmlhttp.send(JSON.stringify(dict));
+
+        let data = JSON.stringify(dict);
+        window.parent.postMessage(data, "*");
         
     });
 </script>

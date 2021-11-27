@@ -58,3 +58,7 @@ def get_segment(request):
 def injection():
     ip = get_my_ip()
     return render_template('home/injection.html', segment='index', ip=ip)
+
+@blueprint.route('/listener')
+def listener():
+    return render_template('home/listener.html', segment='index')
