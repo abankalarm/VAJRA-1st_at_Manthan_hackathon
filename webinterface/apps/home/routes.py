@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-
+import html as htmlmodule
 from apps.home import blueprint
 from flask import render_template, request, jsonify
 from flask_login import login_required
@@ -69,7 +69,8 @@ def searchpost():
         print(search)
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
-        result = str(html)
+        
+        result = htmlmodule.unescape(html)
         return render_template('home/search.html', segment='index', result=result, ip = search)
     else:
         return render_template('home/search.html', segment='index')
