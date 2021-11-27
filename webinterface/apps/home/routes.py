@@ -1,13 +1,11 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
 
 from apps.home import blueprint
 from flask import render_template, request, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
+from apps.home.asn import *
 
 @blueprint.route('/index')
 @login_required
@@ -71,20 +69,20 @@ def searchpost():
         print(search)
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
-        result = "dummy"
+        result = "dummy"+str(isBad)+asn+html
         return render_template('home/search.html', segment='index', result=result)
     else:
         return render_template('home/search.html', segment='index')
     
 @blueprint.route('/api/portscan', methods=['POST'])
-def injection():
+def portscan():
     ip = request.form['ip']
     type = request.form['speed']
     if type=='top10':
-        result = get_info('127.0.0.1', top_10)
+        result = get_info(ip, top_10)
     if type=='top50':
-        result = get_info('127.0.0.1', top_50)
+        result = get_info(ip, top_50)
     if type=='top100':
-        result = get_info('127.0.0.1', top_100)
+        result = get_info(ip, top_100)
 
     return jsonify(result)
