@@ -69,6 +69,8 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         print(search)
+        isBad,asn,html=getDetails(search)
+        print(isBad,asn)
         result = "dummy"
         return render_template('home/search.html', segment='index', result=result)
     else:
