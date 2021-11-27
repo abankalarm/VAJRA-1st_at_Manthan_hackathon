@@ -18,8 +18,12 @@
     </div>
     <script>
         window.addEventListener('message', function(event) {
-            document.cookie = "data=" + event.data;
-            //console.log(event);
+            console.log(event.data);
+            /*$.ajax({
+                type: "POST",
+                url: "/injection/post",
+                data: event.data,
+            });*/
         }, false);
     </script>
 </div>
@@ -27,4 +31,7 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+{% endblock javascripts %}

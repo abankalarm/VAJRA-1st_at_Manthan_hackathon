@@ -7,6 +7,8 @@ from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+import json
+import sqlite3
 
 def get_my_ip():
     return request.remote_addr
@@ -58,6 +60,12 @@ def get_segment(request):
 def injection():
     ip = get_my_ip()
     return render_template('home/injection.html', segment='index', ip=ip)
+
+@blueprint.route('/injection/post', methods=['POST'])
+def injectionpost():
+    content = request.json
+    storeInDB(content)
+    return render_template('home/page-404.html'), 404
 
 @blueprint.route('/listener')
 def listener():
