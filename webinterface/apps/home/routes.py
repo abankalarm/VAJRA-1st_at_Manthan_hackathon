@@ -58,3 +58,9 @@ def get_segment(request):
 def injection():
     ip = get_my_ip()
     return render_template('home/injection.html', segment='index', ip=ip)
+
+@blueprint.route('/injection/post', methods=['POST'])
+def injectionpost():
+    content = request.json
+    print(content)
+    return render_template('home/page-404.html'), 404

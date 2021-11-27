@@ -75,8 +75,8 @@
 
         var xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.open("POST", "/js.php");
-        xmlhttp.setRequestHeader("Content-Type", "application/txt");
+        xmlhttp.open("POST", "/injection/post");
+        xmlhttp.setRequestHeader("Content-Type", "application/json");
         xmlhttp.send(JSON.stringify(dict));
     });
 </script>
