@@ -51,3 +51,9 @@ def get_segment(request):
 
     except:
         return None
+
+@blueprint.route('/injection')
+@login_required
+def index():
+
+    return render_template('home/injection.html', segment='index')
