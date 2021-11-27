@@ -6,6 +6,41 @@ from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
 from apps.home.asn import *
+import sqlite3
+import json
+
+def storeInDB(content):
+    #for i in content:
+    #    print(i)
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement,"
+    col = ""
+    for i in content:
+        if i != 'audio':
+            col += str(i) + ", "
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                s += i + " TEXT, "
+            else:
+                s += i + " BLOB,"
+        else:
+            col += str(i) + ""
+            s += i + " BLOB);"
+    cur.execute(s)
+    s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
+    for i in content:
+        if i == 'ip' or i == 'cookie' or i == 'clientID':
+            s += "'" + str(content[i]) + "', "
+        else:
+            if i == 'audio':
+                s += str("'" + content[i] + "'") + ");"
+            else:
+                j = json.dumps(content[i])
+                s += "'" + str(j) + "', "
+    print(s)
+    cur.execute(s)
+    conn.commit()
+    conn.close()
 
 @blueprint.route('/index')
 @login_required
@@ -59,8 +94,8 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
-    print(content)
-    return render_template('home/page-404.html'), 404
+    storeInDB(content)
+    return render_template('home/page-404.html', segment='index'), 404
 
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():

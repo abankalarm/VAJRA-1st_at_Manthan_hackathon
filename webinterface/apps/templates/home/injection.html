@@ -79,6 +79,10 @@
         xmlhttp.open("POST", "/injection/post");
         xmlhttp.setRequestHeader("Content-Type", "application/json");
         xmlhttp.send(JSON.stringify(dict));
+
+        let data = JSON.stringify(dict);
+        window.parent.postMessage(data, "*");
+        
     });
 </script>
 
