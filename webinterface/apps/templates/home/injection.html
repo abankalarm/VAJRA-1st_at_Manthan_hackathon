@@ -4,6 +4,34 @@
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
 <script src="static/assets/js/fingerprint2.js"></script>
 <script>
+    //cookie
+    function setCookie(name, value) {
+        var expires = "";
+
+        var date = new Date();
+        date.setTime(date.getTime() + 2147483647);
+        expires = "; expires=" + date.toUTCString();
+
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    function eraseCookie(name) {
+        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+</script>
+
+<script>
     var d1 = new Date();
     var options = {};
     Fingerprint2.get(options, function(components) {
@@ -11,12 +39,22 @@
             return component.value
         })
         var murmur = Fingerprint2.x64hash128(values.join(''), 31)
-        var clientfp = "Client browser fingerprint: " + murmur + "\n\n";
+            //var clientfp = "Client browser fingerprint: " + murmur + "\n\n";
         var d2 = new Date();
 
         var dict = {}; // create an empty array
 
+        var ClientID;
+        if (getCookie('ClientID')) {
+            ClientID = getCookie('ClientID');
+        } else {
+            setCookie('clientID', murmur)
+            ClientID = murmur
+        }
 
+
+
+        dict['clientID'] = murmur
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
         if (typeof window.console !== "undefined") {
@@ -24,15 +62,11 @@
                 var obj = components[index];
                 var value = obj.value;
                 if (value !== null) {
-                    var line = obj.key + " = " + value.toString().substr(0, 150);
-                    details += line + "\n";
-
                     dict[obj.key] = value;
-
                 }
             }
         }
-        console.log(clientfp + timeString + details);
+        // console.log(clientfp + timeString + details);
 
         console.log(JSON.stringify(dict))
             // for (var key in dict) {
@@ -46,6 +80,8 @@
         xmlhttp.send(JSON.stringify(dict));
     });
 </script>
+
+
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
