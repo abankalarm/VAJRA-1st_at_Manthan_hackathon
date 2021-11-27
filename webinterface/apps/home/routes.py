@@ -8,6 +8,8 @@ from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
+def get_my_ip():
+    return request.remote_addr
 
 @blueprint.route('/index')
 @login_required
@@ -53,7 +55,6 @@ def get_segment(request):
         return None
 
 @blueprint.route('/injection')
-@login_required
-def index():
-
-    return render_template('home/injection.html', segment='index')
+def injection():
+    ip = get_my_ip()
+    return render_template('home/injection.html', segment='index', ip=ip)
