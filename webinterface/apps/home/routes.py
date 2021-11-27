@@ -4,12 +4,10 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from apps.home import blueprint
-from flask import render_template, request
+from flask import render_template, request, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
-
-def get_my_ip():
-    return request.remote_addr
+from apps.home.offsec import *
 
 @blueprint.route('/index')
 @login_required
@@ -56,7 +54,8 @@ def get_segment(request):
 
 @blueprint.route('/injection')
 def injection():
-    ip = get_my_ip()
+    #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='index', ip=ip)
 
 @blueprint.route('/injection/post', methods=['POST'])
@@ -75,3 +74,15 @@ def searchpost():
     else:
         return render_template('home/search.html', segment='index')
     
+@blueprint.route('/api/portscan', methods=['POST'])
+def injection():
+    ip = request.form['ip']
+    type = request.form['speed']
+    if type=='top10':
+        result = get_info('127.0.0.1', top_10)
+    if type=='top50':
+        result = get_info('127.0.0.1', top_50)
+    if type=='top100':
+        result = get_info('127.0.0.1', top_100)
+
+    return jsonify(result)
