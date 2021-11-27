@@ -3,10 +3,11 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
-from apps.home import blueprint
+from apps.home import asn, blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+from apps.home.asn import *
 
 def get_my_ip():
     return request.remote_addr
@@ -70,6 +71,8 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         print(search)
+        isBad,asn,html=getDetails(search)
+        print(isBad,asn)
         result = "dummy"
         return render_template('home/search.html', segment='index', result=result)
     else:
