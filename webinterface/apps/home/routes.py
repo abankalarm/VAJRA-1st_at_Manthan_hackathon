@@ -1,13 +1,11 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
 
 from apps.home import blueprint
 from flask import render_template, request, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
+from apps.home.asn import *
 import sqlite3
 import json
 
@@ -106,8 +104,8 @@ def searchpost():
         print(search)
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
-        result = "dummy"
-        return render_template('home/search.html', segment='index', result=result)
+        result = str(html)
+        return render_template('home/search.html', segment='index', result=result, ip = search)
     else:
         return render_template('home/search.html', segment='index')
     
@@ -116,10 +114,10 @@ def portscan():
     ip = request.form['ip']
     type = request.form['speed']
     if type=='top10':
-        result = get_info('127.0.0.1', top_10)
+        result = get_info(ip, top_10)
     if type=='top50':
-        result = get_info('127.0.0.1', top_50)
+        result = get_info(ip, top_50)
     if type=='top100':
-        result = get_info('127.0.0.1', top_100)
+        result = get_info(ip, top_100)
 
     return jsonify(result)
