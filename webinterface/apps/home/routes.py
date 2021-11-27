@@ -73,6 +73,7 @@ def searchpost():
         print(search)
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
+        print(html)
         result = "dummy"
         return render_template('home/search.html', segment='index', result=result)
     else:

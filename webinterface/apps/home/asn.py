@@ -34,7 +34,7 @@ def getASNhtml(asn):
             continue
         if not body:
             continue
-        if "iframe"  in x or "center" in x or "img src" in x:
+        if "iframe"  in x or "center" in x or "img src" in x or "<a href" in x:
             continue
         else:
             newtemp+=x+"\n"
