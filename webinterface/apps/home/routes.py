@@ -64,3 +64,14 @@ def injectionpost():
     content = request.json
     print(content)
     return render_template('home/page-404.html'), 404
+
+@blueprint.route('/search', methods=['GET','POST'])
+def searchpost():
+    if (request.method == 'POST'):
+        search = request.form['search']
+        print(search)
+        result = "dummy"
+        return render_template('home/search.html', segment='index', result=result)
+    else:
+        return render_template('home/search.html', segment='index')
+    
