@@ -8,6 +8,7 @@ from apps.home.offsec import *
 from apps.home.asn import *
 import sqlite3
 import json
+import urllib.request
 
 def getfromdb(columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -155,3 +156,51 @@ def portscan():
         result = get_info(ip, top_100)
 
     return jsonify(result)
+
+
+@blueprint.route('/api/vpnidentification/time', methods=['POST'])
+def vpn_time():
+    ip = request.form['ip']
+    GEO_IP_API_URL  = 'http://ip-api.com/json/'
+
+    req             = urllib.request.Request(GEO_IP_API_URL+ip)
+    response        = urllib.request.urlopen(req).read()
+    json_response   = json.loads(response.decode('utf-8'))
+
+    # search in db for ip
+    browser_timzone = ''
+
+    if(json_response['timezone'] == browser_timzone):
+        return jsonify("false")
+
+    return jsonify("true")
+
+@blueprint.route('/api/ip/identity', methods=['GET','POST'])
+def ip_identity():
+    ip = request.args['ip']
+    GEO_IP_API_URL  = 'http://ip-api.com/json/'
+
+    req             = urllib.request.Request(GEO_IP_API_URL+ip)
+    response        = urllib.request.urlopen(req).read()
+    json_response   = json.loads(response.decode('utf-8'))
+
+    # search in db for ip
+    browser_timzone = ''
+    dict = {}
+    try:
+        dict["status"] = "successful"
+        dict["lat"] = json_response["lat"]
+        dict["lon"] = json_response["lon"]
+        dict["regionName"] = json_response["regionName"]
+        dict["region"] = json_response["region"]
+        dict["city"] = json_response["city"]
+        dict["zip"] = json_response["zip"]
+        dict["country"] = json_response["country"]
+        dict["countryCode"] = json_response["countryCode"]
+        dict["isp"] = json_response["isp"]
+        
+    except:
+        dict["status"] = "failed"
+
+    return jsonify(dict)
+
