@@ -139,7 +139,7 @@ def searchpost():
         isBad,asn,result=getDetails(search)
         print(isBad,asn)
         
-        return render_template('home/search.html', segment='index', result=result, ip = search)
+        return render_template('home/search.html', segment='index', result=result, ip = search, asn = asn, bad = isBad)
     else:
         return render_template('home/search.html', segment='index')
     
