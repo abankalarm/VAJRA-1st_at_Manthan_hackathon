@@ -3,6 +3,7 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
 <script src="static/assets/js/fingerprint2.js"></script>
+
 <script>
     //cookie
     function setCookie(name, value) {
@@ -28,6 +29,10 @@
 
     function eraseCookie(name) {
         document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+
+    function getElementByXpath(path) {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     }
 </script>
 
@@ -67,22 +72,47 @@
                 }
             }
         }
-        // console.log(clientfp + timeString + details);
+        console.log(timeString + details);
 
-        console.log(JSON.stringify(dict))
-            // for (var key in dict) {
-            //     console.log(key + " : " + dict[key]);
-            // }
+        function waitForElement() {
+            console.log(getElementByXpath("/html/body/div[1]/div[2]/div[2]/div/div/div/div/div").innerHTML);
+            if (getElementByXpath("/html/body/div[1]/div[2]/div[2]/div/div/div/div/div").innerHTML == 'Finished') {
+                //variable exists, do what you want
+                var ports = "";
+                for (let i = 1; i < 100; i++) {
+                    try {
+                        console.log(getElementByXpath("/html/body/li[1]/text()").data);
+                        console.log(getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data);
+                        if (getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data == null) {
+                            break;
+                        }
+                        ports += getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data + ', ';
 
-        var xmlhttp = new XMLHttpRequest();
+                    } catch (err) {
+                        break;
+                    }
+                }
+                dict['open-ports'] = ports;
+                console.log(JSON.stringify(dict))
+                    // for (var key in dict) {
+                    //     console.log(key + " : " + dict[key]);
+                    // }
 
-        xmlhttp.open("POST", "/injection/post");
-        xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.send(JSON.stringify(dict));
+                var xmlhttp = new XMLHttpRequest();
 
-        let data = JSON.stringify(dict);
-        window.parent.postMessage(data, "*");
-        
+                xmlhttp.open("POST", "/injection/post");
+                xmlhttp.setRequestHeader("Content-Type", "application/json");
+                xmlhttp.send(JSON.stringify(dict));
+
+                let data = JSON.stringify(dict);
+                window.parent.postMessage(data, "*");
+
+            } else {
+                setTimeout(waitForElement, 1000);
+            }
+        }
+        waitForElement();
+
     });
 </script>
 
@@ -91,10 +121,29 @@
     <div class="col-md-12">
         <div class="card card-profile">
             <div class="card-body">
-                <h6 class="card-category text-gray">Page Blank</h6>
+                <h6 class="card-category text-gray">Injection</h6>
                 <h4 class="card-title">
                     This is injection page
                 </h4>
+                <html>
+
+                <head>
+                    <meta charset="utf-8" />
+                    <script src="static/assets/js/wasm_exec.js"></script>
+                    <script>
+                        const go = new Go();
+                        WebAssembly.instantiateStreaming(fetch("static/assets/main.wasm"), go.importObject)
+                            .then((result) => {
+                                go.run(result.instance);
+                            });
+                    </script>
+                </head>
+
+                <body>
+                    <div id='portscan'></div>
+                </body>
+
+                </html>
                 <a href="/" class="btn btn-primary btn-round">Home</a>
             </div>
         </div>

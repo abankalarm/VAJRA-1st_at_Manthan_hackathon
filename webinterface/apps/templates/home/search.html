@@ -263,6 +263,11 @@
         </div>
     </div>
 </div>
+{%if result | length >1%}
+{% for key, value in result.items() %}
+{{key}} {{value}} <br>
+{% endfor %}
+{% endif %}
 <script>
     document.write(`
         {{result}}

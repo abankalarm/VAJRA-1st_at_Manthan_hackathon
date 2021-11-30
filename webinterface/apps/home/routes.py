@@ -9,9 +9,22 @@ from apps.home.asn import *
 import sqlite3
 import json
 
+def getfromdb(columns, values):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    query = "SELECT * FROM Fingerprints where "
+    for i in range(0, len(columns)):
+        if i == len(columns) - 1:
+            query += columns[i] + " = '" + values[i] + "';"
+        else:
+            query += columns[i] + " = '" + values[i] + "' and "
+    print(query)
+    cur.execute(query)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
 def storeInDB(content):
-    #for i in content:
-    #    print(i)
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement,"
@@ -27,20 +40,39 @@ def storeInDB(content):
             col += str(i) + ""
             s += i + " BLOB);"
     cur.execute(s)
-    s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
-    for i in content:
-        if i == 'ip' or i == 'cookie' or i == 'clientID':
-            s += "'" + str(content[i]) + "', "
-        else:
-            if i == 'audio':
-                s += str("'" + content[i] + "'") + ");"
+    l = getfromdb(["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
+    if(len(l) == 0):
+        s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
+        for i in content:
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                s += "'" + str(content[i]) + "', "
             else:
-                j = json.dumps(content[i])
-                s += "'" + str(j) + "', "
-    print(s)
-    cur.execute(s)
-    conn.commit()
-    conn.close()
+                if i == 'audio':
+                    s += str("'" + content[i] + "'") + ");"
+                else:
+                    j = json.dumps(content[i])
+                    s += "'" + str(j) + "', "
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+    else:
+        s = "UPDATE Fingerprints SET "
+        for i in content:
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                #nothing
+                print("match")
+            else:
+                if i == 'audio':
+                    s += i + " = " + str("'" + content[i] + "'")
+                else:
+                    j = json.dumps(content[i])
+                    s += i + " = '" + str(j) + "', "
+        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
 
 @blueprint.route('/index')
 @login_required
@@ -95,6 +127,7 @@ def injection():
 def injectionpost():
     content = request.json
     storeInDB(content)
+    l = getfromdb(['clientID'], [content['clientID']])
     return render_template('home/page-404.html', segment='index'), 404
 
 @blueprint.route('/search', methods=['GET','POST'])
@@ -102,10 +135,9 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         print(search)
-        isBad,asn,html=getDetails(search)
+        isBad,asn,result=getDetails(search)
         print(isBad,asn)
         
-        result = htmlmodule.unescape(html)
         return render_template('home/search.html', segment='index', result=result, ip = search, asn = asn, bad = isBad)
     else:
         return render_template('home/search.html', segment='index')
