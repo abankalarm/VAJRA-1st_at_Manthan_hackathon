@@ -24,18 +24,50 @@ def getfromdb(columns, values):
     conn.close()
     return rows
 
+def updateInDb(content, columns, values):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "UPDATE Fingerprints SET "
+        for i in content:
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                #nothing
+                print("match")
+            else:
+                for i in columns:
+                    if i == 'openPorts':
+                        j = json.dumps(values[i])
+                        s += i + " = '" + str(j) + "'"
+                    else:
+                        if i == 'timestamp':
+                            s += str(content[i])
+                        elif i == 'audio':
+                            s += i + " = " + str("'" + content[i] + "', ")
+                        else:
+                            j = json.dumps(content[i])
+                            s += i + " = '" + str(j) + "', "
+        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+
 def storeInDB(content):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement,"
     col = ""
     for i in content:
-        if i != 'audio':
+        if i != 'openPorts':
             col += str(i) + ", "
-            if i == 'ip' or i == 'cookie' or i == 'clientID':
+            if i == 'timestamp':
+                s += i + " TEXT, "
+            elif i == 'ip' or i == 'cookie' or i == 'clientID' or i == 'domain' or i == 'parentDomain' or i == 'vpn_asn' or i == 'vpn_timestamp':
                 s += i + " TEXT, "
             else:
-                s += i + " BLOB,"
+                if i == 'audio':
+                    s += i + " TEXT,"
+                else:   
+                    s += i + " BLOB,"
         else:
             col += str(i) + ""
             s += i + " BLOB);"
@@ -44,14 +76,19 @@ def storeInDB(content):
     if(len(l) == 0):
         s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
         for i in content:
-            if i == 'ip' or i == 'cookie' or i == 'clientID':
+            if i == 'timestamp':
+                s += "'" + str(content[i]) + "', "
+            elif i == 'ip' or i == 'cookie' or i == 'clientID' or i == 'domain' or i == 'parentDomain' or i == 'vpn_asn' or i == 'vpn_timestamp':
                 s += "'" + str(content[i]) + "', "
             else:
-                if i == 'audio':
+                if i == 'openPorts':
                     s += str("'" + content[i] + "'") + ");"
                 else:
-                    j = json.dumps(content[i])
-                    s += "'" + str(j) + "', "
+                    if i == 'audio':
+                        s += str("'" + content[i] + "', ")
+                    else:
+                        j = json.dumps(content[i])
+                        s += "'" + str(j) + "', "
         print(s)
         cur.execute(s)
         conn.commit()
@@ -63,11 +100,17 @@ def storeInDB(content):
                 #nothing
                 print("match")
             else:
-                if i == 'audio':
-                    s += i + " = " + str("'" + content[i] + "'")
-                else:
+                if i == 'openPorts':
                     j = json.dumps(content[i])
-                    s += i + " = '" + str(j) + "', "
+                    s += i + " = '" + str(j) + "'"
+                else:
+                    if i == 'timestamp':
+                        s += str(content[i])
+                    elif i == 'audio':
+                        s += i + " = " + str("'" + content[i] + "', ")
+                    else:
+                        j = json.dumps(content[i])
+                        s += i + " = '" + str(j) + "', "
         s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
         print(s)
         cur.execute(s)
@@ -122,6 +165,11 @@ def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='index', ip=ip)
+
+@blueprint.route('/listener')
+def listener():
+    #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    return render_template('home/listener.html', segment='index')
 
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():

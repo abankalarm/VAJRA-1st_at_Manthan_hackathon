@@ -61,6 +61,9 @@
         dict['ip'] = "{{ip}}";
         dict['cookie'] = c_ClientID
         dict['clientID'] = murmur
+        dict['parentDomain'] = window.parent.location.href
+        dict['domain'] = window.location.href
+        dict['timestamp'] = new Date().toString()
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
         if (typeof window.console !== "undefined") {
@@ -72,7 +75,7 @@
                 }
             }
         }
-        console.log(timeString + details);
+        //console.log(timeString + details);
 
         function waitForElement() {
             console.log(getElementByXpath("/html/body/div[1]/div[2]/div[2]/div/div/div/div/div").innerHTML);
@@ -81,8 +84,8 @@
                 var ports = "";
                 for (let i = 1; i < 100; i++) {
                     try {
-                        console.log(getElementByXpath("/html/body/li[1]/text()").data);
-                        console.log(getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data);
+                        //console.log(getElementByXpath("/html/body/li[1]/text()").data);
+                        //console.log(getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data);
                         if (getElementByXpath("/html/body/li[" + i.toString() + "]/text()").data == null) {
                             break;
                         }
@@ -92,7 +95,7 @@
                         break;
                     }
                 }
-                dict['open-ports'] = ports;
+                dict['openPorts'] = ports;
                 console.log(JSON.stringify(dict))
                     // for (var key in dict) {
                     //     console.log(key + " : " + dict[key]);
