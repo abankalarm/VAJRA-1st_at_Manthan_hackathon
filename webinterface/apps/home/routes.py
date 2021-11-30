@@ -135,17 +135,10 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         print(search)
-        isBad,asn,html=getDetails(search)
+        isBad,asn,result=getDetails(search)
         print(isBad,asn)
-<<<<<<< HEAD
-        print(html)
-        result = "dummy"
-        return render_template('home/search.html', segment='index', result=result)
-=======
         
-        result = htmlmodule.unescape(html)
         return render_template('home/search.html', segment='index', result=result, ip = search)
->>>>>>> 8a82334ab40bd21493343f66a358260b1ad8b691
     else:
         return render_template('home/search.html', segment='index')
     
