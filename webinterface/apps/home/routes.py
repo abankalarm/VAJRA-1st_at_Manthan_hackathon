@@ -8,6 +8,7 @@ from apps.home.offsec import *
 from apps.home.asn import *
 import sqlite3
 import json
+from ua_parser import user_agent_parser
 
 def getfromdb(columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -154,3 +155,12 @@ def portscan():
         result = get_info(ip, top_100)
 
     return jsonify(result)
+
+@blueprint.route('/api/getDetailsFromUserAgent')
+def getDetailsFromUserAgent():
+
+    userAgent = request.form['user-agent']
+    #userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+    parsed_string = user_agent_parser.Parse(userAgent)
+    print(parsed_string)
+    return jsonify(parsed_string)
