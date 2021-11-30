@@ -20,101 +20,92 @@ def getfromdb(columns, values):
             query += columns[i] + " = '" + values[i] + "';"
         else:
             query += columns[i] + " = '" + values[i] + "' and "
-    print(query)
+    #print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
     return rows
 
-def updateInDb(content, columns, values):
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    s = "UPDATE Fingerprints SET "
-        for i in content:
-            if i == 'ip' or i == 'cookie' or i == 'clientID':
-                #nothing
-                print("match")
-            else:
-                for i in columns:
-                    if i == 'openPorts':
-                        j = json.dumps(values[i])
-                        s += i + " = '" + str(j) + "'"
-                    else:
-                        if i == 'timestamp':
-                            s += str(content[i])
-                        elif i == 'audio':
-                            s += i + " = " + str("'" + content[i] + "', ")
-                        else:
-                            j = json.dumps(content[i])
-                            s += i + " = '" + str(j) + "', "
-        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
-        print(s)
-        cur.execute(s)
-        conn.commit()
-        conn.close()
+
 
 def storeInDB(content):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement,"
     col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
     for i in content:
-        if i != 'openPorts':
-            col += str(i) + ", "
-            if i == 'timestamp':
-                s += i + " TEXT, "
-            elif i == 'ip' or i == 'cookie' or i == 'clientID' or i == 'domain' or i == 'parentDomain' or i == 'vpn_asn' or i == 'vpn_timestamp':
-                s += i + " TEXT, "
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
             else:
-                if i == 'audio':
-                    s += i + " TEXT,"
-                else:   
-                    s += i + " BLOB,"
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
         else:
-            col += str(i) + ""
-            s += i + " BLOB);"
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    #print(col)
     cur.execute(s)
     l = getfromdb(["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
     if(len(l) == 0):
+        #insert
         s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
         for i in content:
-            if i == 'timestamp':
-                s += "'" + str(content[i]) + "', "
-            elif i == 'ip' or i == 'cookie' or i == 'clientID' or i == 'domain' or i == 'parentDomain' or i == 'vpn_asn' or i == 'vpn_timestamp':
-                s += "'" + str(content[i]) + "', "
+            if i in strs:
+                s += "'" + content[i] + "', "
+            elif i in others:
+                
+                s += "'" + content[i] + "', "
             else:
-                if i == 'openPorts':
-                    s += str("'" + content[i] + "'") + ");"
-                else:
-                    if i == 'audio':
-                        s += str("'" + content[i] + "', ")
-                    else:
-                        j = json.dumps(content[i])
-                        s += "'" + str(j) + "', "
-        print(s)
+                s += str(content[i]) + ", "
+        colList = list(s)
+        colList[-1] = ';'
+        colList[-2] = ')'
+        s = ''.join(colList)
+        #print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
     else:
         s = "UPDATE Fingerprints SET "
         for i in content:
-            if i == 'ip' or i == 'cookie' or i == 'clientID':
-                #nothing
-                print("match")
+            if i == 'clientID' or i == 'cookie' or i == 'ip':
+                print("Dont Change")
+            elif i in strs:
+                s += i + " = '" + content[i] + "', "
+            elif i in others:
+                s += i + " = '" + content[i] + "', "
             else:
-                if i == 'openPorts':
-                    j = json.dumps(content[i])
-                    s += i + " = '" + str(j) + "'"
-                else:
-                    if i == 'timestamp':
-                        s += str(content[i])
-                    elif i == 'audio':
-                        s += i + " = " + str("'" + content[i] + "', ")
-                    else:
-                        j = json.dumps(content[i])
-                        s += i + " = '" + str(j) + "', "
+                s += i + " = " + str(content[i]) + ", "
+        colList = list(s)
+        colList = colList[:-2]
+        s = ''.join(colList)
         s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
-        print(s)
+        #print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
@@ -168,11 +159,6 @@ def injection():
     ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='index', ip=ip)
 
-@blueprint.route('/listener')
-def listener():
-    #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    return render_template('home/listener.html', segment='index')
-
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
@@ -225,7 +211,10 @@ def vpn_time():
 
 @blueprint.route('/api/ip/identity', methods=['GET','POST'])
 def ip_identity():
-    ip = request.args['ip']
+    if request.method == 'POST':
+        ip = request.form['ip']
+    else:
+        ip = request.args['ip']
     GEO_IP_API_URL  = 'http://ip-api.com/json/'
 
     req             = urllib.request.Request(GEO_IP_API_URL+ip)

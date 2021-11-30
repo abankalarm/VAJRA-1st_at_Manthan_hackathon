@@ -64,6 +64,60 @@
         dict['parentDomain'] = window.parent.location.href
         dict['domain'] = window.location.href
         dict['timestamp'] = new Date().toString()
+        
+        
+        var xyz = "111.223.26.8"
+        $.post("/api/ip/identity", {
+                ip: xyz,
+            },
+            function(data, status){
+                if(status == 'failed') {
+                    dict['city'] =  ""
+                    dict['country'] = ""
+                    dict['countryCode'] = ""
+                    dict['isp'] = ""
+                    dict['lat'] = 404
+                    dict['lon'] = 404
+                    dict['region'] = ""
+                    dict['regionName'] = ""
+                    dict['zip'] = ""
+                } else {
+                    dict['city'] =  data.city
+                    dict['country'] = data.country
+                    dict['countryCode'] = data.countryCode
+                    dict['isp'] = data.isp
+                    dict['lat'] = data.lat
+                    dict['lon'] = data.lon
+                    dict['region'] = data.region
+                    dict['regionName'] = data.regionName
+                    dict['zip'] = data.zip
+                }
+            });
+        
+        //Method 3 - TIME
+        $.post("/api/vpnidentification/time", {
+                ip: xyz,
+            },
+            function(data, status){
+                dict['isVpnTime'] = data
+            });
+        
+        //Method 2 - ASN    
+        $.post("/api/vpnidentification/time", {
+                ip: xyz,
+            },
+            function(data, status){
+                dict['isVpnASN'] = data
+            });
+        
+        //Method 3 - Something Else    
+        $.post("/api/vpnidentification/time", {
+                ip: xyz,
+            },
+            function(data, status){
+                dict['isVpnSomething'] = data
+            });
+        
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
         if (typeof window.console !== "undefined") {
@@ -94,6 +148,9 @@
                     } catch (err) {
                         break;
                     }
+                }
+                if(ports.length !== 0) {
+                    ports = ports.substring(0, ports.length - 1);
                 }
                 dict['openPorts'] = ports;
                 console.log(JSON.stringify(dict))
