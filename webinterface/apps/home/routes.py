@@ -8,6 +8,8 @@ from apps.home.offsec import *
 from apps.home.asn import *
 import sqlite3
 import json
+import urllib.request
+from ua_parser import user_agent_parser
 
 def getfromdb(columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -183,11 +185,10 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         print(search)
-        isBad,asn,html=getDetails(search)
+        isBad,asn,result=getDetails(search)
         print(isBad,asn)
         
-        result = htmlmodule.unescape(html)
-        return render_template('home/search.html', segment='index', result=result, ip = search)
+        return render_template('home/search.html', segment='index', result=result, ip = search, asn = asn, bad = isBad)
     else:
         return render_template('home/search.html', segment='index')
     
@@ -203,3 +204,59 @@ def portscan():
         result = get_info(ip, top_100)
 
     return jsonify(result)
+
+
+@blueprint.route('/api/vpnidentification/time', methods=['POST'])
+def vpn_time():
+    ip = request.form['ip']
+    GEO_IP_API_URL  = 'http://ip-api.com/json/'
+
+    req             = urllib.request.Request(GEO_IP_API_URL+ip)
+    response        = urllib.request.urlopen(req).read()
+    json_response   = json.loads(response.decode('utf-8'))
+
+    # search in db for ip
+    browser_timzone = ''
+
+    if(json_response['timezone'] == browser_timzone):
+        return jsonify("false")
+
+    return jsonify("true")
+
+@blueprint.route('/api/ip/identity', methods=['GET','POST'])
+def ip_identity():
+    ip = request.args['ip']
+    GEO_IP_API_URL  = 'http://ip-api.com/json/'
+
+    req             = urllib.request.Request(GEO_IP_API_URL+ip)
+    response        = urllib.request.urlopen(req).read()
+    json_response   = json.loads(response.decode('utf-8'))
+
+    # search in db for ip
+    browser_timzone = ''
+    dict = {}
+    try:
+        dict["status"] = "successful"
+        dict["lat"] = json_response["lat"]
+        dict["lon"] = json_response["lon"]
+        dict["regionName"] = json_response["regionName"]
+        dict["region"] = json_response["region"]
+        dict["city"] = json_response["city"]
+        dict["zip"] = json_response["zip"]
+        dict["country"] = json_response["country"]
+        dict["countryCode"] = json_response["countryCode"]
+        dict["isp"] = json_response["isp"]
+        
+    except:
+        dict["status"] = "failed"
+
+    return jsonify(dict)
+
+@blueprint.route('/api/getDetailsFromUserAgent')
+def getDetailsFromUserAgent():
+
+    userAgent = request.form['user-agent']
+    #userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+    parsed_string = user_agent_parser.Parse(userAgent)
+    print(parsed_string)
+    return jsonify(parsed_string)
