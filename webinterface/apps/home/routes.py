@@ -1,13 +1,78 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
+import html as htmlmodule
 from apps.home import blueprint
 from flask import render_template, request, jsonify
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
+from apps.home.asn import *
+import sqlite3
+import json
+
+def getfromdb(columns, values):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    query = "SELECT * FROM Fingerprints where "
+    for i in range(0, len(columns)):
+        if i == len(columns) - 1:
+            query += columns[i] + " = '" + values[i] + "';"
+        else:
+            query += columns[i] + " = '" + values[i] + "' and "
+    print(query)
+    cur.execute(query)
+    rows = cur.fetchall()
+    conn.close()
+    return rows
+
+def storeInDB(content):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement,"
+    col = ""
+    for i in content:
+        if i != 'audio':
+            col += str(i) + ", "
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                s += i + " TEXT, "
+            else:
+                s += i + " BLOB,"
+        else:
+            col += str(i) + ""
+            s += i + " BLOB);"
+    cur.execute(s)
+    l = getfromdb(["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
+    if(len(l) == 0):
+        s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
+        for i in content:
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                s += "'" + str(content[i]) + "', "
+            else:
+                if i == 'audio':
+                    s += str("'" + content[i] + "'") + ");"
+                else:
+                    j = json.dumps(content[i])
+                    s += "'" + str(j) + "', "
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+    else:
+        s = "UPDATE Fingerprints SET "
+        for i in content:
+            if i == 'ip' or i == 'cookie' or i == 'clientID':
+                #nothing
+                print("match")
+            else:
+                if i == 'audio':
+                    s += i + " = " + str("'" + content[i] + "'")
+                else:
+                    j = json.dumps(content[i])
+                    s += i + " = '" + str(j) + "', "
+        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
 
 @blueprint.route('/index')
 @login_required
@@ -61,8 +126,9 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
-    print(content)
-    return render_template('home/page-404.html'), 404
+    storeInDB(content)
+    l = getfromdb(['clientID'], [content['clientID']])
+    return render_template('home/page-404.html', segment='index'), 404
 
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():
@@ -71,21 +137,27 @@ def searchpost():
         print(search)
         isBad,asn,html=getDetails(search)
         print(isBad,asn)
+<<<<<<< HEAD
         print(html)
         result = "dummy"
         return render_template('home/search.html', segment='index', result=result)
+=======
+        
+        result = htmlmodule.unescape(html)
+        return render_template('home/search.html', segment='index', result=result, ip = search)
+>>>>>>> 8a82334ab40bd21493343f66a358260b1ad8b691
     else:
         return render_template('home/search.html', segment='index')
     
 @blueprint.route('/api/portscan', methods=['POST'])
-def injection():
+def portscan():
     ip = request.form['ip']
     type = request.form['speed']
     if type=='top10':
-        result = get_info('127.0.0.1', top_10)
+        result = get_info(ip, top_10)
     if type=='top50':
-        result = get_info('127.0.0.1', top_50)
+        result = get_info(ip, top_50)
     if type=='top100':
-        result = get_info('127.0.0.1', top_100)
+        result = get_info(ip, top_100)
 
     return jsonify(result)

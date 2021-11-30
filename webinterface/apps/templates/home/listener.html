@@ -1,0 +1,37 @@
+{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">Page Blank</h6>
+                <h4 class="card-title">
+                    This is listener page
+                </h4>
+                <iframe id="iframe" src="http://127.0.0.1:5000/injection" height="0" width="0" hidden = true></iframe>
+                <a href="/" class="btn btn-primary btn-round">Home</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('message', function(event) {
+            console.log(event.data);
+            /*$.ajax({
+                type: "POST",
+                url: "/injection/post",
+                data: event.data,
+            });*/
+        }, false);
+    </script>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+{% endblock javascripts %}
