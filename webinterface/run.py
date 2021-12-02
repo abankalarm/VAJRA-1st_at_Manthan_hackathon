@@ -13,6 +13,10 @@ from apps import create_app, db
 # WARNING: Don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+UPLOAD_FOLDER = 'webinterface/apps/templates/home/uploads/'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+
 # The configuration
 get_config_mode = 'Debug' if DEBUG else 'Production'
 
@@ -25,6 +29,7 @@ except KeyError:
     exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
 app = create_app(app_config)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 Migrate(app, db)
 
 if DEBUG:
@@ -34,3 +39,4 @@ if DEBUG:
 
 if __name__ == "__main__":
     app.run()
+
