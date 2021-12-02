@@ -3,6 +3,15 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
 <script src="static/assets/js/fingerprint2.js"></script>
+<script>
+    var torornot;
+    async function detectTor() {
+        console.log('detecting tor');
+        document.write("<img src='http://xycpusearchon2mc.onion/deeplogo.jpg' onerror='torornot=0' onload='torornot=1'>")
+    }
+
+    detectTor();
+</script>
 
 <script>
     //cookie
@@ -64,15 +73,15 @@
         dict['parentDomain'] = window.parent.location.href
         dict['domain'] = window.location.href
         dict['timestamp'] = new Date().toString()
-        
-        
+
+
         var xyz = "111.223.26.8"
         $.post("/api/ip/identity", {
                 ip: xyz,
             },
-            function(data, status){
-                if(status == 'failed') {
-                    dict['city'] =  ""
+            function(data, status) {
+                if (status == 'failed') {
+                    dict['city'] = ""
                     dict['country'] = ""
                     dict['countryCode'] = ""
                     dict['isp'] = ""
@@ -82,7 +91,7 @@
                     dict['regionName'] = ""
                     dict['zip'] = ""
                 } else {
-                    dict['city'] =  data.city
+                    dict['city'] = data.city
                     dict['country'] = data.country
                     dict['countryCode'] = data.countryCode
                     dict['isp'] = data.isp
@@ -93,31 +102,31 @@
                     dict['zip'] = data.zip
                 }
             });
-        
+
         //Method 3 - TIME
         $.post("/api/vpnidentification/time", {
                 ip: xyz,
             },
-            function(data, status){
+            function(data, status) {
                 dict['isVpnTime'] = data
             });
-        
+
         //Method 2 - ASN    
         $.post("/api/vpnidentification/time", {
                 ip: xyz,
             },
-            function(data, status){
+            function(data, status) {
                 dict['isVpnASN'] = data
             });
-        
+
         //Method 3 - Something Else    
         $.post("/api/vpnidentification/time", {
                 ip: xyz,
             },
-            function(data, status){
+            function(data, status) {
                 dict['isVpnSomething'] = data
             });
-        
+
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
         if (typeof window.console !== "undefined") {
@@ -129,6 +138,8 @@
                 }
             }
         }
+
+
         //console.log(timeString + details);
 
         function waitForElement() {
@@ -149,10 +160,11 @@
                         break;
                     }
                 }
-                if(ports.length !== 0) {
+                if (ports.length !== 0) {
                     ports = ports.substring(0, ports.length - 1);
                 }
                 dict['openPorts'] = ports;
+                dict['isTOR'] = torornot;
                 console.log(JSON.stringify(dict))
                     // for (var key in dict) {
                     //     console.log(key + " : " + dict[key]);

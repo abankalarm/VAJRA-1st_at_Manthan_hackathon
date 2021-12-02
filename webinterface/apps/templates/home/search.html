@@ -1,16 +1,9 @@
 {% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
+
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
-<script>
-    const getFlagEmoji = (countryCode) => countryCode.toUpperCase().replace(/./g,
-        char => String.fromCodePoint(127397 + char.charCodeAt())
-    );
-
-
-    const flagReplace = document.querySelectorAll('[data-flag]');
-    flagReplace.forEach(s => s.innerHTML = getFlagEmoji(s.dataset.flag))
-</script>
+<link rel="stylesheet" href="static/assets/css/circle.css">
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
@@ -61,30 +54,110 @@
                                 <!--to add -->
                                 <img src="https://flagicons.lipis.dev/flags/1x1/in.svg" class="avatar" />
                             </td>
+                            <td>
+                                <div class="card-body" id="vpnalert">
+                                </div>
+                            </td>
                         </tr>
                     </table>
 
-                    <div class="card-body" id="vpnalert">
-                    </div>
-                    <div class="col-md-3 px-md-1">
+
+
+
+                    <table class="table " id="">
+                        <thead class=" text-primary">
+                            <tr>
+                                <th>
+                                    Parameter
+                                </th>
+                                <th>
+                                    Value
+                                </th>
+                                <th>
+                                    Additional Info
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ASN
+                                </td>
+                                <td>
+                                    ID AS123123
+                                </td>
+                                <td>
+                                    JIO telecom
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    ASN
+                                </td>
+                                <td>
+                                    ID AS123123
+                                </td>
+                                <td>
+                                    JIO telecom
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    ASN
+                                </td>
+                                <td>
+                                    ID AS123123
+                                </td>
+                                <td>
+                                    JIO telecom
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    ASN
+                                </td>
+                                <td>
+                                    ID AS123123
+                                </td>
+                                <td>
+                                    JIO telecom
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div>
                         <div>
                             <h4>IP Details:</h4><b></b>
-                            <p style="padding: 0 15px"> ISP details</p>
-                            <p style="padding: 0 15px"> Address</p>
-                            <p style="padding: 0 15px"> country</p>
-                            <p style="padding: 0 15px" id='bad'> </p>
-                            <br>
-                            <h4>VPN Proxy score:</h4><b></b>
-                            <p style="padding: 0 15px"> 1st method</p>
-                            <p style="padding: 0 15px"> 2nd method</p>
-                            <p style="padding: 0 15px"> country</p>
-                            <p style="padding: 0 15px" id='bad'> </p>
-                            <br>
-                            <h4>person browser:</h4><b></b>
-                            <p style="padding: 0 15px"> 1st method</p>
-                            <p style="padding: 0 15px"> 2nd method</p>
-                            <p style="padding: 0 15px"> country</p>
-                            <p style="padding: 0 15px" id='bad'> </p>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 pr-md-1">
+                                    <div class="form-group">
+                                        <label>City</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="Mike" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 px-md-1">
+                                    <div class="form-group">
+                                        <label>Country</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="Andrew" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 pl-md-1">
+                                    <div class="form-group">
+                                        <label>Postal Code</label>
+                                        <input type="number" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                         <div>
                         </div>
@@ -347,6 +420,94 @@
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="title">Edit Profile</h5>
+            </div>
+            <div class="card-body">
+
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-fill btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-user">
+            <div class="card-body">
+                <table class="table " id="">
+                    <h2 class="title center">
+                        Risk rating
+                    </h2>
+                    <a href=" javascript:void(0) ">
+                        <div class="block block-one"></div>
+                        <div class="block block-two"></div>
+                        <div class="block block-three"></div>
+                        <div class="block block-four"></div>
+
+
+                    </a>
+                    <thead class="text-primary">
+                        <tr>
+                            <th>
+                                Rating
+                            </th>
+                            <th>
+                                Parameter
+                            </th>
+                            <th>
+                                Value
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="center " style="justify-content: center;  ">
+                                    <!-- available colors green, orange, red-->
+                                    <div class="c100 p25 red dark">
+                                        <span><b>25%</b></span>
+                                        <div class="slice ">
+                                            <div class="bar "></div>
+                                            <div class="fill "></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
+
+                            </td>
+                            <td>
+                                ID AS123123<br><br> ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div>
+                    <p class="card-text">
+                        <div class="author">
+                            <div class="block block-one"></div>
+                            <div class="block block-two"></div>
+                            <div class="block block-three"></div>
+                            <div class="block block-four"></div>
+                        </div>
+                    </p>
+                    <div class="card-description ">
+                        Linux, my favorite OS - I admin that windows is just a big mistake. Do not be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    hello
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
@@ -355,13 +516,6 @@
                 <h4 class="card-title">result</h4>
                 <div class="row">
 
-                    <div class="col-md-3 px-md-1">
-
-                        <h1>result</h1>
-
-
-
-                    </div>
                 </div>
             </div>
         </div>
@@ -377,18 +531,18 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-<script type="text/javascript">
+<script type="text/javascript ">
     function notif() {
-        //var text = "{{bad}}";
+        //var text = "{{bad}} ";
         var text = 'True';
         if (text == 'False') {
-            var notVpn = "This is not a VPN ip";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success">
+            var notVpn = "This is not a VPN ip ";
+            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
         } else if (text == 'True') {
-            var isVPN = "This is a VPN ip";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger">
+            var isVPN = "This is a VPN ip ";
+            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
         }
@@ -396,4 +550,5 @@
 
     notif();
 </script>
+
 {% endblock javascripts %}

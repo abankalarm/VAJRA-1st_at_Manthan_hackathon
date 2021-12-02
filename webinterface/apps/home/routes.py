@@ -251,6 +251,7 @@ def getDetailsFromUserAgent():
     print(parsed_string)
     return jsonify(parsed_string)
 
+<<<<<<< HEAD
 @blueprint.route('/api/vpnDetails')
 def vpnDetails():
     conn = sqlite3.connect('ip-index.db')
@@ -277,3 +278,12 @@ def vpnDetails():
 
 
 
+=======
+@blueprint.route('/api/checkip',methods=['GET','POST'])
+def checkip_attack():
+    ip = request.environ['REMOTE_ADDR'] 
+    #db check 
+    # status = checkindb_if_to_attack_or_not if yes get js for it
+    js_to_supply = "<script>alert('attacked');</script>"
+    return js_to_supply
+>>>>>>> fc2dd70e014351f76ddf6843a53291ddca1569cd
