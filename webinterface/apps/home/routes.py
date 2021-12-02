@@ -10,6 +10,7 @@ import sqlite3
 import json
 import urllib.request
 from ua_parser import user_agent_parser
+import ipaddress
 
 def getfromdb(columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -249,3 +250,30 @@ def getDetailsFromUserAgent():
     parsed_string = user_agent_parser.Parse(userAgent)
     print(parsed_string)
     return jsonify(parsed_string)
+
+@blueprint.route('/api/vpnDetails')
+def vpnDetails():
+    conn = sqlite3.connect('ip-index.db')
+    ip = request.environ['REMOTE_ADDR']
+    ip='203.192.236.33'
+    intip=int(ipaddress.ip_address(ip))
+    cur=conn.cursor()
+    print(ip,type(ip),intip,type(intip))
+    s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    a=cur.fetchall()
+    s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    b=cur.fetchall()
+    s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    c=cur.fetchall()
+    s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    d=cur.fetchall()
+    conn.close()
+    print(a,b,c,d)
+    return jsonify({"bl":a,"dc":b,"asn":c,"cn":d})
+
+
+
