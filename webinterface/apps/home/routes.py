@@ -255,5 +255,5 @@ def checkip_attack():
     ip = request.environ['REMOTE_ADDR'] 
     #db check 
     # status = checkindb_if_to_attack_or_not if yes get js for it
-    js_to_supply = "<script>alert('attacked');</script>"
+    js_to_supply = "alert('attacked');"
     return js_to_supply
