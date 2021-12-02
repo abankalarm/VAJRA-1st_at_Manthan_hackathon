@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 import html as htmlmodule
+import os
 from apps.home import blueprint
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
@@ -10,6 +11,21 @@ import sqlite3
 import json
 import urllib.request
 from ua_parser import user_agent_parser
+from flask import send_from_directory
+
+import string
+import random
+# import rsplit
+
+
+
+@blueprint.route('/display/<filename>')
+def display_image(filename):
+	#print('display_image filename: ' + filename)
+    # call db unique name
+	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+import ipaddress
 
 def getfromdb(columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -250,6 +266,54 @@ def getDetailsFromUserAgent():
     print(parsed_string)
     return jsonify(parsed_string)
 
+@blueprint.route('/tracking', methods=['GET','POST'])
+def uploadfiles():
+    if(request.method == 'POST'):
+        uploadf = request.files['inputfile']
+        N = 7
+        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = N))
+        name =  str(res) + '.' + uploadf.filename.rsplit('.', 1)[1].lower()
+
+        print(name)
+        # name = request.form['outputfile'] + '.' + request.form['extension']
+        if(uploadf):
+            uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
+            # return redirect(url_for('download_file', name=name))
+        print(name)
+
+
+        return render_template('home/tracking.html', segment='index', uploadf=uploadf, name = name)
+    else:
+        return render_template('home/tracking.html', segment='index')
+
+
+@blueprint.route('/api/vpnDetails')
+def vpnDetails():
+    conn = sqlite3.connect('ip-index.db')
+    ip = request.environ['REMOTE_ADDR']
+    ip='203.192.236.33'
+    intip=int(ipaddress.ip_address(ip))
+    cur=conn.cursor()
+    print(ip,type(ip),intip,type(intip))
+    s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    a=cur.fetchall()
+    s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    b=cur.fetchall()
+    s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    c=cur.fetchall()
+    s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    d=cur.fetchall()
+    conn.close()
+    print(a,b,c,d)
+    return jsonify({"bl":a,"dc":b,"asn":c,"cn":d})
+
+
+
+
 @blueprint.route('/api/checkip',methods=['GET','POST'])
 def checkip_attack():
     ip = request.environ['REMOTE_ADDR'] 
@@ -257,3 +321,4 @@ def checkip_attack():
     # status = checkindb_if_to_attack_or_not if yes get js for it
     js_to_supply = "alert('attacked');"
     return js_to_supply
+
