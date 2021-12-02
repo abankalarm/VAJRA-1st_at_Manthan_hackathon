@@ -117,6 +117,11 @@ def index():
 
     return render_template('home/index.html', segment='index')
 
+@blueprint.route('/dash')
+@login_required
+def dash():
+    return render_template('home/dashboard.html', segment='index')
+
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):
@@ -251,7 +256,6 @@ def getDetailsFromUserAgent():
     print(parsed_string)
     return jsonify(parsed_string)
 
-<<<<<<< HEAD
 @blueprint.route('/api/vpnDetails')
 def vpnDetails():
     conn = sqlite3.connect('ip-index.db')
@@ -278,7 +282,6 @@ def vpnDetails():
 
 
 
-=======
 @blueprint.route('/api/checkip',methods=['GET','POST'])
 def checkip_attack():
     ip = request.environ['REMOTE_ADDR'] 
@@ -286,4 +289,3 @@ def checkip_attack():
     # status = checkindb_if_to_attack_or_not if yes get js for it
     js_to_supply = "<script>alert('attacked');</script>"
     return js_to_supply
->>>>>>> fc2dd70e014351f76ddf6843a53291ddca1569cd
