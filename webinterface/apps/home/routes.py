@@ -249,3 +249,11 @@ def getDetailsFromUserAgent():
     parsed_string = user_agent_parser.Parse(userAgent)
     print(parsed_string)
     return jsonify(parsed_string)
+
+@blueprint.route('/api/checkip',methods=['GET','POST'])
+def checkip_attack():
+    ip = request.environ['REMOTE_ADDR'] 
+    #db check 
+    # status = checkindb_if_to_attack_or_not if yes get js for it
+    js_to_supply = "<script>alert('attacked');</script>"
+    return js_to_supply
