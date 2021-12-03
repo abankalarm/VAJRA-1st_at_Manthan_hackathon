@@ -1,17 +1,6 @@
-// Copyright 2018 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
 
 (() => {
-	// Map multiple JavaScript environments to a single common API,
-	// preferring web standards over Node.js API.
-	//
-	// Environments considered:
-	// - Browsers
-	// - Node.js
-	// - Electron
-	// - Parcel
-	// - Webpack
+	
 
 	if (typeof global !== "undefined") {
 		// global already exists
@@ -257,11 +246,7 @@
 			const timeOrigin = Date.now() - performance.now();
 			this.importObject = {
 				go: {
-					// Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
-					// may synchronously trigger a Go event handler. This makes Go code get executed in the middle of the imported
-					// function. A goroutine can switch to a new stack if the current stack is too small (see morestack function).
-					// This changes the SP, thus we have to update the SP used by the imported function.
-
+					
 					// func wasmExit(code int32)
 					"runtime.wasmExit": (sp) => {
 						sp >>>= 0;
@@ -313,8 +298,7 @@
 							() => {
 								this._resume();
 								while (this._scheduledTimeouts.has(id)) {
-									// for some reason Go failed to register the timeout event, log and try again
-									// (temporary workaround for https://github.com/golang/go/issues/28975)
+									
 									console.warn("scheduleTimeoutEvent: missed timeout event");
 									this._resume();
 								}
@@ -567,8 +551,7 @@
 				offset += 8;
 			});
 
-			// The linker guarantees global data starts from at least wasmMinDataAddr.
-			// Keep in sync with cmd/link/internal/ld/data.go:wasmMinDataAddr.
+			
 			const wasmMinDataAddr = 4096 + 8192;
 			if (offset >= wasmMinDataAddr) {
 				throw new Error("total length of command line and environment variables exceeds limit");

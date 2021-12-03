@@ -190,20 +190,14 @@
                     <script>
                         am5.ready(function() {
 
-                            // Create root element
-                            // https://www.amcharts.com/docs/v5/getting-started/#Root_element
                             var root = am5.Root.new("chartdiv");
 
 
-                            // Set themes
-                            // https://www.amcharts.com/docs/v5/concepts/themes/
                             root.setThemes([
                                 am5themes_Animated.new(root)
                             ]);
 
 
-                            // Create the map chart
-                            // https://www.amcharts.com/docs/v5/charts/map-chart/
                             var chart = root.container.children.push(am5map.MapChart.new(root, {
                                 panX: "translateX",
                                 panY: "translateY",
@@ -217,7 +211,7 @@
                             }));
 
 
-                            // Add labels and controls
+
                             cont.children.push(am5.Label.new(root, {
                                 centerY: am5.p50,
                                 text: "Map"
@@ -248,8 +242,6 @@
                                 text: "Globe"
                             }));
 
-                            // Create main polygon series for countries
-                            // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
                             var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
                                 geoJSON: am5geodata_worldLow
                             }));
@@ -260,15 +252,14 @@
                                 strokeOpacity: 0.08
                             });
 
-                            // Create line series for trajectory lines
-                            // https://www.amcharts.com/docs/v5/charts/map-chart/map-line-series/
+                            
                             var lineSeries = chart.series.push(am5map.MapLineSeries.new(root, {}));
                             lineSeries.mapLines.template.setAll({
                                 stroke: root.interfaceColors.get("alternativeBackground"),
                                 strokeOpacity: 0.6
                             });
 
-                            // destination series
+                        
                             var citySeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -288,7 +279,7 @@
                                 });
                             });
 
-                            // arrow series
+                        
                             var arrowSeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -310,7 +301,7 @@
                                 });
                             });
 
-                            //sample format
+         
                             var cities = [{
                                 id: "london",
                                 title: "London",
@@ -359,9 +350,7 @@
                                 };
                             }
                             console.log(destinations);
-                            // prepare line series data
 
-                            // London coordinates
                             var originLongitude = -0.1262;
                             var originLatitude = 51.5002;
 
@@ -409,7 +398,7 @@
                             })
 
 
-                            // Make stuff animate on load
+               
                             chart.appear(500, 500);
                         });
                     </script>
@@ -529,11 +518,10 @@
 </script>
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
+
 {% block javascripts %}
 <script type="text/javascript ">
     function notif() {
-        //var text = "{{bad}} ";
         var text = 'True';
         if (text == 'False') {
             var notVpn = "This is not a VPN ip ";

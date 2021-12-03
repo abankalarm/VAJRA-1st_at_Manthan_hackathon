@@ -1,29 +1,11 @@
-/**
- * ---------------------------------------
- * This demo was created using amCharts 5.
- * 
- * For more information visit:
- * https://www.amcharts.com/
- * 
- * Documentation is available at:
- * https://www.amcharts.com/docs/v5/
- * ---------------------------------------
- */
 
-// Create root element
-// https://www.amcharts.com/docs/v5/getting-started/#Root_element
 var root = am5.Root.new("chartdiv");
 
-
-// Set themes
-// https://www.amcharts.com/docs/v5/concepts/themes/
 root.setThemes([
   am5themes_Animated.new(root)
 ]);
 
 
-// Create the map chart
-// https://www.amcharts.com/docs/v5/charts/map-chart/
 var chart = root.container.children.push(am5map.MapChart.new(root, {
   panX: "rotateX",
   panY: "rotateY",
@@ -31,8 +13,7 @@ var chart = root.container.children.push(am5map.MapChart.new(root, {
 }));
 
 
-// Create series for background fill
-// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+
 var backgroundSeries = chart.series.push(
   am5map.MapPolygonSeries.new(root, {})
 );
@@ -47,8 +28,7 @@ backgroundSeries.data.push({
 });
 
 
-// Create main polygon series for countries
-// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+
 var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
   geoJSON: am5geodata_worldLow 
 }));
@@ -60,14 +40,14 @@ polygonSeries.mapPolygons.template.setAll({
 });
 
 
-// Create polygon series for projected circles
+
 var circleSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
 circleSeries.mapPolygons.template.setAll({
   templateField: "polygonTemplate",
   tooltipText: "{name}:{value}"
 });
 
-// Define data
+
 var colors = am5.ColorSet.new(root, {});
 
 var data = [
@@ -255,11 +235,11 @@ for (var i = 0; i < data.length; i++) {
   }
 }
 
-// radius in degrees
+
 var minRadius = 0.5;
 var maxRadius = 5;
 
-// Create circles when data for countries is fully loaded.
+
 polygonSeries.events.on("datavalidated", function () {
   circleSeries.data.clear();
 
@@ -291,5 +271,5 @@ polygonSeries.events.on("datavalidated", function () {
 
 
 
-// Make stuff animate on load
+
 chart.appear(1000, 100);

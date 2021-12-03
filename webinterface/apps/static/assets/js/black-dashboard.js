@@ -49,7 +49,6 @@ var seq2 = 0,
   var isWindows = navigator.platform.indexOf('Win') > -1 ? true : false;
 
   if (isWindows) {
-    // if we are on windows OS we activate the perfectScrollbar function
     if ($('.main-panel').length != 0) {
       var ps = new PerfectScrollbar('.main-panel', {
         wheelSpeed: 2,
@@ -116,7 +115,7 @@ $(document).ready(function() {
   $navbar = $('.navbar[color-on-scroll]');
   scroll_distance = $navbar.attr('color-on-scroll') || 500;
 
-  // Check if we have the class "navbar-color-on-scroll" then add the function to remove the class "navbar-transparent" so it will transform to a plain color.
+  
   if ($('.navbar[color-on-scroll]').length != 0) {
     blackDashboard.checkScrollForTransparentNavbar();
     $(window).on('scroll', blackDashboard.checkScrollForTransparentNavbar)
@@ -173,7 +172,7 @@ $(document).on('click', '.navbar-toggle', function() {
 });
 
 $(window).resize(function() {
-  // reset the seq for charts drawing animations
+  
   seq = seq2 = 0;
 
   if ($full_screen_map.length == 0 && $('.bd-docs').length == 0) {
