@@ -378,6 +378,11 @@ def searchpost():
                 cur.execute("Select ip from Fingerprints where clientID="+e)
                 ips.append(cur.fetchall())
             conn.close()
+            uip = list(set(ips))
+            allData={}
+            for ip in uip:
+                cur.execute("Select cookie,clientID,openports,userafent,timestamp, isvpn,isTOR,vpnblabla from Fingerprints where clientID=" )
+                allData[ip]=cur.fetchall()
         except:
             print("error")
         
