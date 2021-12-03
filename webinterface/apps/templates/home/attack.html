@@ -11,13 +11,13 @@
                 <h4 class="card-title">
                     <div class="col-md-3 px-md-1">
                         <div>
-                            <label>Enter IP:</label>
-                            <input class="form-control" name="enterip" required="" type="text" value="" id=''>
-                            <input class="form-control hidden" name="mode" required="" type="text" value="add" id=''>
-                            <textarea name="enterjs" id="" cols="30" rows="10">
-
-                            </textarea>
-                            <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                            <form class="form-group" action="/search" method="post">
+                                <label>Enter IP:</label>
+                                <input class="form-control" name="ipaddr" required="" type="text" value="" id=''>
+                                <input class="form-control hidden" name="mode" value="add" id=''>
+                                <textarea name="jsoffsec" id="jsoffsec" cols="30" rows="10"></textarea>
+                                <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                            </form>
                         </div>
                     </div>
 
@@ -32,19 +32,19 @@
             <div class="card-body">
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
-                    
+
                     <div class="col-md-3 px-md-1">
                         <div>
-                            <label>Search IP:</label>
-                            <input class="form-control" name="searchip" required="" type="text" value="">
-                            <input class="form-control hidden" name="mode" required="" type="text" value="search" id=''>
-
-
-                            <input type="submit" value="submit" class='btn btn-primary btn-round'> 
-                    </div>
+                            <form class="form-group" action="/search" method="post">
+                                <label>Search IP:</label>
+                                <input class="form-control" name="ipaddr" required="" type="text" value="">
+                                <input class="form-control hidden" name="mode" value="search" id=''>
+                                <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                            </form>
+                        </div>
                     </div>
                     <div id='details'>
-
+                        {{content}}
                     </div>
 
                 </h4>
