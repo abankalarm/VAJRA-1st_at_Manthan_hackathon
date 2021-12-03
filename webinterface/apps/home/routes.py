@@ -43,13 +43,16 @@ def getfromdb(table, columns, values):
     return rows
 
 def checkBookmarkDB(ip):
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    s = "Select * from Fingerprints where ip = " + ip +" and bookmarked = 1 LIMIT 1;"
-    cur.execute(s)
-    rows = cur.fetchall()
-    conn.close()
-    return len(rows) == 1
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        s = "Select * from Fingerprints where ip = " + ip +" and bookmarked = 1 LIMIT 1;"
+        cur.execute(s)
+        rows = cur.fetchall()
+        conn.close()
+        return len(rows) == 1
+    except:
+        return False
 
 def flagBookmarkDB(ip):
     conn = sqlite3.connect('db.sqlite3')
@@ -118,7 +121,7 @@ def storeInDB(content):
         colList[-1] = ';'
         colList[-2] = ')'
         s = ''.join(colList)
-        #print(s)
+        print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
