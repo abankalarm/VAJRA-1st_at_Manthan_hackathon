@@ -274,6 +274,25 @@ def index():
 @blueprint.route('/dash')
 @login_required
 def dash():
+    try:
+            ips=[]
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT ( DISTINCT ip) FROM Fingerprints;")
+            uip=cur.fetchall()
+            cur.execute("SELECT countryCode, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY countryCode; ")
+            cCount=cur.fetchall()
+            cur.execute("SELECT COUNT ( DISTINCT domain) FROM Fingerprints;")
+            udomain=cur.fetchall()
+            cur.execute("SELECT domain, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY domain; ")
+            dCount=cur.fetchall()
+            cur.execute("SELECT domain, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY domain Where vpn=1")
+            dip=cur.fetchall()
+            cur.execute("SELECT ip FROM Fingerprints WHERE bookmark=1 ;")
+            flagIP=cur.fetchall()
+
+    except:
+        print()
     return render_template('home/dashboard.html', segment='index')
 
 @blueprint.route('/<template>')
@@ -335,6 +354,25 @@ def searchpost():
         print(search)
         isBad,asn,result=getDetails(search)
         print(isBad,asn)
+        try:
+            ips=[]
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("Select cookie from Fingerprints where ip="+search)
+            cookie=cur.fetchall()
+            
+            for e in cookie:
+                cur.execute("Select ip from Fingerprints where cookie="+e)
+                ips.append(cur.fetchall())
+            
+            cur.execute("Select clientID from Fingerprints where ip="+search)
+            clientID=cur.fetchall()
+            for e in clientID:
+                cur.execute("Select ip from Fingerprints where cookie="+e)
+                ips.append(cur.fetchall())
+            conn.close()
+        except:
+            print("error")
         
         return render_template('home/search.html', segment='index', result=result, ip = search, asn = asn, bad = isBad)
     else:
