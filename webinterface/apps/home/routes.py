@@ -2,7 +2,7 @@
 import html as htmlmodule
 import os
 from sqlite3.dbapi2 import connect
-
+import ipaddress
 from werkzeug.datastructures import ContentRange
 from apps.home import blueprint
 from flask import render_template, request, jsonify, redirect, url_for
@@ -15,7 +15,7 @@ import json
 import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
-
+import time
 import string
 import random
 # import rsplit
@@ -26,9 +26,17 @@ import random
 def display_image(filename):
 	#print('display_image filename: ' + filename)
     # call db unique name
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+    ip = request.environ['REMOTE_ADDR']
+    data={
+    "ip":ip,
+    "id":filename,
+    "timestamp":str(time.time())
+    }
+    storeInTrackingTable(data)
 
-import ipaddress
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
 
 def getfromdb(table, columns, values):
     conn = sqlite3.connect('db.sqlite3')
@@ -471,7 +479,11 @@ def uploadfiles():
         print(name)
         # name = request.form['outputfile'] + '.' + request.form['extension']
         if(uploadf):
-            uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
+            try:
+                uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
+            except:
+                uploadf.save(os.path.join('apps/static/uploads/', name))
+
             # return redirect(url_for('download_file', name=name))
         print(name)
 
