@@ -11,10 +11,10 @@ import json
 import urllib.request
 from ua_parser import user_agent_parser
 
-def getfromdb(columns, values):
+def getfromdb(table, columns, values):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
-    query = "SELECT * FROM Fingerprints where "
+    query = "SELECT * FROM " + table + " where "
     for i in range(0, len(columns)):
         if i == len(columns) - 1:
             query += columns[i] + " = '" + values[i] + "';"
@@ -25,6 +25,22 @@ def getfromdb(columns, values):
     rows = cur.fetchall()
     conn.close()
     return rows
+
+def checkBookmarkDB(ip):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "Select * from Fingerprints where ip = " + ip +" and bookmarked = 1 LIMIT 1;"
+    cur.execute(s)
+    rows = cur.fetchall()
+    conn.close()
+    return len(rows) == 1
+
+def flagBookmarkDB(ip):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "UPDATE Fingerprints SET bookmarked = 1 where ip = " + ip +";"
+    cur.execute(s)
+    conn.close()
 
 
 
@@ -70,7 +86,7 @@ def storeInDB(content):
     col = ''.join(anotherList)
     #print(col)
     cur.execute(s)
-    l = getfromdb(["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
+    l = getfromdb("Fingerprints", ["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
     if(len(l) == 0):
         #insert
         s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
@@ -109,6 +125,129 @@ def storeInDB(content):
         cur.execute(s)
         conn.commit()
         conn.close()
+
+
+def storeInTrackingTable(content):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Tracking ("
+    col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
+    for i in content:
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
+            else:
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
+        else:
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    #print(col)
+    cur.execute(s)
+    #insert
+    s = "INSERT INTO Tracking (" + col + ") VALUES ("
+    for i in content:
+        if i in strs:
+            s += "'" + content[i] + "', "
+        elif i in others:
+            
+            s += "'" + content[i] + "', "
+        else:
+            s += str(content[i]) + ", "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    #print(s)
+    cur.execute(s)
+    conn.commit()
+    conn.close()
+
+def storeInAttackingTable(content):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Attacking ("
+    col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
+    for i in content:
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
+            else:
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
+        else:
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    #print(col)
+    cur.execute(s)
+    #insert
+    s = "INSERT INTO Attacking (" + col + ") VALUES ("
+    for i in content:
+        if i in strs:
+            s += "'" + content[i] + "', "
+        elif i in others:
+            
+            s += "'" + content[i] + "', "
+        else:
+            s += str(content[i]) + ", "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    #print(s)
+    cur.execute(s)
+    conn.commit()
+    conn.close()
 
 @blueprint.route('/index')
 @login_required
@@ -162,8 +301,10 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
+    if checkBookmarkDB(content['ip']):
+        content['bookmarked'] = 1
     storeInDB(content)
-    l = getfromdb(['clientID'], [content['clientID']])
+    #l = getfromdb(['ip'], [content['ip']])
     return render_template('home/page-404.html', segment='index'), 404
 
 @blueprint.route('/search', methods=['GET','POST'])
