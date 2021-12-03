@@ -2,6 +2,8 @@
 import html as htmlmodule
 import os
 from sqlite3.dbapi2 import connect
+
+from werkzeug.datastructures import ContentRange
 from apps.home import blueprint
 from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
@@ -482,10 +484,12 @@ def attack():
 
         if request.args('mode') == "search":
             IP = request.args('ipaddr')
+            content = {}
+            getfromdb("Attacking",[IP,"JS"],[content["IP"],content["JS"]])
+            return render_template('home/attack.html', segment='index', search = content)
 
     else:
-        ip = request.environ['REMOTE_ADDR'] 
-        #db check 
-        # status = checkindb_if_to_attack_or_not if yes get js for it
-        js_to_supply = "alert('attacked');"
-        return js_to_supply
+        content = {}
+        getfromdb("Attacking",["IP","JS"],[content["IP"],content["JS"]])
+        
+        return render_template('home/attack.html', segment='index', alldetails = content)
