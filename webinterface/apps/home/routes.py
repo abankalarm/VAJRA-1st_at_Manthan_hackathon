@@ -221,12 +221,12 @@ def storeInAttackingTable(content):
     others = {}
     reals = {}
     for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
+        print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
-        if isinstance(content[i], str):
-            strs[i] = 1
-            s += i + " TEXT, "
-        elif isinstance(content[i], int):
+        #if isinstance(content[i], str):
+        #    strs[i] = 1
+        #    s += i + " TEXT, "
+        if isinstance(content[i], int):
             ints[i] = 1
             s += i + " INTEGER, "
         elif isinstance(content[i], float):
@@ -250,10 +250,11 @@ def storeInAttackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    #print(col)
+    print(col)
     cur.execute(s)
     #insert
     s = "INSERT INTO Attacking (" + col + ") VALUES ("
+    
     for i in content:
         if i in strs:
             s += "'" + content[i] + "', "
@@ -267,6 +268,7 @@ def storeInAttackingTable(content):
     colList[-2] = ')'
     s = ''.join(colList)
     #print(s)
+    print(s)
     cur.execute(s)
     conn.commit()
     conn.close()
@@ -515,6 +517,7 @@ def checkip_attack():
 def attack():
     if(request.method == 'POST'):
         if request.args('mode') == "add":
+            # store a ip and js pair together , make it unique and overwrite
             IP = request.args('ipaddr')
             JS = request.args('jsoffsec')
             content = {}
@@ -524,11 +527,16 @@ def attack():
 
         if request.args('mode') == "search":
             IP = request.args('ipaddr')
-            content = {}
+            # search for js respective to partivular ip
             getfromdb("Attacking",[IP,"JS"],[content["IP"],content["JS"]])
             return render_template('home/attack.html', segment='index', search = content)
 
     else:
+        content1 = {}
+        content1["ip"] = "58.56.25.25"
+        content1["program"] = "alert('works')"
+        # store a ip and js pair together , make it unique and overwrite
+        storeInAttackingTable(content1)
         content = {}
         getfromdb("Attacking",["IP","JS"],[content["IP"],content["JS"]])
         
