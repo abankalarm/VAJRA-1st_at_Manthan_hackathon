@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import html as htmlmodule
 import os
+from sqlite3.dbapi2 import connect
 from apps.home import blueprint
 from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
@@ -466,3 +467,25 @@ def checkip_attack():
     # status = checkindb_if_to_attack_or_not if yes get js for it
     js_to_supply = "alert('attacked');"
     return js_to_supply
+
+@login_required
+@blueprint.route('/attack',methods=['GET','POST'])
+def attack():
+    if(request.method == 'POST'):
+        if request.args('mode') == "add":
+            IP = request.args('ipaddr')
+            JS = request.args('jsoffsec')
+            content = {}
+            content[IP] = JS
+            storeInAttackingTable(content)
+            return redirect("/attack", code=302)
+
+        if request.args('mode') == "search":
+            IP = request.args('ipaddr')
+
+    else:
+        ip = request.environ['REMOTE_ADDR'] 
+        #db check 
+        # status = checkindb_if_to_attack_or_not if yes get js for it
+        js_to_supply = "alert('attacked');"
+        return js_to_supply
