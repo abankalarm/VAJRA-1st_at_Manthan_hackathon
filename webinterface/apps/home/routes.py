@@ -275,7 +275,6 @@ def index():
 @login_required
 def dash():
     try:
-            ips=[]
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
             cur.execute("SELECT COUNT ( DISTINCT ip) FROM Fingerprints;")
@@ -368,7 +367,7 @@ def searchpost():
             cur.execute("Select clientID from Fingerprints where ip="+search)
             clientID=cur.fetchall()
             for e in clientID:
-                cur.execute("Select ip from Fingerprints where cookie="+e)
+                cur.execute("Select ip from Fingerprints where clientID="+e)
                 ips.append(cur.fetchall())
             conn.close()
         except:
