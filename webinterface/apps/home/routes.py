@@ -137,6 +137,17 @@ def index():
 def dash():
     return render_template('home/dashboard.html', segment='index')
 
+@blueprint.route('/fdl')
+@login_required
+def fdl():
+    return render_template('home/fulldomainlist.html', segment='index')
+
+@blueprint.route('/ipl')
+@login_required
+def ipl():
+    return render_template('home/fulliplog.html', segment='index')
+
+
 @blueprint.route('/<template>')
 @login_required
 def route_template(template):

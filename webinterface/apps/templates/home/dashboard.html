@@ -10,12 +10,33 @@
 <script src="static/assets/js/map.js"></script>
 {% endblock javascripts %}
 {% block content %}
+<link rel="stylesheet" href="static/assets/css/style.css">
 <!-- <link rel="stylesheet" href="static/assets/css/style.css"> -->
 <!-- MAP -->
-<div id="chartdiv" style = "width: 100%; height: 250px"></div>
+<div class="row">
+<div class="col-md-3">
+   
+            
+    </div>
+    <div class="col-md-12">
+    <div class="card">
+        <div class="card card-profile">
+            <div class="card-body">
 
+                <h4 class="card-title">Map</h4>
+                
+<div id="chartdiv" style = "width: 100%"></div>
 
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-3">
+    
+            
+    </div>
 
+</div>
 <br>
 
 
@@ -88,9 +109,9 @@
                             <div class="card">
                                 
                                 <div class="container">
-                                  <a>gcaisugua.com</a><br>
-                                  <a>sgakjjdsk.com</a><br>
-                                  <a>gcaisugua.com</a>
+                                  <a href="gcaisugua.com">gcaisugua.com</a><br>
+                                  <a href="sgakjjdsk.com">sgakjjdsk.com</a><br>
+                                  <a href="gcaisugua.com">gcaisugua.com</a>
                                 
                                 </div>
                             </div>
@@ -100,7 +121,7 @@
                         <div class="form-group">
 
                             <div class="card">
-                                <a href="" target="_blank">
+                                <a href="fdl" target="_blank">
                                 <div class="container" type = "button">
                                     <br>
                                   <h4 ><b>View Full List</b></h4>
@@ -133,7 +154,10 @@
                                 
                                 <div class="container">
                                   <h4><b>Last 10 IPs</b></h4>
-                                  <p>53675218</p>
+                                  <div id="lastTenIP">
+                                    <a href="">1.101.342.321</a>
+                                  </div>
+                                  
                                 </div>
                             </div>
                         </div>
@@ -143,10 +167,10 @@
                         <div class="form-group">
 
                             <div class="card">
-                                
-                                <div class="container">
+                                <a href="ipl" target="_blank">
+                                <div class="container" type = "button">
                                   <h4><b>View Full Log</b></h4>
-                                  <p>736758</p>
+                                  
                                 </div>
                             </div>
                         </div>
@@ -156,5 +180,5 @@
         </div>
     </div>
     
-</div>x
+</div>
 {% endblock content %}
