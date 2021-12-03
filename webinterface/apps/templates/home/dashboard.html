@@ -8,6 +8,10 @@
 <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 <script src="static/assets/js/map.js"></script>
+<script>
+    var allData = JSON.parse('{{allData | tojson}}');
+    console.log(allData);
+</script>
 {% endblock javascripts %}
 {% block content %}
 <link rel="stylesheet" href="static/assets/css/style.css">

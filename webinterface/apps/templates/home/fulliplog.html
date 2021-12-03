@@ -3,6 +3,10 @@
 
 
 {% block javascripts %}
+<script>
+    var allData = JSON.parse('{{allData | tojson}}');
+    console.log(allData);
+</script>
 {%endblock javascripts%}
 {% block content %}
 <h2> Complete IP Log</h2>

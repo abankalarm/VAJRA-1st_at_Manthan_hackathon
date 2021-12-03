@@ -16,10 +16,6 @@ import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
-<<<<<<< HEAD
-
-=======
->>>>>>> 43dba2c4938e5f28cfff0be86cf8b8f4252c318e
 import string
 import random
 # import rsplit
@@ -76,6 +72,20 @@ def flagBookmarkDB(ip):
     cur.execute(s)
     conn.close()
 
+def storeIpCommentTable(ip, comment):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( ip TEXT, comments TEXT);"
+    cur.execute(s)
+    l = getfromdb('TrackingComments', ['ip'], ip)
+    if len(l) == 0:
+        s = "INSERT INTO TrackingComments (ip, comment) VALUES ('" + ip + "', '" + comment + "');"
+        cur.execute(s)
+        conn.commit()
+    else:
+        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE ip = '" + ip + "';"
+        cur.execute(s)
+    conn.close()
 
 
 def storeInDB(content):
@@ -221,6 +231,7 @@ def storeInTrackingTable(content):
     cur.execute(s)
     conn.commit()
     conn.close()
+    storeIpCommentTable(ip, '')
 
 def storeInAttackingTable(content):
     conn = sqlite3.connect('db.sqlite3')
@@ -325,35 +336,102 @@ def index():
 @blueprint.route('/dash')
 @login_required
 def dash():
+    allData = {}
     try:
-            conn = sqlite3.connect('db.sqlite3')
-            cur = conn.cursor()
-            cur.execute("SELECT COUNT ( DISTINCT ip) FROM Fingerprints;")
-            uip=cur.fetchall()
-            cur.execute("SELECT countryCode, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY countryCode; ")
-            cCount=cur.fetchall()
-            cur.execute("SELECT COUNT ( DISTINCT domain) FROM Fingerprints;")
-            udomain=cur.fetchall()
-            cur.execute("SELECT domain, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY domain; ")
-            dCount=cur.fetchall()
-            cur.execute("SELECT domain, COUNT( DISTINCT ip) FROM Fingerprints GROUP BY domain Where vpn=1")
-            dip=cur.fetchall()
-            cur.execute("SELECT ip FROM Fingerprints WHERE bookmark=1 ;")
-            flagIP=cur.fetchall()
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
 
+        cur.execute("SELECT COUNT(DISTINCT (ip)) as cnt FROM Fingerprints;")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['uniqueIP'] = data
+        
+        cur.execute("SELECT countryCode, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY countryCode; ")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['countryCount'] = data
+
+        cur.execute("SELECT COUNT ( DISTINCT parentDomain) as cnt FROM Fingerprints;")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['uniqueDomains'] = data
+        
+        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY parentDomain; ")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['domainCount'] = data
+        
+        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true' GROUP BY parentDomain; ")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['distinctIp'] = data
+        
+        cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['flaggedIp'] = data
+        conn.close()
     except:
-        print()
-    return render_template('home/dashboard.html', segment='index')
+        print('Some error occured')
+    return render_template('home/dashboard.html', segment='index', allData = allData)
 
 @blueprint.route('/fdl')
 @login_required
 def fdl():
-    return render_template('home/fulldomainlist.html', segment='index')
+    allData = {}
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("SELECT distinct(parentDomain) FROM Fingerprints;")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        pDomains = []
+        for i in data:
+            pDomains.append(i['parentDomain'])
+            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
+            cur.execute(s)
+            desc = cur.description
+            column_names = [col[0] for col in desc]
+            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[i['parentDomain']] = data1
+        allData['keyList'] = pDomains
+        conn.close()
+    except:
+        print('No data')
+    return render_template('home/fulldomainlist.html', segment='index', allData = allData)
 
 @blueprint.route('/ipl')
 @login_required
 def ipl():
-    return render_template('home/fulliplog.html', segment='index')
+    allData = {}
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("SELECT distinct(ip) FROM Fingerprints;")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        ips = []
+        for i in data:
+            ips.append(i['ip'])
+            s = "SELECT cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where ip ='" + i['ip'] + "';"
+            cur.execute(s)
+            desc = cur.description
+            column_names = [col[0] for col in desc]
+            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[i['ip']] = data1
+        allData['keyList'] = ips
+        conn.close()
+    except:
+        print('No data')
+    return render_template('home/fulliplog.html', segment='index', allData = allData)
 
 
 @blueprint.route('/<template>')
