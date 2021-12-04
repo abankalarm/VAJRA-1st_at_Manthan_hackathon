@@ -74,8 +74,8 @@
         dict['domain'] = window.location.href
         dict['timestamp'] = new Date().toString()
         dict['bookmarked'] = 0;
-        
-        
+
+
 
 
         var xyz = "111.223.26.8"
@@ -147,7 +147,7 @@
 
         function waitForElement() {
             //console.log(getElementByXpath("/html/body/div[1]/div[2]/div[2]/div/div/div/div/div").innerHTML);
-            if (getElementByXpath("/html/body/div[1]/div[2]/div[2]/div/div/div/div/div").innerHTML == 'Finished') {
+            if (getElementByXpath('/html/body/div[1]/div[2]/div/div/div/div/div/div').innerHTML == 'Finished') {
                 //variable exists, do what you want
                 var ports = "";
                 for (let i = 1; i < 100; i++) {
@@ -215,7 +215,7 @@
                 </head>
 
                 <body>
-                    <div id='portscan'></div>
+                    <div id='portscan'>Not finished</div>
                 </body>
 
                 </html>
