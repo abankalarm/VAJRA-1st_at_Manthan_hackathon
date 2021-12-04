@@ -352,7 +352,7 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['uniqueIP'] = data
         
-        cur.execute("SELECT countryCode, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY countryCode; ")
+        cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -370,11 +370,17 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['domainCount'] = data
         
-        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true' GROUP BY parentDomain; ")
+        cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['distinctIp'] = data
+    
+        cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['vpns'] = data
         
         cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
         desc = cur.description 
@@ -676,17 +682,18 @@ def checkip_attack():
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
     if(request.method == 'POST'):
-        if request.args('mode') == "add":
+        if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
-            IP = request.args('ipaddr')
-            JS = request.args('jsoffsec')
+            IP = request.form.get('ipaddr')
+            JS = request.form.get('jsoffsec')
             content = {}
             content['ip'] = IP
             content['js'] = JS
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
-        if request.args('mode') == "search":
-            IP = request.args('ipaddr')
+        if request.form.get('mode') == "search":
+            IP = request.form.get('ipaddr')
+            content = {}
             # search for js respective to partivular ip
             getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='attack', search = content)

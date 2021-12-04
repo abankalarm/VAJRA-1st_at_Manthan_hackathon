@@ -7,7 +7,7 @@
         display: inline-block;
         cursor: pointer;
         font-weight: bold;
-        color: rgb(50, 107, 182);
+        color: rgb(208, 91, 255);
         ;
     }
     
@@ -16,7 +16,7 @@
         overflow: hidden;
         padding: 0px;
         color: white;
-        background-color: rgb(36, 112, 160);
+        background-color: rgb(208, 91, 255);
     }
 </style>
 {% endblock stylesheets %}
@@ -29,9 +29,14 @@
     for(let i = 0; i < Object.keys(allData['keyList']).length; i++) {
         console.log(allData['keyList'][i], " ", allData[allData['keyList'][i]]);
     }
-    /*var ele = "";
-    for (var i = 0; i < Object.keys(allData.faq).length; i++) {
-        ele += "<div class='faq_container'><div class='faq'><div class = 'faq_question'><div class = 'card-header'><b>" + allData.faq[i].q + "</b><br></div></div><div class='faq_answer_container'><div class='faq_answer'><div class = 'card-block'>" + allData.faq[i].a + "</div><br><br></div></div></div></div>";
+    var ele = "";
+    for (var i = 0; i < Object.keys(allData['keyList']).length; i++) {
+        var display = '';
+        for (var j = 0; j < Object.keys(allData[allData['keyList'][i]]).length; j++) {
+            //display all the properties which you wish to display here
+            display += "TOR: " + (allData[allData['keyList'][i]][j]['isTOR'] === 0? "false" : "true") + " , Location: " + allData[allData['keyList'][i]][j]['city'] + ", " + allData[allData['keyList'][i]][j]['country'] + "<br>";
+        }
+        ele += "<div class='faq_container'><div class='faq'><div class = 'faq_question' style = 'width: 100%'><div class = 'card-header'><b>" + allData['keyList'][i] + "</b><br></div></div><div class='faq_answer_container'><div class='faq_answer'><div class = 'card-block' style = 'padding: 10px'>" + display + "</div><br><br></div></div></div></div>";
     }
 
     document.getElementById("ques").innerHTML = ele;
@@ -50,7 +55,7 @@
             }, 500);
             $(this).closest('.faq').addClass('open');
         }
-    });*/
+    });
 </script>
 </script>
 {%endblock javascripts%}
