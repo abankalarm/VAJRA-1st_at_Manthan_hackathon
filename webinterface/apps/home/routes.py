@@ -334,6 +334,11 @@ def index():
 
     return render_template('home/index.html', segment='index')
 
+@blueprint.route('/nmap')
+def nmap():
+
+    return render_template('home/nmaps.html', segment='nmaps')
+
 @blueprint.route('/dash')
 def dash():
     allData = {}
@@ -696,17 +701,18 @@ def checkip_attack():
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
     if(request.method == 'POST'):
-        if request.args('mode') == "add":
+        if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
-            IP = request.args('ipaddr')
-            JS = request.args('jsoffsec')
+            IP = request.form.get('ipaddr')
+            JS = request.form.get('jsoffsec')
             content = {}
             content['ip'] = IP
             content['js'] = JS
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
-        if request.args('mode') == "search":
-            IP = request.args('ipaddr')
+        if request.form.get('mode') == "search":
+            IP = request.form.get('ipaddr')
+            content = {}
             # search for js respective to partivular ip
             getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='attack', search = content)
