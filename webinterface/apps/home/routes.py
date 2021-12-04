@@ -16,6 +16,7 @@ import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
+import pandas
 
 
 import string
@@ -736,3 +737,56 @@ def trackinglogs():
     except:
         print('No data')
     return render_template('home/trackinglogs.html', segment='index', allData = allData)
+
+@blueprint.route('/countryblock')
+def countryblock():  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
+    l = getfromdb("Countries", ["name"], ["India"])
+    if len(l) == 0:
+        df = pandas.read_csv('countrylist.csv')
+        s = "Insert into Countries values "
+        for i in range (0, len(df['country'])):
+            s += '("' + str(df['country'][i]) + '", "' + str(df['name'][i]) + '", 0), '
+        m = list(s)
+        m[-1] = ';'
+        m[-2] = ' '
+        s = ''.join(m)
+        print(s)
+        cur.execute(s)
+        conn.commit()
+    allData = {}
+    cur.execute('select id, name, blocked from Countries')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['countrylist'] = data
+    conn.close()
+    return jsonify(allData) 
+
+@blueprint.route('/block')
+def block():  
+    try:
+        if(request.method == 'POST'):
+            name = request.form.get('name')
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where name = "' + name + '";')
+            conn.commmit()
+            conn.close()
+    except:
+        print('Table DNE')
+    
+@blueprint.route('/unblock')
+def unblock():  
+    try:
+        if(request.method == 'POST'):
+            name = request.form.get('name')
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 0 where name = "' + name + '";')
+            conn.commit()
+            conn.close()
+    except:
+        print('Table DNE')
