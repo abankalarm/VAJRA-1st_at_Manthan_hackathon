@@ -7,10 +7,26 @@
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
-<script src="static/assets/js/map.js"></script>
+<script src="static/assets/js/map2.js"></script>
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
     console.log(allData);
+    document.getElementById("currentIps").innerHTML = allData['uniqueIP'][0]['cnt']
+    document.getElementById("currentVpns").innerHTML = allData['vpns'][0]['cnt']
+    document.getElementById("currentDomains").innerHTML = allData['uniqueDomains'][0]['cnt']
+    var domainsDetected = "";
+    for(let i = 0; i < Math.min(10, Object.keys(allData['domainCount']).length); i++) {
+        domainsDetected += "<a href='"+ allData['domainCount'][i]['parentDomain'] +"'>" + allData['domainCount'][i]['parentDomain'] + "</a><br>"
+    }
+    document.getElementById("domainsDetected").innerHTML = domainsDetected
+    var ipsDetected = "";
+    for(let i = 0; i < Math.min(10, Object.keys(allData['distinctIp']).length); i++) {
+        ipsDetected += "<a href='"+ allData['distinctIp'][i]['ip'] +"'>" + allData['distinctIp'][i]['ip'] + "&emsp;&emsp;<b>VPN: " + allData['distinctIp'][i]['isVpnTime'] + "<b></a><br>"
+    }
+    document.getElementById("ipsDetected").innerHTML = ipsDetected
+
+    setData(allData['countryCount']);
+
 </script>
 {% endblock javascripts %}
 {% block content %}
@@ -60,7 +76,7 @@
                                 
                                 <div class="container">
                                   <h4><b>Current IPs Traced</b></h4>
-                                  <p>53675218</p>
+                                  <p id = "currentIps" style = "text-align: center"></p>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +88,7 @@
                                 
                                 <div class="container">
                                   <h4><b>Domains Covered</b></h4>
-                                  <p>5317537</p>
+                                  <p  id = "currentDomains" style = "text-align: center"></p>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +100,7 @@
                                 
                                 <div class="container">
                                   <h4><b>Proxies Detected</b></h4>
-                                  <p>736758</p>
+                                  <p id = "currentVpns" style = "text-align: center">736758</p>
                                 </div>
                             </div>
                         </div>
@@ -112,9 +128,9 @@
                             <div class="card">
                                 
                                 <div class="container">
-                                  <a href="gcaisugua.com">gcaisugua.com</a><br>
-                                  <a href="sgakjjdsk.com">sgakjjdsk.com</a><br>
-                                  <a href="gcaisugua.com">gcaisugua.com</a>
+                                  <div id = "domainsDetected" style = "text-align: center">
+
+                                  </div>
                                 
                                 </div>
                             </div>
@@ -157,10 +173,8 @@
                                 
                                 <div class="container">
                                   <h4><b>Last 10 IPs</b></h4>
-                                  <div id="lastTenIP">
-                                    <a href="">1.101.342.321</a>
+                                  <div id="ipsDetected" style = "text-align: center;">
                                   </div>
-                                  
                                 </div>
                             </div>
                         </div>

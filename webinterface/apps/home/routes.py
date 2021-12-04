@@ -347,7 +347,7 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['uniqueIP'] = data
         
-        cur.execute("SELECT countryCode, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY countryCode; ")
+        cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -365,11 +365,17 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['domainCount'] = data
         
-        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true' GROUP BY parentDomain; ")
+        cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['distinctIp'] = data
+    
+        cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allData['vpns'] = data
         
         cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
         desc = cur.description 
