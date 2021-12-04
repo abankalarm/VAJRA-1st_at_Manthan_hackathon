@@ -395,7 +395,7 @@ def fdl():
         pDomains = []
         for i in data:
             pDomains.append(i['parentDomain'])
-            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
+            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]
@@ -421,7 +421,7 @@ def ipl():
         ips = []
         for i in data:
             ips.append(i['ip'])
-            s = "SELECT cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where ip ='" + i['ip'] + "';"
+            s = "SELECT cookie, clientId, timestamp, bookmarked, userAgent, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country, parentDomain FROM Fingerprints where ip ='" + i['ip'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]

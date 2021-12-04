@@ -1,16 +1,67 @@
 {% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<style>
+    .faq_question {
+        margin: 0px;
+        padding: 0px 0px 5px 0px;
+        display: inline-block;
+        cursor: pointer;
+        font-weight: bold;
+        color: rgb(50, 107, 182);
+        ;
+    }
+    
+    .faq_answer_container {
+        height: 0px;
+        overflow: hidden;
+        padding: 0px;
+        color: white;
+        background-color: rgb(36, 112, 160);
+    }
+</style>
+{% endblock stylesheets %}
 
 
 {% block javascripts %}
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
     console.log(allData);
+    for(let i = 0; i < Object.keys(allData['keyList']).length; i++) {
+        console.log(allData['keyList'][i], " ", allData[allData['keyList'][i]]);
+    }
+    /*var ele = "";
+    for (var i = 0; i < Object.keys(allData.faq).length; i++) {
+        ele += "<div class='faq_container'><div class='faq'><div class = 'faq_question'><div class = 'card-header'><b>" + allData.faq[i].q + "</b><br></div></div><div class='faq_answer_container'><div class='faq_answer'><div class = 'card-block'>" + allData.faq[i].a + "</div><br><br></div></div></div></div>";
+    }
+
+    document.getElementById("ques").innerHTML = ele;
+
+    $('.faq_question').click(function() {
+        if ($(this).parent().is('.open')) {
+            $(this).closest('.faq').find('.faq_answer_container').animate({
+                'height': '0'
+            }, 500);
+            $(this).closest('.faq').removeClass('open');
+
+        } else {
+            var newHeight = $(this).closest('.faq').find('.faq_answer').height() + 'px';
+            $(this).closest('.faq').find('.faq_answer_container').animate({
+                'height': newHeight
+            }, 500);
+            $(this).closest('.faq').addClass('open');
+        }
+    });*/
+</script>
 </script>
 {%endblock javascripts%}
 {% block content %}
 <h2> Complete IP Log</h2>
 <div id="iplog">
+    <div class="card-block">
+        <div id="ques" style="color: black">
+
+        </div>
+    </div>
 </div>
 
 <button onclick="window.print()">Print Complete IP Log</button>
