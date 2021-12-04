@@ -16,10 +16,6 @@ import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
-<<<<<<< HEAD
-
-=======
->>>>>>> 43dba2c4938e5f28cfff0be86cf8b8f4252c318e
 import string
 import random
 # import rsplit
@@ -589,17 +585,18 @@ def checkip_attack():
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
     if(request.method == 'POST'):
-        if request.args('mode') == "add":
+        if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
-            IP = request.args('ipaddr')
-            JS = request.args('jsoffsec')
+            IP = request.form.get('ipaddr')
+            JS = request.form.get('jsoffsec')
             content = {}
             content['ip'] = IP
             content['js'] = JS
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
-        if request.args('mode') == "search":
-            IP = request.args('ipaddr')
+        if request.form.get('mode') == "search":
+            IP = request.form.get('ipaddr')
+            content = {}
             # search for js respective to partivular ip
             getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='index', search = content)
