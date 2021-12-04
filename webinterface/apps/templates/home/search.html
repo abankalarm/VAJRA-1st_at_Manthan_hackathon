@@ -252,14 +252,14 @@
                                 strokeOpacity: 0.08
                             });
 
-                            
+
                             var lineSeries = chart.series.push(am5map.MapLineSeries.new(root, {}));
                             lineSeries.mapLines.template.setAll({
                                 stroke: root.interfaceColors.get("alternativeBackground"),
                                 strokeOpacity: 0.6
                             });
 
-                        
+
                             var citySeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -279,7 +279,7 @@
                                 });
                             });
 
-                        
+
                             var arrowSeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -301,7 +301,7 @@
                                 });
                             });
 
-         
+
                             var cities = [{
                                 id: "london",
                                 title: "London",
@@ -324,6 +324,14 @@
                                 geometry: {
                                     type: "Point",
                                     coordinates: [52, 61]
+                                },
+                                isVPN: false
+                            }, {
+                                id: "chinasde",
+                                title: "chinasde",
+                                geometry: {
+                                    type: "Point",
+                                    coordinates: [62, 81]
                                 },
                                 isVPN: false
                             }, {
@@ -398,8 +406,8 @@
                             })
 
 
-               
-                            chart.appear(500, 500);
+
+                            chart.appear(1000, 1000);
                         });
                     </script>
 
@@ -457,7 +465,7 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div class="c100 p25 red dark">
+                                    <div class="c100 p25 orange dark">
                                         <span><b>25%</b></span>
                                         <div class="slice ">
                                             <div class="bar "></div>
@@ -516,21 +524,18 @@
         {{result}}
         `)
 </script>
-{% endblock content %}
-
-
-{% block javascripts %}
+{% endblock content %} {% block javascripts %}
 <script type="text/javascript ">
     function notif() {
         var text = 'True';
         if (text == 'False') {
             var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-success ">
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
         } else if (text == 'True') {
             var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-danger ">
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
         }
