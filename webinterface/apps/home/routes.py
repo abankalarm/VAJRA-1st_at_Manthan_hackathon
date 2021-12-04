@@ -16,6 +16,8 @@ import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
+
+
 import string
 import random
 # import rsplit
@@ -328,13 +330,11 @@ def getJSWithThisIP(ip):
     return str(rows[0][0])
 
 @blueprint.route('/index')
-@login_required
 def index():
 
     return render_template('home/index.html', segment='index')
 
 @blueprint.route('/dash')
-@login_required
 def dash():
     allData = {}
     try:
@@ -383,13 +383,18 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['flaggedIp'] = data
         conn.close()
-    except:
+    except:    
         print('Some error occured')
-    return render_template('home/dashboard.html', segment='index', allData = allData)
+    return render_template('home/dashboard.html', segment='dash', allData = allData)
 
 @blueprint.route('/fdl')
-@login_required
 def fdl():
+    return render_template('home/fulldomainlist.html', segment='fdl')
+
+
+@blueprint.route('/bookmarks')
+def bkmark():
+    return render_template('home/bookmarks.html', segment='bookmarks')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -414,8 +419,8 @@ def fdl():
     return render_template('home/fulldomainlist.html', segment='index', allData = allData)
 
 @blueprint.route('/ipl')
-@login_required
 def ipl():
+    return render_template('home/fulliplog.html', segment='ipl')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -441,7 +446,6 @@ def ipl():
 
 
 @blueprint.route('/<template>')
-@login_required
 def route_template(template):
 
     try:
@@ -481,7 +485,7 @@ def get_segment(request):
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
     ip = request.environ['REMOTE_ADDR']
-    return render_template('home/injection.html', segment='index', ip=ip)
+    return render_template('home/injection.html', segment='injection', ip=ip)
 
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
@@ -524,9 +528,9 @@ def searchpost():
         except:
             print("error")
         
-        return render_template('home/search.html', segment='index', result=result, ip = search, asn = asn, bad = isBad)
+        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad)
     else:
-        return render_template('home/search.html', segment='index')
+        return render_template('home/search.html', segment='search')
     
 @blueprint.route('/api/portscan', methods=['POST'])
 def portscan():
@@ -620,9 +624,9 @@ def uploadfiles():
         print(name)
 
 
-        return render_template('home/tracking.html', segment='index', uploadf=uploadf, name = name)
+        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
-        return render_template('home/tracking.html', segment='index')
+        return render_template('home/tracking.html', segment='tracking')
 
 
 @blueprint.route('/api/vpnDetails')
@@ -669,7 +673,7 @@ def checkip_attack():
         storeInTrackingTable(content)
         return js
 
-@login_required
+
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
     if(request.method == 'POST'):
@@ -686,7 +690,7 @@ def attack():
             IP = request.args('ipaddr')
             # search for js respective to partivular ip
             getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
-            return render_template('home/attack.html', segment='index', search = content)
+            return render_template('home/attack.html', segment='attack', search = content)
 
     else:
         content = {}
@@ -697,4 +701,4 @@ def attack():
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
         
-        return render_template('home/attack.html', segment='index', alldetails = content)
+        return render_template('home/attack.html', segment='attack', alldetails = content)
