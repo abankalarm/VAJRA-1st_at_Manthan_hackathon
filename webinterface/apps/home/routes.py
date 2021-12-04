@@ -134,20 +134,21 @@ def flagBookmarkDB(ip):
     cur = conn.cursor()
     s = "UPDATE Fingerprints SET bookmarked = 1 where ip = " + ip +";"
     cur.execute(s)
+    conn.commit()
     conn.close()
 
 def storeIpCommentTable(name, comment):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( name TEXT, comment TEXT);"
+    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( id TEXT, comment TEXT);"
     cur.execute(s)
-    l = getfromdb('TrackingComments', ['name'], name)
+    l = getfromdb('TrackingComments', ['id'], name)
     if len(l) == 0:
-        s = "INSERT INTO TrackingComments (name, comment) VALUES ('" + name + "', '" + comment + "');"
+        s = "INSERT INTO TrackingComments (id, comment) VALUES ('" + name + "', '" + comment + "');"
         cur.execute(s)
         conn.commit()
     else:
-        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE name = '" + name + "';"
+        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE id = '" + name + "';"
         cur.execute(s)
     conn.close()
 
@@ -421,6 +422,7 @@ def fdl():
 
 @blueprint.route('/bookmarks')
 def bkmark():
+    #receive an IP and call flagBookmarkDB(ip)
     return render_template('home/bookmarks.html', segment='bookmarks')
 
 @blueprint.route('/ipl')
@@ -688,7 +690,6 @@ def attack():
             content = {}
             content['ip'] = IP
             content['js'] = JS
-            print("Here")
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
         if request.form.get('mode') == "search":
@@ -698,7 +699,6 @@ def attack():
             l = getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='attack', search = content)
     else:
-        print("There")
         content = {}
         content['ip'] = '0.0.1.0'
         content['js'] = ''
@@ -708,3 +708,31 @@ def attack():
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
         
         return render_template('home/attack.html', segment='attack', alldetails = content)
+
+@blueprint.route('/trackinglogs')
+def trackinglogs():
+    allData = {}
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("SELECT id, comment FROM TrackingComments;")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        ids = []
+        comments = []
+        for i in data:
+            ids.append(i['id'])
+            comments.append(i['comment'])
+            s = "SELECT ip, timestamp from Tracking where id ='" + i['id'] + "';"
+            cur.execute(s)
+            desc = cur.description
+            column_names = [col[0] for col in desc]
+            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[i['id']] = data1
+        allData['keyList'] = ids
+        allData['comments'] = comments
+        conn.close()
+    except:
+        print('No data')
+    return render_template('home/trackinglogs.html', segment='index', allData = allData)

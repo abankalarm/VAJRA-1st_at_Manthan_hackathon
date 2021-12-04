@@ -70,12 +70,10 @@
         dict['ip'] = "{{ip}}";
         dict['cookie'] = c_ClientID
         dict['clientID'] = murmur
-        dict['parentDomain'] = window.parent.location
+        dict['parentDomain'] = window.parent.location.hostname
         dict['domain'] = window.location.href
         dict['timestamp'] = new Date().toString()
         dict['bookmarked'] = 0;
-
-
 
 
         var xyz = "111.223.26.8"
