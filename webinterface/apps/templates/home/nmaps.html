@@ -5,8 +5,29 @@
 {% block javascripts %}
 {%endblock javascripts%}
 {% block content %}
-<h2> Complete IP Log</h2>
-<div id="bookmarkedips">
+<div style="padding-top: 70px;">
+    <h2>Enter IP</h2>
+    <div>
+        <form action="/action_page.php">
+
+            <label for="fname">Enter IP</label><br>
+            <input type="text" id="fname" name="fname"><br><br>
+            
+            <input type="radio" id="Button1">
+            <label for="Button1">Button1</label><br>
+            <input type="radio" id="Button2">
+            <label for="Button2">Button2</label><br>
+            <input type="radio" id="Button1">
+            <label for="Button3">Button3</label><br>
+            
+            <button onclick="submit" value="Submit">Submit</button>
+        </form>
+    </div>
+</div>
+<br><br><br>
+<div>
+    <h3>Output</h3>
+    <p>The results would appear here</p>
 </div>
 
 

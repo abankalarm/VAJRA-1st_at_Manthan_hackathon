@@ -334,6 +334,11 @@ def index():
 
     return render_template('home/index.html', segment='index')
 
+@blueprint.route('/nmap')
+def nmap():
+
+    return render_template('home/nmaps.html', segment='nmaps')
+
 @blueprint.route('/dash')
 def dash():
     allData = {}
