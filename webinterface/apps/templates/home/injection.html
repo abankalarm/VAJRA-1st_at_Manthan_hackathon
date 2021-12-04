@@ -76,8 +76,6 @@
         dict['bookmarked'] = 0;
         
         
-
-
         var xyz = "111.223.26.8"
         $.post("/api/ip/identity", {
                 ip: xyz,
@@ -130,6 +128,7 @@
                 dict['isVpnSomething'] = data
             });
 
+        console.log(dict)
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
         var details = "Detailed information: \n";
         if (typeof window.console !== "undefined") {

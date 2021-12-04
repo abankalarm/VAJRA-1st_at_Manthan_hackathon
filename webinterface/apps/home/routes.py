@@ -421,7 +421,7 @@ def fdl():
 
 @blueprint.route('/bookmarks')
 def bkmark():
-    return render_template('home/bookmarks.html', segment='bookmarks', allData = allData)
+    return render_template('home/bookmarks.html', segment='bookmarks')
 
 @blueprint.route('/ipl')
 def ipl():
@@ -494,6 +494,7 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
+    print(content)
     if checkBookmarkDB(content['ip']):
         content['bookmarked'] = 1
     storeInDB(content)
