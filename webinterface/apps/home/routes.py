@@ -23,6 +23,67 @@ import random
 # import rsplit
 
 
+def storeInTrackingTable(content):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Tracking ("
+    col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
+    for i in content:
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
+            else:
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
+        else:
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    #print(col)
+    cur.execute(s)
+    #insert
+    s = "INSERT INTO Tracking (" + col + ") VALUES ("
+    for i in content:
+        if i in strs:
+            s += "'" + content[i] + "', "
+        elif i in others:
+            
+            s += "'" + content[i] + "', "
+        else:
+            s += str(content[i]) + ", "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    #print(s)
+    cur.execute(s)
+    conn.commit()
+    conn.close()
+    #storeIpCommentTable(ip, '')
 
 @blueprint.route('/display/<filename>')
 def display_image(filename):
@@ -30,10 +91,11 @@ def display_image(filename):
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
     data={
-    "ip":ip,
-    "id":filename,
-    "timestamp":str(time.time())
+        "ip":ip,
+        "id":filename,
+        "timestamp":str(time.time())
     }
+    print(data)
     storeInTrackingTable(data)
 
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
@@ -74,18 +136,18 @@ def flagBookmarkDB(ip):
     cur.execute(s)
     conn.close()
 
-def storeIpCommentTable(ip, comment):
+def storeIpCommentTable(name, comment):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( ip TEXT, comments TEXT);"
+    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( name TEXT, comment TEXT);"
     cur.execute(s)
-    l = getfromdb('TrackingComments', ['ip'], ip)
+    l = getfromdb('TrackingComments', ['name'], name)
     if len(l) == 0:
-        s = "INSERT INTO TrackingComments (ip, comment) VALUES ('" + ip + "', '" + comment + "');"
+        s = "INSERT INTO TrackingComments (name, comment) VALUES ('" + name + "', '" + comment + "');"
         cur.execute(s)
         conn.commit()
     else:
-        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE ip = '" + ip + "';"
+        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE name = '" + name + "';"
         cur.execute(s)
     conn.close()
 
@@ -101,7 +163,7 @@ def storeInDB(content):
     others = {}
     reals = {}
     for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
+        print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
         if isinstance(content[i], str):
             strs[i] = 1
@@ -173,69 +235,8 @@ def storeInDB(content):
         conn.close()
 
 
-def storeInTrackingTable(content):
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS Tracking ("
-    col = ""
-    bools = {}
-    strs = {}
-    ints = {}
-    others = {}
-    reals = {}
-    for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
-        col += i + ", "
-        if isinstance(content[i], str):
-            strs[i] = 1
-            s += i + " TEXT, "
-        elif isinstance(content[i], int):
-            ints[i] = 1
-            s += i + " INTEGER, "
-        elif isinstance(content[i], float):
-            reals[i] = 1
-            s += i + " REAL, "
-        elif isinstance(content[i], bool):
-            if content[i] == False:
-                content[i] = 0
-            else:
-                content[i] = 1 
-            bools[i] = 1
-            s += i + " INTEGER, "
-        else:
-            others[i] = 1
-            content[i] = json.dumps(content[i])
-            s += i + " BLOB, "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    anotherList = list(col)
-    anotherList = anotherList[: -2]
-    col = ''.join(anotherList)
-    #print(col)
-    cur.execute(s)
-    #insert
-    s = "INSERT INTO Tracking (" + col + ") VALUES ("
-    for i in content:
-        if i in strs:
-            s += "'" + content[i] + "', "
-        elif i in others:
-            
-            s += "'" + content[i] + "', "
-        else:
-            s += str(content[i]) + ", "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    #print(s)
-    cur.execute(s)
-    conn.commit()
-    conn.close()
-    storeIpCommentTable(ip, '')
-
 def storeInAttackingTable(content):
+    print(content)
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "CREATE TABLE IF NOT EXISTS Attacking ("
@@ -314,7 +315,7 @@ def storeInAttackingTable(content):
         colList = colList[:-2]
         s = ''.join(colList)
         s += " where ip = '" + content['ip'] + "';"
-        #print(s)
+        print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
@@ -420,28 +421,7 @@ def fdl():
 
 @blueprint.route('/bookmarks')
 def bkmark():
-    allData = {}
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("SELECT distinct(parentDomain) FROM Fingerprints;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        pDomains = []
-        for i in data:
-            pDomains.append(i['parentDomain'])
-            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
-            cur.execute(s)
-            desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            allData[i['parentDomain']] = data1
-        allData['keyList'] = pDomains
-        conn.close()
-    except:
-        print('No data')
-    return render_template('home/fulldomainlist.html', segment='bookmarks', allData = allData)
+    return render_template('home/bookmarks.html', segment='bookmarks', allData = allData)
 
 @blueprint.route('/ipl')
 def ipl():
@@ -643,11 +623,10 @@ def uploadfiles():
                 uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
             except:
                 uploadf.save(os.path.join('apps/static/uploads/', name))
-
             # return redirect(url_for('download_file', name=name))
+        
         print(name)
-
-
+        storeIpCommentTable(name, 'AAA')
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
         return render_template('home/tracking.html', segment='tracking')
@@ -694,7 +673,7 @@ def checkip_attack():
         content['ip'] = ip
         content['js'] = js
         content['timestamp'] = str(time.time())
-        storeInTrackingTable(content)
+        storeInAttackingTable(content)
         return js
 
 
@@ -708,19 +687,20 @@ def attack():
             content = {}
             content['ip'] = IP
             content['js'] = JS
+            print("Here")
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
         if request.form.get('mode') == "search":
             IP = request.form.get('ipaddr')
             content = {}
             # search for js respective to partivular ip
-            getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
+            l = getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='attack', search = content)
-
     else:
+        print("There")
         content = {}
-        content['ip'] = '127.0.0.1'
-        content['js'] = '()=>{console.log("Something");--#!@#$%^&*[]................'
+        content['ip'] = '0.0.1.0'
+        content['js'] = ''
         content['timestamp'] = ''
         # store a ip and js pair together , make it unique and overwrite
         storeInAttackingTable(content)
