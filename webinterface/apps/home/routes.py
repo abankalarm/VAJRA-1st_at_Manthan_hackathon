@@ -389,12 +389,32 @@ def dash():
 
 @blueprint.route('/fdl')
 def fdl():
-    return render_template('home/fulldomainlist.html', segment='fdl')
+    allData = {}
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("SELECT distinct(parentDomain) FROM Fingerprints;")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        pDomains = []
+        for i in data:
+            pDomains.append(i['parentDomain'])
+            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
+            cur.execute(s)
+            desc = cur.description
+            column_names = [col[0] for col in desc]
+            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[i['parentDomain']] = data1
+        allData['keyList'] = pDomains
+        conn.close()
+    except:
+        print('No data')
+    return render_template('home/fulldomainlist.html', segment='fdl', allData = allData)
 
 
 @blueprint.route('/bookmarks')
 def bkmark():
-    return render_template('home/bookmarks.html', segment='bookmarks')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -416,11 +436,10 @@ def bkmark():
         conn.close()
     except:
         print('No data')
-    return render_template('home/fulldomainlist.html', segment='index', allData = allData)
+    return render_template('home/fulldomainlist.html', segment='bookmarks', allData = allData)
 
 @blueprint.route('/ipl')
 def ipl():
-    return render_template('home/fulliplog.html', segment='ipl')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -442,7 +461,7 @@ def ipl():
         conn.close()
     except:
         print('No data')
-    return render_template('home/fulliplog.html', segment='index', allData = allData)
+    return render_template('home/fulliplog.html', segment='ipl', allData = allData)
 
 
 @blueprint.route('/<template>')
