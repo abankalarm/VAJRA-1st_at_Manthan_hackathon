@@ -349,11 +349,18 @@ def dash():
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
 
-        cur.execute("SELECT COUNT(DISTINCT (ip)) as cnt FROM Fingerprints;")
+        cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['uniqueIP'] = data
+        print(data)
+        
+        allData["IP"]=data
+        
+        vpnD=vpnDetails(allData)
+        print(json.loads(vpnD.data))
+        allData['uniqueIpCount'] = len(data)
+        print(allData)
         
         cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
         desc = cur.description 
@@ -391,8 +398,10 @@ def dash():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         allData['flaggedIp'] = data
         conn.close()
-    except:    
+    except:  
+        
         print('Some error occured')
+    
     return render_template('home/dashboard.html', segment='dash', allData = allData)
 
 @blueprint.route('/fdl')
@@ -511,30 +520,31 @@ def searchpost():
         print(search)
         isBad,asn,result=getDetails(search)
         print(isBad,asn)
-        try:
-            ips=[]
-            conn = sqlite3.connect('db.sqlite3')
-            cur = conn.cursor()
-            cur.execute("Select cookie from Fingerprints where ip="+search)
-            cookie=cur.fetchall()
-            
-            for e in cookie:
-                cur.execute("Select ip from Fingerprints where cookie="+e)
-                ips.append(cur.fetchall())
-            
-            cur.execute("Select clientID from Fingerprints where ip="+search)
-            clientID=cur.fetchall()
-            for e in clientID:
-                cur.execute("Select ip from Fingerprints where clientID="+e)
-                ips.append(cur.fetchall())
-            conn.close()
-            uip = list(set(ips))
-            allData={}
-            for ip in uip:
-                cur.execute("Select cookie,clientID,openports,userafent,timestamp, isvpn,isTOR,vpnblabla from Fingerprints where clientID=" )
-                allData[ip]=cur.fetchall()
-        except:
-            print("error")
+        
+        ips=[]
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
+        cookie=cur.fetchall()
+        print(cookie)
+    
+        for e in cookie:
+            cur.execute("Select ip from Fingerprints where cookie='"+e+"'")
+            ips.append(cur.fetchall())
+        
+        cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
+        clientID=cur.fetchall()
+        for e in clientID:
+            cur.execute("Select ip from Fingerprints where clientID='"+e+"'")
+            ips.append(cur.fetchall())
+        conn.close()
+        uip = list(set(ips))
+        allData={}
+        for ip in uip:
+            cur.execute("Select cookie,clientID,openports,userafent,timestamp, isvpn,isTOR,vpnblabla from Fingerprints where clientID='"+ip+"'" )
+            allData[ip]=cur.fetchall()
+    
+        print("error")
         
         return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad)
     else:
@@ -637,28 +647,40 @@ def uploadfiles():
 
 
 @blueprint.route('/api/vpnDetails')
-def vpnDetails():
+def vpnDetails(data):
     conn = sqlite3.connect('ip-index.db')
-    ip = request.environ['REMOTE_ADDR']
-    ip='203.192.236.33'
-    intip=int(ipaddress.ip_address(ip))
-    cur=conn.cursor()
-    print(ip,type(ip),intip,type(intip))
-    s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    a=cur.fetchall()
-    s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    b=cur.fetchall()
-    s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    c=cur.fetchall()
-    s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    d=cur.fetchall()
-    conn.close()
-    print(a,b,c,d)
-    return jsonify({"bl":a,"dc":b,"asn":c,"cn":d})
+    if data=={}:
+        ip = request.environ['REMOTE_ADDR']
+        #TODO delete default value after hosting
+        ip='203.192.236.33'
+        data=[{"ip":ip}]
+    for i in range (len(data)):
+        try:
+            intip=int(ipaddress.ip_address(data[i]["ip"]))
+            cur=conn.cursor()
+            print(ip,type(ip),intip,type(intip))
+            s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            a=cur.fetchall()
+            s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            b=cur.fetchall()
+            s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            c=cur.fetchall()
+            s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            d=cur.fetchall()
+            conn.close()
+            data[i]["bl"]=a
+            data[i]["dc"]=b
+            data[i]["asn"]=c
+            data[i]["cn"]=d
+            print(a,b,c,d)
+            inBad=c[3] in badASN
+        except:
+            print("Private IP")
+    return jsonify(data)
 
 
 
