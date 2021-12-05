@@ -551,6 +551,7 @@ def searchpost():
         for row in rows:
             Alldata_for_searched_ip = json.dumps(dict(row))
         
+        #return Alldata_for_searched_ip
         # all data returned for ip is what you need for most of the top part of search page
         
         conn.close()
