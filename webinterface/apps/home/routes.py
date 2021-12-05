@@ -775,8 +775,31 @@ def trackinglogs():
         print('No data')
     return render_template('home/trackinglogs.html', segment='index', allData = allData)
 
-@blueprint.route('/countryblock')
+
+
+
+@blueprint.route('/blockManage',methods=['GET','POST'])
 def countryblock():  
+
+    if(request.method == 'POST'):
+        if "Bid" in request.form.keys():
+            print("here")
+            id = request.form.get('Bid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+        if "Uid" in request.form.keys():
+            id = request.form.get('Uid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 0 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+    
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
@@ -794,15 +817,22 @@ def countryblock():
         cur.execute(s)
         conn.commit()
     allData = {}
-    cur.execute('select id, name, blocked from Countries')
+    cur.execute('select id, name, blocked from Countries where blocked=0')
     desc = cur.description
     column_names = [col[0] for col in desc]
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    allData['countrylist'] = data
+    allData['unblocked'] = data
+    
+    cur.execute('select id, name, blocked from Countries where blocked=1')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['blocked'] = data
     conn.close()
-    return jsonify(allData) 
+    
+    return render_template('home/blockManage.html', segment='blockManage', allData = allData)
 
-@blueprint.route('/block')
+@blueprint.route('/block',methods=['POST'])
 def block():  
     try:
         if(request.method == 'POST'):
@@ -814,6 +844,7 @@ def block():
             conn.close()
     except:
         print('Table DNE')
+    
     
 @blueprint.route('/unblock')
 def unblock():  

@@ -10,7 +10,9 @@
 <script src="static/assets/js/map2.js"></script>
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
-    console.log(data)
+    
+
+    
     console.log(allData);
     document.getElementById("currentIps").innerHTML = allData['uniqueIpCount']
     document.getElementById("currentVpns").innerHTML = allData['vpns'][0]['cnt']
