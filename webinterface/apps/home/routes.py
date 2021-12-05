@@ -345,62 +345,62 @@ def nmap():
 @blueprint.route('/dash')
 def dash():
     allData = {}
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-
-        cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        print(data)
-        
-        allData["IP"]=data
-        
-        vpnD=vpnDetails(allData)
-        print(json.loads(vpnD.data))
-        allData['uniqueIpCount'] = len(data)
-        print(allData)
-        
-        cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['countryCount'] = data
-
-        cur.execute("SELECT COUNT ( DISTINCT parentDomain) as cnt FROM Fingerprints;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['uniqueDomains'] = data
-        
-        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY parentDomain; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['domainCount'] = data
-        
-        cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['distinctIp'] = data
+    allData["IP"]=[]
     
-        cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['vpns'] = data
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+
+    # cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
+    # desc = cur.description 
+    # column_names = [col[0] for col in desc] 
+    #data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    # print(data)
+    
+    # allData["IP"]=data
+    
+    allData["IP"]=json.loads(  vpnDetails(allData["IP"]).data  ) 
+
+    
         
-        cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['flaggedIp'] = data
-        conn.close()
-    except:  
-        
-        print('Some error occured')
+    allData['uniqueIpCount'] = len(allData["IP"])
+    print(allData)
+    
+    cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['countryCount'] = data
+
+    cur.execute("SELECT COUNT ( DISTINCT parentDomain) as cnt FROM Fingerprints;")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['uniqueDomains'] = data
+    
+    cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY parentDomain; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['domainCount'] = data
+    
+    cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['distinctIp'] = data
+
+    cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['vpns'] = data
+    
+    cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['flaggedIp'] = data
+    conn.close()
     
     return render_template('home/dashboard.html', segment='dash', allData = allData)
 
@@ -658,14 +658,15 @@ def uploadfiles():
 @blueprint.route('/api/vpnDetails')
 def vpnDetails(data):
     conn = sqlite3.connect('ip-index.db')
-    if data=={}:
+    if data==[]:
         ip = request.environ['REMOTE_ADDR']
         #TODO delete default value after hosting
-        ip='203.192.236.33'
-        data=[{"ip":ip}]
+        ip='203.192.236.244'
+        data=[{"IP":ip}]
     for i in range (len(data)):
         try:
-            intip=int(ipaddress.ip_address(data[i]["ip"]))
+            ip=data[i]["IP"]
+            intip=int(ipaddress.ip_address(ip))
             cur=conn.cursor()
             print(ip,type(ip),intip,type(intip))
             s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
@@ -683,12 +684,18 @@ def vpnDetails(data):
             conn.close()
             data[i]["bl"]=a
             data[i]["dc"]=b
-            data[i]["asn"]=c
-            data[i]["cn"]=d
+            data[i]["asn"]=c[0]
+            data[i]["cn"]=d[0]
             print(a,b,c,d)
-            inBad=c[3] in badASN
+            inBad=c[0][3] in badASN
+            data[i]["bad"]=inBad
         except:
-            print("Private IP")
+            data[i]["bl"]=[]
+            data[i]["dc"]=[]
+            data[i]["asn"]=[]
+            data[i]["cn"]=[]
+            data[i]["bad"]=False
+            
     return jsonify(data)
 
 
@@ -769,8 +776,31 @@ def trackinglogs():
         print('No data')
     return render_template('home/trackinglogs.html', segment='index', allData = allData)
 
-@blueprint.route('/countryblock')
+
+
+
+@blueprint.route('/blockManage',methods=['GET','POST'])
 def countryblock():  
+
+    if(request.method == 'POST'):
+        if "Bid" in request.form.keys():
+            print("here")
+            id = request.form.get('Bid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+        if "Uid" in request.form.keys():
+            id = request.form.get('Uid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 0 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+    
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
@@ -788,15 +818,22 @@ def countryblock():
         cur.execute(s)
         conn.commit()
     allData = {}
-    cur.execute('select id, name, blocked from Countries')
+    cur.execute('select id, name, blocked from Countries where blocked=0')
     desc = cur.description
     column_names = [col[0] for col in desc]
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    allData['countrylist'] = data
+    allData['unblocked'] = data
+    
+    cur.execute('select id, name, blocked from Countries where blocked=1')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['blocked'] = data
     conn.close()
-    return jsonify(allData) 
+    
+    return render_template('home/blockManage.html', segment='blockManage', allData = allData)
 
-@blueprint.route('/block')
+@blueprint.route('/block',methods=['POST'])
 def block():  
     try:
         if(request.method == 'POST'):
@@ -808,6 +845,7 @@ def block():
             conn.close()
     except:
         print('Table DNE')
+    
     
 @blueprint.route('/unblock')
 def unblock():  

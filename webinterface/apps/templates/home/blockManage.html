@@ -1,0 +1,36 @@
+{% extends "layouts/base.html" %} {% block title %} Bookmarks {% endblock %}
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block javascripts %}
+{%endblock javascripts%}
+{% block content %}
+<h2> Country List</h2>
+{%if allData["unblocked"] | length>0%}
+<form method="POST">
+<select name="Bid" id="Bid">
+{% for x in allData["unblocked"]%}
+
+    <option value={{x["id"]}}>{{x["name"]}}</option>
+
+{%endfor%}
+</select>
+<input type="submit" value="Submit">
+</form>
+{% endif %}
+{%if allData["blocked"] | length>0%}
+
+<form method="POST">
+<select name="Uid" id="Uid">
+{% for x in allData["blocked"]%}
+
+    <option value={{x["id"]}}>{{x["name"]}}</option>
+
+{%endfor%}
+</select>
+<input type="submit" value="Submit">
+</form>
+{% endif %}
+    
+
+{% endblock content %}

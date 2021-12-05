@@ -324,51 +324,102 @@
                             });
 
 
-                            var cities = [{
-                                id: "london",
-                                title: "London",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [-0.1262, 51.5002]
-                                },
-                                isVPN: true
-                            }, {
-                                id: "india",
-                                title: "india",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [32, 51]
-                                },
-                                isVPN: false
-                            }, {
-                                id: "chine",
-                                title: "chine",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [52, 61]
-                                },
-                                isVPN: false
-                            }, {
-                                id: "chinasde",
-                                title: "chinasde",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [62, 81]
-                                },
-                                isVPN: false
-                            }, {
-                                id: "us",
-                                title: "us",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [80, 40]
-                                },
-                                isVPN: true
-                            }]
+                            // let myDictionary = {
+                            //             id: "",
+                            //             title: "",
+                            //             geometry: {
+                            //                 type: "",
+                            //                 coordinates: []
+                            //             },
+                            //             isVPN: ""
+                            //         };
+                            var cities = [];
 
-                            citySeries.data.setAll(cities);
+                            function addvalues(dump, cities) {
 
+                                for (let i = 0; i < dump.length; i++) {
+                                    let myDictionary = {
+                                        id: "",
+                                        title: "",
+                                        geometry: {
+                                            type: "",
+                                            coordinates: []
+                                        },
+                                        isVPN: ""
+                                    };
+
+                                    myDictionary.id = dump[i][1];
+                                    myDictionary.title = dump[i][2];
+                                    myDictionary.geometry["type"] = "Point";
+                                    myDictionary.geometry["coordinates"] = dump[i][4];
+                                    if (dump[i][0] == true) {
+                                        myDictionary.isVPN = true;
+                                    } else {
+                                        myDictionary.isVPN = false;
+                                    }
+                                    cities.push(myDictionary);
+
+                                }
+                                return cities;
+                            }
+
+                            dump1 = [
+                                [true, "india", "india", "point", [80, 40]],
+                                [false, "indo", "indo", "point", [40, 80]]
+                            ];
+                            addvalues(dump1, cities);
                             console.log(cities);
+
+                            //call function;
+                            // var cities1 = [{
+                            //     id: "london",
+                            //     title: "London",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [-0.1262, 51.5002]
+                            //     },
+                            //     isVPN: true
+                            // }, {
+                            //     id: "india",
+                            //     title: "india",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [32, 51]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "chine",
+                            //     title: "chine",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [52, 61]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "chinasde",
+                            //     title: "chinasde",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [62, 81]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "us",
+                            //     title: "us",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [80, 40]
+                            //     },
+                            //     isVPN: true
+                            // }]
+                            // console.log(cities1);
+                            citySeries.data.setAll(cities);
+                            console.log(citySeries);
+
+
+
+
+                            //console.log(cities);
                             var destinations = [];
 
                             for (const x in cities) {
