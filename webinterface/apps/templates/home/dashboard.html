@@ -10,6 +10,7 @@
 <script src="static/assets/js/map2.js"></script>
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
+    console.log(data)
     console.log(allData);
     document.getElementById("currentIps").innerHTML = allData['uniqueIpCount']
     document.getElementById("currentVpns").innerHTML = allData['vpns'][0]['cnt']
@@ -174,8 +175,6 @@
                                 <div class="container">
                                   <h4><b>Last 10 IPs</b></h4>
                                   <div id="ipsDetected" style = "text-align: center;">
-                                    {% if allData["IP"] | length >10 %}
-                                    {}
                                     {% for x in allData["IP"]%}
                                         <ul>
                                             {% for e in x.keys()%}
