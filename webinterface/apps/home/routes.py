@@ -517,17 +517,14 @@ def injectionpost():
 def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
-        print(search)
         isBad,asn,result=getDetails(search)
-        print(isBad,asn)
         
         ips=[]
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
         cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
         cookie=cur.fetchall()
-        print(cookie)
-    
+        
         for e in cookie:
             cur.execute("Select ip from Fingerprints where cookie='"+e+"'")
             ips.append(cur.fetchall())
@@ -537,16 +534,27 @@ def searchpost():
         for e in clientID:
             cur.execute("Select ip from Fingerprints where clientID='"+e+"'")
             ips.append(cur.fetchall())
-        conn.close()
+        
         uip = list(set(ips))
         allData={}
         for ip in uip:
-            cur.execute("Select cookie,clientID,openports,userafent,timestamp, isvpn,isTOR,vpnblabla from Fingerprints where clientID='"+ip+"'" )
+            cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
             allData[ip]=cur.fetchall()
-    
-        print("error")
+            print(allData[ip])
         
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad)
+        # change hardcoded
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("Select * from Fingerprints where ip='127.0.0.1'" )
+        #Alldata_for_searched_ip={ search : cur.fetchall()}
+        rows=cur.fetchall()
+        for row in rows:
+            Alldata_for_searched_ip = json.dumps(dict(row))
+        
+        # all data returned for ip is what you need for most of the top part of search page
+        
+        conn.close()
+        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
     else:
         return render_template('home/search.html', segment='search')
     
