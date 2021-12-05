@@ -48,7 +48,7 @@
                     <table>
                         <tr>
                             <td>
-                                <h2 class="card-title"><strong> {{ip}} 127.0.0.1 </strong></h2>
+                                <h2 class="card-title"><strong> {{ip}}</strong></h2>
                             </td>
                             <td>
                                 <!--to add -->
@@ -60,7 +60,29 @@
                             </td>
                         </tr>
                     </table>
+                    <script>
+                        function htmlDecode(input) {
+                            var doc = new DOMParser().parseFromString(input, "text/html");
+                            return doc.documentElement.textContent;
+                        }
 
+                        var myJSONString = htmlDecode("{{Alldata_for_searched_ip}}");
+                        var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, "\\&")
+                            .replace(/\\r/g, "\\r")
+                            .replace(/\\t/g, "\\t")
+                            .replace(/\\b/g, "\\b")
+                            .replace(/\\f/g, "\\f");
+                        myEscapedJSONString = myEscapedJSONString.replace(/[\u0000-\u0019]+/g, "");
+                        console.log(myEscapedJSONString);
+                        var Alldata_for_searched = JSON.stringify(myEscapedJSONString);
+                        var Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
+                        Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
+                        console.log(Alldata_for_searched_ip);
+                        console.log(Alldata_for_searched_ip['_id']);
+                    </script>
 
 
 
@@ -131,7 +153,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Address</label>
+                                        <label>ISP</label>
                                         <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" readonly>
                                     </div>
                                 </div>
@@ -345,8 +367,6 @@
                             }]
 
                             citySeries.data.setAll(cities);
-
-
 
                             console.log(cities);
                             var destinations = [];

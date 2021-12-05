@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-import html as htmlmodule
+import html
 import os
 from sqlite3.dbapi2 import connect
 import ipaddress
