@@ -518,6 +518,8 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         isBad,asn,result=getDetails(search)
+        riskData=[{"IP":search}]
+        vpnDetails(riskData)
         
         ips=[]
         conn = sqlite3.connect('db.sqlite3')
@@ -541,7 +543,7 @@ def searchpost():
             cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
             allData[ip]=cur.fetchall()
             print(allData[ip])
-        
+        allData["risk"]=riskData[0]
         # change hardcoded
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -789,7 +791,7 @@ def countryblock():
             print(id)
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
-            cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
+            cur.execute('Update Countries set blocked = 2 where id = "' + id + '";')
             conn.commit()
             conn.close()
         if "Uid" in request.form.keys():
@@ -800,6 +802,15 @@ def countryblock():
             cur.execute('Update Countries set blocked = 0 where id = "' + id + '";')
             conn.commit()
             conn.close()
+        if "Gid" in request.form.keys():
+            id = request.form.get('Gid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+    
     
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
@@ -825,6 +836,12 @@ def countryblock():
     allData['unblocked'] = data
     
     cur.execute('select id, name, blocked from Countries where blocked=1')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['grey'] = data
+
+    cur.execute('select id, name, blocked from Countries where blocked=2')
     desc = cur.description
     column_names = [col[0] for col in desc]
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
