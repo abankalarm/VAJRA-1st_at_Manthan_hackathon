@@ -1,26 +1,53 @@
-{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
-{% block stylesheets %}{% endblock stylesheets %}
-
-
-{% block javascripts %}
-{%endblock javascripts%}
-{% block content %}
+{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %} {% block stylesheets %}{% endblock stylesheets %} {% block javascripts %} {%endblock javascripts%} {% block content %}
 <div style="padding-top: 70px;">
     <h2>Enter IP</h2>
     <div>
-        <form action="/action_page.php">
+        <script>
+            function on_submit() {
+
+                var input = document.getElementById("fname");
+                var speed;
+                if (document.getElementById('Button1').checked) {
+                    speed = 'top10';
+                }
+                if (document.getElementById('Button2').checked) {
+                    speed = 'top50';
+                }
+                if (document.getElementById('Button3').checked) {
+                    speed = 'top100';
+                }
+                var inputData = encodeURIComponent(input.value);
+
+                var xhr = new XMLHttpRequest();
+                var params = "ip=" + input + "&speed=" + speed;
+                xhr.open('POST', '/api/portscan', true);
+
+                //Send the proper header information along with the request
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                xhr.onload = function() { //Call a function when the state changes.
+                    if (xhr.status == 200) {
+                        alert(this.responseText);
+                        document.getElementById("result").innerHTML = xhttp.responseText;
+                    }
+                }
+                xhr.send(params);
+            }
+        </script>
+
+        <form action="/api/portscan">
 
             <label for="fname">Enter IP</label><br>
-            <input type="text" id="fname" name="fname"><br><br>
-            
-            <input type="radio" id="Button1">
-            <label for="Button1">Button1</label><br>
-            <input type="radio" id="Button2">
-            <label for="Button2">Button2</label><br>
-            <input type="radio" id="Button1">
-            <label for="Button3">Button3</label><br>
-            
-            <button onclick="submit" value="Submit">Submit</button>
+            <input type="text" id="ip" name="ip"><br><br>
+
+            <input type="radio" id="Button1" name="speed" value="top10">
+            <label for="Button1">Top 10 ports</label><br>
+            <input type="radio" id="Button2" name="speed" value="top50">
+            <label for="Button2">Top 50 ports</label><br>
+            <input type="radio" id="Button3" name="speed" value="top100">
+            <label for="Button3">Top 100 ports</label><br>
+
+            <button value="Submit">Submit</button>
         </form>
     </div>
 </div>
@@ -28,6 +55,7 @@
 <div>
     <h3>Output</h3>
     <p>The results would appear here</p>
+    <div id='result'>{{result}}</div>
 </div>
 
 

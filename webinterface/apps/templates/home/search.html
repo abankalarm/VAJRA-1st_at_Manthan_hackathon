@@ -498,6 +498,41 @@
             </div>
         </div>
     </div>
+    <!-- <script>
+        var riskp, colour;
+        var country;
+        function calcrisk(){
+            for(let i = 0; i < length; i++){
+                if(country) //black country list
+                {    riskp = '100%'
+                    document.getElementsById('riskbar').className = "c100 p100 red";
+                }
+            }
+            for(let i = 0; i < length; i++){
+                if(country) // grey country
+                {
+                    riskp = '50%'
+                    document.getElementsById('riskbar').className = "c100 p50 green dark";
+                }
+            }
+            for(let i = 0; i < length; i++){
+                if(country) //bad ASN
+                {    riskp = '80%'
+                     document.getElementsById('riskbar').className = "c100 p80 orange dark";
+                }
+            }
+            for(let i = 0; i < length; i++){
+                if(country) // black listed
+                {
+                    riskp = '100%'
+                    document.getElementsById('riskbar').className = "c100 p100 red";
+                }
+            }
+
+
+        }
+    </script> -->
+
     <div class="col-md-4">
         <div class="card card-user">
             <div class="card-body">
@@ -531,7 +566,7 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div class="c100 p25 orange dark">
+                                    <div id ='riskbar' class="c100 p50 orange dark">
                                         <span><b>25%</b></span>
                                         <div class="slice ">
                                             <div class="bar "></div>
@@ -561,7 +596,6 @@
                         </div>
                     </p>
                     <div class="card-description ">
-                        Linux, my favorite OS - I admin that windows is just a big mistake. Do not be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
                     </div>
                 </div>
                 <div class="card-footer ">
