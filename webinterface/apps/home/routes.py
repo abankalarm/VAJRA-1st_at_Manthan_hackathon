@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import html
+import numpy
 import os
 from sqlite3.dbapi2 import connect
 import ipaddress
@@ -17,7 +18,8 @@ from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
 import pandas
-
+import base64
+import pickle 
 
 import string
 import random
@@ -509,6 +511,15 @@ def injectionpost():
     print(content)
     if checkBookmarkDB(content['ip']):
         content['bookmarked'] = 1
+    
+    pstr = pickle.dumps(content['plugins'], pickle.HIGHEST_PROTOCOL)
+    bstr = base64.b64encode(pstr).decode()
+    content['plugins'] = bstr
+    content['canvas'] = ','.join(content['canvas'])
+    content['webgl'] = ','.join(content['webgl'])
+    content['fonts'] = ''.join(content['fonts'])
+    content['touchSupport'] = ','.join(str(e) for e in content['touchSupport'])
+    
     storeInDB(content)
     #l = getfromdb(['ip'], [content['ip']])
     return render_template('home/page-404.html', segment='index'), 404
@@ -547,17 +558,20 @@ def searchpost():
         cur = conn.cursor()
         cur.execute("Select * from Fingerprints where ip='127.0.0.1'" )
         #Alldata_for_searched_ip={ search : cur.fetchall()}
-        rows=cur.fetchall()
-        for row in rows:
-            Alldata_for_searched_ip = json.dumps(dict(row))
-        
-        #return Alldata_for_searched_ip
+
+        Alldata_for_searched_ip = {}
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        Alldata_for_searched_ip['data'] = data
+        # return Alldata_for_searched_ip
         # all data returned for ip is what you need for most of the top part of search page
         
         conn.close()
         return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
     else:
-        return render_template('home/search.html', segment='search')
+        Alldata_for_searched_ip = {}
+        return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan', methods=['POST'])
 def portscan():
