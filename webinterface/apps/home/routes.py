@@ -657,7 +657,6 @@ def searchpost():
         except:
             allData["Timezone"]=0
 
-        
         print(allData.keys())
         conn.close()
         return render_template('home/search.html', segment='search', ASN_name = ASN_name, result=result, ip = search, asn = asn, blacklisted = blacklisted, datacenter = datacenter, badASN = badASN, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
