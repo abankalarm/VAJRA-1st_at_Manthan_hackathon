@@ -60,31 +60,40 @@
                             </td>
                         </tr>
                     </table>
+
                     <script>
-                        function htmlDecode(input) {
-                            var doc = new DOMParser().parseFromString(input, "text/html");
-                            return doc.documentElement.textContent;
-                        }
+                        // not working, found another way to get work done - karan
+                        myvar = '{{Alldata_for_searched_ip|tojson}}';
 
-                        var myJSONString = htmlDecode("{{Alldata_for_searched_ip}}");
-                        var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
-                            .replace(/\\'/g, "\\'")
-                            .replace(/\\"/g, '\\"')
-                            .replace(/\\&/g, "\\&")
-                            .replace(/\\r/g, "\\r")
-                            .replace(/\\t/g, "\\t")
-                            .replace(/\\b/g, "\\b")
-                            .replace(/\\f/g, "\\f");
-                        myEscapedJSONString = myEscapedJSONString.replace(/[\u0000-\u0019]+/g, "");
-                        console.log(myEscapedJSONString);
-                        var Alldata_for_searched = JSON.stringify(myEscapedJSONString);
-                        var Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
-                        Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
-                        console.log(Alldata_for_searched_ip);
-                        console.log(Alldata_for_searched_ip['_id']);
+                        var parsed = JSON.parse(myvar);
+                        console.log(parsed);
+                        console.log(parsed['0']);
+                        console.log(parsed['0']['ip']);
+
+
+                        // function htmlDecode(input) {
+                        //     var doc = new DOMParser().parseFromString(input, "text/html");
+                        //     return doc.documentElement.textContent;
+                        // }
+
+                        // var myJSONString = htmlDecode("{{Alldata_for_searched_ip}}");
+                        // var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
+                        //     .replace(/\\'/g, "\\'")
+                        //     .replace(/\\"/g, '\\"')
+                        //     .replace(/\\&/g, "\\&")
+                        //     .replace(/\\r/g, "\\r")
+                        //     .replace(/\\t/g, "\\t")
+                        //     .replace(/\\b/g, "\\b")
+                        //     .replace(/\\f/g, "\\f");
+                        // myEscapedJSONString = myEscapedJSONString.replace(/[\u0000-\u0019]+/g, "");
+                        // console.log(myEscapedJSONString);
+                        // //var Alldata_for_searched = JSON.stringify(myEscapedJSONString);
+                        // var Alldata_for_searched_ip = JSON.parse(myEscapedJSONString);
+                        // //Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
+                        // console.log(Alldata_for_searched_ip);
+                        // console.log(Alldata_for_searched_ip['_id']);
+                        // {///% for key, value in valuem.items() %}
                     </script>
-
-
 
                     <table class="table " id="">
                         <thead class=" text-primary">
