@@ -502,7 +502,8 @@ def get_segment(request):
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    ip = request.environ['REMOTE_ADDR']
+    ip="23.106.56.14"
+    #ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='injection', ip=ip)
 
 @blueprint.route('/injection/post', methods=['POST'])
@@ -529,36 +530,78 @@ def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
         isBad,asn,result=getDetails(search)
-        riskData=[{"IP":search}]
-        vpnDetails(riskData)
+
         
         ips=[]
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
         cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
-        cookie=cur.fetchall()
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         
-        for e in cookie:
-            cur.execute("Select ip from Fingerprints where cookie='"+e+"'")
-            ips.append(cur.fetchall())
+        for e in data:
+            cur.execute("Select ip from Fingerprints where cookie='"+e["cookie"]+"'")
+            desc1 = cur.description 
+            column_names1 = [col[0] for col in desc1] 
+            data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
+            temp=[]
+            if len(data1)>0:
+                print(data1)
+                temp=[x["ip"] for x in data1]
+                print("$$$$$$",temp)
+            ips.extend(temp)
+            
         
         cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
-        clientID=cur.fetchall()
-        for e in clientID:
-            cur.execute("Select ip from Fingerprints where clientID='"+e+"'")
-            ips.append(cur.fetchall())
-        
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        for e in data:
+            cur.execute("Select ip from Fingerprints where clientID='"+e["clientID"]+"'")
+            desc1 = cur.description 
+            column_names1 = [col[0] for col in desc1] 
+            data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
+            temp=[]
+            if len(data1)>0:
+                print(data1)
+                temp=[x["ip"] for x in data1]
+                print("$$$$$$",temp)
+            
+            ips.extend(temp)
+        print(ips,type(ips))
         uip = list(set(ips))
         allData={}
         for ip in uip:
             cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
-            allData[ip]=cur.fetchall()
+            desc = cur.description 
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[ip]=data
             print(allData[ip])
-        allData["risk"]=riskData[0]
+        riskData=[{"IP":search}]
+        vpnDetails(riskData)
+        
+        if isBad :
+            allData["Bad ASN"]=80
+        else:
+            allData["Bad ASN"]=0
+        
+        if riskData[0]["dc"] :
+            allData["data center"]=50
+        else:
+            allData["data center"]=0
+        
+        if riskData[0]["bl"] :
+            allData["blacklisted"]=100
+        else:
+            allData["blacklisted"]=0
+        
+
         # change hardcoded
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("Select * from Fingerprints where ip='127.0.0.1'" )
+        cur.execute("Select * from Fingerprints where ip='"+search+"'" )
         #Alldata_for_searched_ip={ search : cur.fetchall()}
 
         Alldata_for_searched_ip = {}
@@ -568,9 +611,45 @@ def searchpost():
         Alldata_for_searched_ip['data'] = data
         # return Alldata_for_searched_ip
         # all data returned for ip is what you need for most of the top part of search page
+        conn1 = sqlite3.connect('ip-index.db')
+        cur1=conn1.cursor()
+        intip=int(ipaddress.ip_address(search))
+        s="SELECT country FROM countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur1.execute(s)
+        cname=cur1.fetchall()[0][0]
+        conn1.close()
         
+        cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        print("@@@@@@@",data)
+        
+        if data["blocked"]==1 :
+            allData["grey "]=50
+        else:
+            allData["grey"]=0
+
+        if data["blocked"]==2 :
+            allData["black "]=100
+        else:
+            allData["black"]=0
+
+        cur.execute("Select isVpnTime from Fingerprints where ip='"+search+"'")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+
+        if data["isVpnTime"]:
+            allData["Timezone"]=70
+        else:
+            allData["Timezone"]=0
+
+
+        
+        print(allData.keys())
         conn.close()
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         Alldata_for_searched_ip = {}
         return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
