@@ -48,7 +48,7 @@
                     <table>
                         <tr>
                             <td>
-                                <h2 class="card-title"><strong> {{ip}} 127.0.0.1 </strong></h2>
+                                <h2 class="card-title"><strong> {{ip}}</strong></h2>
                             </td>
                             <td>
                                 <!--to add -->
@@ -61,8 +61,39 @@
                         </tr>
                     </table>
 
+                    <script>
+                        // not working, found another way to get work done - karan
+                        myvar = '{{Alldata_for_searched_ip|tojson}}';
+
+                        var parsed = JSON.parse(myvar);
+                        console.log(parsed);
+                        console.log(parsed['0']);
+                        console.log(parsed['0']['ip']);
 
 
+                        // function htmlDecode(input) {
+                        //     var doc = new DOMParser().parseFromString(input, "text/html");
+                        //     return doc.documentElement.textContent;
+                        // }
+
+                        // var myJSONString = htmlDecode("{{Alldata_for_searched_ip}}");
+                        // var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
+                        //     .replace(/\\'/g, "\\'")
+                        //     .replace(/\\"/g, '\\"')
+                        //     .replace(/\\&/g, "\\&")
+                        //     .replace(/\\r/g, "\\r")
+                        //     .replace(/\\t/g, "\\t")
+                        //     .replace(/\\b/g, "\\b")
+                        //     .replace(/\\f/g, "\\f");
+                        // myEscapedJSONString = myEscapedJSONString.replace(/[\u0000-\u0019]+/g, "");
+                        // console.log(myEscapedJSONString);
+                        // //var Alldata_for_searched = JSON.stringify(myEscapedJSONString);
+                        // var Alldata_for_searched_ip = JSON.parse(myEscapedJSONString);
+                        // //Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
+                        // console.log(Alldata_for_searched_ip);
+                        // console.log(Alldata_for_searched_ip['_id']);
+                        // {///% for key, value in valuem.items() %}
+                    </script>
 
                     <table class="table " id="">
                         <thead class=" text-primary">
@@ -131,7 +162,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Address</label>
+                                        <label>ISP</label>
                                         <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" readonly>
                                     </div>
                                 </div>
@@ -252,14 +283,14 @@
                                 strokeOpacity: 0.08
                             });
 
-                            
+
                             var lineSeries = chart.series.push(am5map.MapLineSeries.new(root, {}));
                             lineSeries.mapLines.template.setAll({
                                 stroke: root.interfaceColors.get("alternativeBackground"),
                                 strokeOpacity: 0.6
                             });
 
-                        
+
                             var citySeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -279,7 +310,7 @@
                                 });
                             });
 
-                        
+
                             var arrowSeries = chart.series.push(
                                 am5map.MapPointSeries.new(root, {})
                             );
@@ -301,46 +332,103 @@
                                 });
                             });
 
-         
-                            var cities = [{
-                                id: "london",
-                                title: "London",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [-0.1262, 51.5002]
-                                },
-                                isVPN: true
-                            }, {
-                                id: "india",
-                                title: "india",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [32, 51]
-                                },
-                                isVPN: false
-                            }, {
-                                id: "chine",
-                                title: "chine",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [52, 61]
-                                },
-                                isVPN: false
-                            }, {
-                                id: "us",
-                                title: "us",
-                                geometry: {
-                                    type: "Point",
-                                    coordinates: [80, 40]
-                                },
-                                isVPN: true
-                            }]
 
-                            citySeries.data.setAll(cities);
+                            // let myDictionary = {
+                            //             id: "",
+                            //             title: "",
+                            //             geometry: {
+                            //                 type: "",
+                            //                 coordinates: []
+                            //             },
+                            //             isVPN: ""
+                            //         };
+                            var cities = [];
 
+                            function addvalues(dump, cities) {
 
+                                for (let i = 0; i < dump.length; i++) {
+                                    let myDictionary = {
+                                        id: "",
+                                        title: "",
+                                        geometry: {
+                                            type: "",
+                                            coordinates: []
+                                        },
+                                        isVPN: ""
+                                    };
 
+                                    myDictionary.id = dump[i][1];
+                                    myDictionary.title = dump[i][2];
+                                    myDictionary.geometry["type"] = "Point";
+                                    myDictionary.geometry["coordinates"] = dump[i][4];
+                                    if (dump[i][0] == true) {
+                                        myDictionary.isVPN = true;
+                                    } else {
+                                        myDictionary.isVPN = false;
+                                    }
+                                    cities.push(myDictionary);
+
+                                }
+                                return cities;
+                            }
+
+                            dump1 = [
+                                [true, "india", "india", "point", [80, 40]],
+                                [false, "indo", "indo", "point", [40, 80]]
+                            ];
+                            addvalues(dump1, cities);
                             console.log(cities);
+
+                            //call function;
+                            // var cities1 = [{
+                            //     id: "london",
+                            //     title: "London",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [-0.1262, 51.5002]
+                            //     },
+                            //     isVPN: true
+                            // }, {
+                            //     id: "india",
+                            //     title: "india",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [32, 51]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "chine",
+                            //     title: "chine",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [52, 61]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "chinasde",
+                            //     title: "chinasde",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [62, 81]
+                            //     },
+                            //     isVPN: false
+                            // }, {
+                            //     id: "us",
+                            //     title: "us",
+                            //     geometry: {
+                            //         type: "Point",
+                            //         coordinates: [80, 40]
+                            //     },
+                            //     isVPN: true
+                            // }]
+                            // console.log(cities1);
+                            citySeries.data.setAll(cities);
+                            console.log(citySeries);
+
+
+
+
+                            //console.log(cities);
                             var destinations = [];
 
                             for (const x in cities) {
@@ -398,8 +486,8 @@
                             })
 
 
-               
-                            chart.appear(500, 500);
+
+                            chart.appear(1000, 1000);
                         });
                     </script>
 
@@ -457,7 +545,7 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div class="c100 p25 red dark">
+                                    <div class="c100 p25 orange dark">
                                         <span><b>25%</b></span>
                                         <div class="slice ">
                                             <div class="bar "></div>
@@ -516,21 +604,18 @@
         {{result}}
         `)
 </script>
-{% endblock content %}
-
-
-{% block javascripts %}
+{% endblock content %} {% block javascripts %}
 <script type="text/javascript ">
     function notif() {
         var text = 'True';
         if (text == 'False') {
             var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-success ">
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
         } else if (text == 'True') {
             var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert ").innerHTML = `<div class="alert alert-danger ">
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
         }

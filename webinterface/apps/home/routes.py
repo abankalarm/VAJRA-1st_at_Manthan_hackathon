@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
-import html as htmlmodule
+import html
+import numpy
 import os
 from sqlite3.dbapi2 import connect
 import ipaddress
@@ -16,13 +17,76 @@ import urllib.request
 from ua_parser import user_agent_parser
 from flask import send_from_directory
 import time
-
+import pandas
+import base64
+import pickle 
 
 import string
 import random
 # import rsplit
 
 
+def storeInTrackingTable(content):
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Tracking ("
+    col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
+    for i in content:
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
+            else:
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
+        else:
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    #print(col)
+    cur.execute(s)
+    #insert
+    s = "INSERT INTO Tracking (" + col + ") VALUES ("
+    for i in content:
+        if i in strs:
+            s += "'" + content[i] + "', "
+        elif i in others:
+            
+            s += "'" + content[i] + "', "
+        else:
+            s += str(content[i]) + ", "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    #print(s)
+    cur.execute(s)
+    conn.commit()
+    conn.close()
+    #storeIpCommentTable(ip, '')
 
 @blueprint.route('/display/<filename>')
 def display_image(filename):
@@ -30,10 +94,11 @@ def display_image(filename):
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
     data={
-    "ip":ip,
-    "id":filename,
-    "timestamp":str(time.time())
+        "ip":ip,
+        "id":filename,
+        "timestamp":str(time.time())
     }
+    print(data)
     storeInTrackingTable(data)
 
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
@@ -72,20 +137,21 @@ def flagBookmarkDB(ip):
     cur = conn.cursor()
     s = "UPDATE Fingerprints SET bookmarked = 1 where ip = " + ip +";"
     cur.execute(s)
+    conn.commit()
     conn.close()
 
-def storeIpCommentTable(ip, comment):
+def storeIpCommentTable(name, comment):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( ip TEXT, comments TEXT);"
+    s = "CREATE TABLE IF NOT EXISTS TrackingComments ( id TEXT, comment TEXT);"
     cur.execute(s)
-    l = getfromdb('TrackingComments', ['ip'], ip)
+    l = getfromdb('TrackingComments', ['id'], name)
     if len(l) == 0:
-        s = "INSERT INTO TrackingComments (ip, comment) VALUES ('" + ip + "', '" + comment + "');"
+        s = "INSERT INTO TrackingComments (id, comment) VALUES ('" + name + "', '" + comment + "');"
         cur.execute(s)
         conn.commit()
     else:
-        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE ip = '" + ip + "';"
+        s = "UPDATE TrackingComments SET comment = '" + comment + "' WHERE id = '" + name + "';"
         cur.execute(s)
     conn.close()
 
@@ -101,7 +167,7 @@ def storeInDB(content):
     others = {}
     reals = {}
     for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
+        print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
         if isinstance(content[i], str):
             strs[i] = 1
@@ -173,69 +239,8 @@ def storeInDB(content):
         conn.close()
 
 
-def storeInTrackingTable(content):
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS Tracking ("
-    col = ""
-    bools = {}
-    strs = {}
-    ints = {}
-    others = {}
-    reals = {}
-    for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
-        col += i + ", "
-        if isinstance(content[i], str):
-            strs[i] = 1
-            s += i + " TEXT, "
-        elif isinstance(content[i], int):
-            ints[i] = 1
-            s += i + " INTEGER, "
-        elif isinstance(content[i], float):
-            reals[i] = 1
-            s += i + " REAL, "
-        elif isinstance(content[i], bool):
-            if content[i] == False:
-                content[i] = 0
-            else:
-                content[i] = 1 
-            bools[i] = 1
-            s += i + " INTEGER, "
-        else:
-            others[i] = 1
-            content[i] = json.dumps(content[i])
-            s += i + " BLOB, "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    anotherList = list(col)
-    anotherList = anotherList[: -2]
-    col = ''.join(anotherList)
-    #print(col)
-    cur.execute(s)
-    #insert
-    s = "INSERT INTO Tracking (" + col + ") VALUES ("
-    for i in content:
-        if i in strs:
-            s += "'" + content[i] + "', "
-        elif i in others:
-            
-            s += "'" + content[i] + "', "
-        else:
-            s += str(content[i]) + ", "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    #print(s)
-    cur.execute(s)
-    conn.commit()
-    conn.close()
-    storeIpCommentTable(ip, '')
-
 def storeInAttackingTable(content):
+    print(content)
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "CREATE TABLE IF NOT EXISTS Attacking ("
@@ -314,7 +319,7 @@ def storeInAttackingTable(content):
         colList = colList[:-2]
         s = ''.join(colList)
         s += " where ip = '" + content['ip'] + "';"
-        #print(s)
+        print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
@@ -342,64 +347,67 @@ def nmap():
 @blueprint.route('/dash')
 def dash():
     allData = {}
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-
-        cur.execute("SELECT COUNT(DISTINCT (ip)) as cnt FROM Fingerprints;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['uniqueIP'] = data
-        
-        cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['countryCount'] = data
-
-        cur.execute("SELECT COUNT ( DISTINCT parentDomain) as cnt FROM Fingerprints;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['uniqueDomains'] = data
-        
-        cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY parentDomain; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['domainCount'] = data
-        
-        cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['distinctIp'] = data
+    allData["IP"]=[]
     
-        cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['vpns'] = data
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+
+    # cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
+    # desc = cur.description 
+    # column_names = [col[0] for col in desc] 
+    #data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    # print(data)
+    
+    # allData["IP"]=data
+    
+    allData["IP"]=json.loads(  vpnDetails(allData["IP"]).data  ) 
+
+    
         
-        cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        allData['flaggedIp'] = data
-        conn.close()
-    except:    
-        print('Some error occured')
+    allData['uniqueIpCount'] = len(allData["IP"])
+    print(allData)
+    
+    cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['countryCount'] = data
+
+    cur.execute("SELECT COUNT ( DISTINCT parentDomain) as cnt FROM Fingerprints;")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['uniqueDomains'] = data
+    
+    cur.execute("SELECT parentDomain, COUNT( DISTINCT ip) as cnt FROM Fingerprints GROUP BY parentDomain; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['domainCount'] = data
+    
+    cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['distinctIp'] = data
+
+    cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['vpns'] = data
+    
+    cur.execute("SELECT ip FROM Fingerprints WHERE bookmarked=1 ;")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['flaggedIp'] = data
+    conn.close()
+    
     return render_template('home/dashboard.html', segment='dash', allData = allData)
 
 @blueprint.route('/fdl')
 def fdl():
-    return render_template('home/fulldomainlist.html', segment='fdl')
-
-
-@blueprint.route('/bookmarks')
-def bkmark():
-    return render_template('home/bookmarks.html', segment='bookmarks')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -411,7 +419,7 @@ def bkmark():
         pDomains = []
         for i in data:
             pDomains.append(i['parentDomain'])
-            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
+            s = "SELECT ip, cookie, clientId, timestamp, bookmarked, userAgent, webdriver, timezone, isTor, isVpnTime, isVpnASN, countryCode, region, regionName, isp, lat, lon, city, country FROM Fingerprints where parentDomain ='" + i['parentDomain'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]
@@ -421,11 +429,16 @@ def bkmark():
         conn.close()
     except:
         print('No data')
-    return render_template('home/fulldomainlist.html', segment='index', allData = allData)
+    return render_template('home/fulldomainlist.html', segment='fdl', allData = allData)
+
+
+@blueprint.route('/bookmarks')
+def bkmark():
+    #receive an IP and call flagBookmarkDB(ip)
+    return render_template('home/bookmarks.html', segment='bookmarks')
 
 @blueprint.route('/ipl')
 def ipl():
-    return render_template('home/fulliplog.html', segment='ipl')
     allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
@@ -447,7 +460,7 @@ def ipl():
         conn.close()
     except:
         print('No data')
-    return render_template('home/fulliplog.html', segment='index', allData = allData)
+    return render_template('home/fulliplog.html', segment='ipl', allData = allData)
 
 
 @blueprint.route('/<template>')
@@ -495,8 +508,18 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
+    print(content)
     if checkBookmarkDB(content['ip']):
         content['bookmarked'] = 1
+    
+    pstr = pickle.dumps(content['plugins'], pickle.HIGHEST_PROTOCOL)
+    bstr = base64.b64encode(pstr).decode()
+    content['plugins'] = bstr
+    content['canvas'] = ','.join(content['canvas'])
+    content['webgl'] = ','.join(content['webgl'])
+    content['fonts'] = ''.join(content['fonts'])
+    content['touchSupport'] = ','.join(str(e) for e in content['touchSupport'])
+    
     storeInDB(content)
     #l = getfromdb(['ip'], [content['ip']])
     return render_template('home/page-404.html', segment='index'), 404
@@ -505,37 +528,50 @@ def injectionpost():
 def searchpost():
     if (request.method == 'POST'):
         search = request.form['search']
-        print(search)
         isBad,asn,result=getDetails(search)
-        print(isBad,asn)
-        try:
-            ips=[]
-            conn = sqlite3.connect('db.sqlite3')
-            cur = conn.cursor()
-            cur.execute("Select cookie from Fingerprints where ip="+search)
-            cookie=cur.fetchall()
-            
-            for e in cookie:
-                cur.execute("Select ip from Fingerprints where cookie="+e)
-                ips.append(cur.fetchall())
-            
-            cur.execute("Select clientID from Fingerprints where ip="+search)
-            clientID=cur.fetchall()
-            for e in clientID:
-                cur.execute("Select ip from Fingerprints where clientID="+e)
-                ips.append(cur.fetchall())
-            conn.close()
-            uip = list(set(ips))
-            allData={}
-            for ip in uip:
-                cur.execute("Select cookie,clientID,openports,userafent,timestamp, isvpn,isTOR,vpnblabla from Fingerprints where clientID=" )
-                allData[ip]=cur.fetchall()
-        except:
-            print("error")
         
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad)
+        ips=[]
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
+        cookie=cur.fetchall()
+        
+        for e in cookie:
+            cur.execute("Select ip from Fingerprints where cookie='"+e+"'")
+            ips.append(cur.fetchall())
+        
+        cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
+        clientID=cur.fetchall()
+        for e in clientID:
+            cur.execute("Select ip from Fingerprints where clientID='"+e+"'")
+            ips.append(cur.fetchall())
+        
+        uip = list(set(ips))
+        allData={}
+        for ip in uip:
+            cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
+            allData[ip]=cur.fetchall()
+            print(allData[ip])
+        
+        # change hardcoded
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("Select * from Fingerprints where ip='127.0.0.1'" )
+        #Alldata_for_searched_ip={ search : cur.fetchall()}
+
+        Alldata_for_searched_ip = {}
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        Alldata_for_searched_ip['data'] = data
+        # return Alldata_for_searched_ip
+        # all data returned for ip is what you need for most of the top part of search page
+        
+        conn.close()
+        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
     else:
-        return render_template('home/search.html', segment='search')
+        Alldata_for_searched_ip = {}
+        return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan', methods=['POST'])
 def portscan():
@@ -624,39 +660,57 @@ def uploadfiles():
                 uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
             except:
                 uploadf.save(os.path.join('apps/static/uploads/', name))
-
             # return redirect(url_for('download_file', name=name))
+        
         print(name)
-
-
+        storeIpCommentTable(name, 'AAA')
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
         return render_template('home/tracking.html', segment='tracking')
 
 
 @blueprint.route('/api/vpnDetails')
-def vpnDetails():
+def vpnDetails(data):
     conn = sqlite3.connect('ip-index.db')
-    ip = request.environ['REMOTE_ADDR']
-    ip='203.192.236.33'
-    intip=int(ipaddress.ip_address(ip))
-    cur=conn.cursor()
-    print(ip,type(ip),intip,type(intip))
-    s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    a=cur.fetchall()
-    s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    b=cur.fetchall()
-    s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    c=cur.fetchall()
-    s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-    cur.execute(s)
-    d=cur.fetchall()
-    conn.close()
-    print(a,b,c,d)
-    return jsonify({"bl":a,"dc":b,"asn":c,"cn":d})
+    if data==[]:
+        ip = request.environ['REMOTE_ADDR']
+        #TODO delete default value after hosting
+        ip='203.192.236.244'
+        data=[{"IP":ip}]
+    for i in range (len(data)):
+        try:
+            ip=data[i]["IP"]
+            intip=int(ipaddress.ip_address(ip))
+            cur=conn.cursor()
+            print(ip,type(ip),intip,type(intip))
+            s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            a=cur.fetchall()
+            s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            b=cur.fetchall()
+            s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            c=cur.fetchall()
+            s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+            cur.execute(s)
+            d=cur.fetchall()
+            conn.close()
+            data[i]["bl"]=a
+            data[i]["dc"]=b
+            data[i]["asn"]=c[0]
+            data[i]["cn"]=d[0]
+            print(a,b,c,d)
+            inBad=c[0][3] in badASN
+            data[i]["bad"]=inBad
+        except:
+            data[i]["bl"]=[]
+            data[i]["dc"]=[]
+            data[i]["asn"]=[]
+            data[i]["cn"]=[]
+            data[i]["bad"]=False
+            
+    return jsonify(data)
 
 
 
@@ -675,7 +729,7 @@ def checkip_attack():
         content['ip'] = ip
         content['js'] = js
         content['timestamp'] = str(time.time())
-        storeInTrackingTable(content)
+        storeInAttackingTable(content)
         return js
 
 
@@ -695,16 +749,127 @@ def attack():
             IP = request.form.get('ipaddr')
             content = {}
             # search for js respective to partivular ip
-            getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
+            l = getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
             return render_template('home/attack.html', segment='attack', search = content)
-
     else:
         content = {}
-        content['ip'] = '127.0.0.1'
-        content['js'] = '()=>{console.log("Something");--#!@#$%^&*[]................'
+        content['ip'] = '0.0.1.0'
+        content['js'] = ''
         content['timestamp'] = ''
         # store a ip and js pair together , make it unique and overwrite
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
         
         return render_template('home/attack.html', segment='attack', alldetails = content)
+
+@blueprint.route('/trackinglogs')
+def trackinglogs():
+    allData = {}
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("SELECT id, comment FROM TrackingComments;")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        ids = []
+        comments = []
+        for i in data:
+            ids.append(i['id'])
+            comments.append(i['comment'])
+            s = "SELECT ip, timestamp from Tracking where id ='" + i['id'] + "';"
+            cur.execute(s)
+            desc = cur.description
+            column_names = [col[0] for col in desc]
+            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData[i['id']] = data1
+        allData['keyList'] = ids
+        allData['comments'] = comments
+        conn.close()
+    except:
+        print('No data')
+    return render_template('home/trackinglogs.html', segment='index', allData = allData)
+
+
+
+
+@blueprint.route('/blockManage',methods=['GET','POST'])
+def countryblock():  
+
+    if(request.method == 'POST'):
+        if "Bid" in request.form.keys():
+            print("here")
+            id = request.form.get('Bid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+        if "Uid" in request.form.keys():
+            id = request.form.get('Uid')
+            print(id)
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 0 where id = "' + id + '";')
+            conn.commit()
+            conn.close()
+    
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
+    l = getfromdb("Countries", ["name"], ["India"])
+    if len(l) == 0:
+        df = pandas.read_csv('countrylist.csv')
+        s = "Insert into Countries values "
+        for i in range (0, len(df['country'])):
+            s += '("' + str(df['country'][i]) + '", "' + str(df['name'][i]) + '", 0), '
+        m = list(s)
+        m[-1] = ';'
+        m[-2] = ' '
+        s = ''.join(m)
+        print(s)
+        cur.execute(s)
+        conn.commit()
+    allData = {}
+    cur.execute('select id, name, blocked from Countries where blocked=0')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['unblocked'] = data
+    
+    cur.execute('select id, name, blocked from Countries where blocked=1')
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    allData['blocked'] = data
+    conn.close()
+    
+    return render_template('home/blockManage.html', segment='blockManage', allData = allData)
+
+@blueprint.route('/block',methods=['POST'])
+def block():  
+    try:
+        if(request.method == 'POST'):
+            name = request.form.get('name')
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 1 where name = "' + name + '";')
+            conn.commmit()
+            conn.close()
+    except:
+        print('Table DNE')
+    
+    
+@blueprint.route('/unblock')
+def unblock():  
+    try:
+        if(request.method == 'POST'):
+            name = request.form.get('name')
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute('Update Countries set blocked = 0 where name = "' + name + '";')
+            conn.commit()
+            conn.close()
+    except:
+        print('Table DNE')

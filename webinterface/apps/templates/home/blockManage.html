@@ -1,0 +1,100 @@
+{% extends "layouts/base.html" %} {% block title %} Bookmarks {% endblock %}
+{% block stylesheets %}{% endblock stylesheets %}
+<style>
+    #form-form{
+    display: block;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  padding: 0.5rem 0.7rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.42857;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: transparent;
+  background-clip: padding-box;
+  border: 1px solid #cad1d7;
+  border-radius: 0.25rem;
+  box-shadow: none;
+  }
+
+</style>
+
+{% block javascripts %}
+{%endblock javascripts%}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">Countries List</h6>
+                <h4 class="card-title">
+                    <fieldset>
+                        <legend>Select the country to Block: </legend>
+                    <form method="POST">
+                    <select name="Bid" id="Bid" id='form-form'>
+                    {% for x in allData["unblocked"]%}
+
+                        <option value={{x["id"]}}>{{x["name"]}}</option>
+
+                    {%endfor%}
+                    </select>
+                    <br> <br>
+                    <input type="submit" value="Submit" class='btn btn-primary btn-round'>
+                    </form>
+                    </fieldset>
+                </h4>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">Blocked Countries List</h6>
+                <h4 class="card-title">
+                    {%if allData["unblocked"] | length>0%}
+                    {% endif %}
+                    {%if allData["blocked"] | length>0%}
+                    <fieldset>
+                        <legend>Countries Blocked: </legend>
+                        <form method="POST" action='' class='form-group'>
+                            <select name="Uid" id="Uid" id='form-form'>
+                            {% for x in allData["blocked"]%}
+                        
+                                <option value={{x["id"]}}>{{x["name"]}}</option>
+                        
+                            {%endfor%}
+                            </select>
+                            <br> <br>
+                            <input type="submit" value="Submit" class='btn btn-primary btn-round'>
+                        </form>
+                        </fieldset>
+                </h4>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <h2> Country List</h2>
+
+<fieldset id=custom>
+    <legend>Contries Blocked</legend>
+    <form method="POST" class='form-control'>
+    <select name="Uid" id="Uid">
+    {% for x in allData["blocked"]%}
+
+        <option value={{x["id"]}}>{{x["name"]}}</option>
+
+    {%endfor%}
+    </select>
+    <input type="submit" value="Submit" class='btn btn-primary btn-round'>
+</form>
+</fieldset> -->
+{% endif %}
+    
+
+{% endblock content %}

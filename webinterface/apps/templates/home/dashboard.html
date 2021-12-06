@@ -10,8 +10,11 @@
 <script src="static/assets/js/map2.js"></script>
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
+    
+
+    
     console.log(allData);
-    document.getElementById("currentIps").innerHTML = allData['uniqueIP'][0]['cnt']
+    document.getElementById("currentIps").innerHTML = allData['uniqueIpCount']
     document.getElementById("currentVpns").innerHTML = allData['vpns'][0]['cnt']
     document.getElementById("currentDomains").innerHTML = allData['uniqueDomains'][0]['cnt']
     var domainsDetected = "";
@@ -179,6 +182,13 @@
                                 <div class="container">
                                   <h4><b>Last 10 IPs</b></h4>
                                   <div id="ipsDetected" style = "text-align: center;">
+                                    {% for x in allData["IP"]%}
+                                        <ul>
+                                            {% for e in x.keys()%}
+                                            <li>{{e}}:  {{x[e]}}</li>
+                                            {%endfor%}
+                                        </ul>
+                                    {% endfor %}
                                   </div>
                                 </div>
                             </div>

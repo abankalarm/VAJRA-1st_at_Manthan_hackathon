@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %} {% block title %} Full Domain List {% endblock %}
+{% block stylesheets %}{% endblock stylesheets %}
+
+
+{% block javascripts %}
+<script>
+    var allData = JSON.parse('{{allData | tojson}}');
+    console.log(allData);
+</script>
+{%endblock javascripts%}
+{% block content %}
+<h2> Tracking Pixels</h2>
+<div id="trackinglist">
+</div>
+
+<button onclick="window.print()">Print Domain List</button>
+
+{% endblock content %}
