@@ -18,7 +18,7 @@
     for(let i = 0; i < Math.min(10, Object.keys(allData['domainCount']).length); i++) {
         domainsDetected += "<a href='"+ allData['domainCount'][i]['parentDomain'] +"'>" + allData['domainCount'][i]['parentDomain'] + "</a><br>"
     }
-    document.getElementById("domainsDetected").innerHTML = domainsDetected
+    document.getElementById("domainsDetect").innerHTML = "<p>output</p>"
     var ipsDetected = "";
     for(let i = 0; i < Math.min(10, Object.keys(allData['distinctIp']).length); i++) {
         ipsDetected += "<a href='"+ allData['distinctIp'][i]['ip'] +"'>" + allData['distinctIp'][i]['ip'] + "&emsp;&emsp;<b>VPN: " + allData['distinctIp'][i]['isVpnTime'] + "<b></a><br>"
@@ -26,13 +26,15 @@
     document.getElementById("ipsDetected").innerHTML = ipsDetected
 
     setData(allData['countryCount']);
+    
+    
 
 </script>
 {% endblock javascripts %}
 {% block content %}
 <link rel="stylesheet" href="static/assets/css/style.css">
 <!-- MAP -->
-<div class="row">
+<!-- <div class="row">
 <div class="col-md-3">
    
             
@@ -57,7 +59,7 @@
 
 </div>
 <br>
-
+ -->
 
 <!-- LIVE STATISTICS -->
 <link rel="stylesheet" href="static/assets/css/circle.css">
@@ -128,7 +130,10 @@
                             <div class="card">
                                 
                                 <div class="container">
-                                  <div id = "domainsDetected" style = "text-align: center">
+                                  <div id = "domainsDetect" style = "text-align: center">
+                                   
+                                        <!-- <div id = "domains"></div> -->
+                                    
 
                                   </div>
                                 
