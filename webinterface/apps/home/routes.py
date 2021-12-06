@@ -665,10 +665,10 @@ def searchpost():
         Alldata_for_searched_ip = {}
         return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
     
-@blueprint.route('/api/portscan', methods=['POST'])
+@blueprint.route('/api/portscan')
 def portscan():
-    ip = request.form['ip']
-    type = request.form['speed']
+    ip = request.args['ip']
+    type = request.args['speed']
     if type=='top10':
         result = get_info(ip, top_10)
     if type=='top50':
@@ -676,7 +676,7 @@ def portscan():
     if type=='top100':
         result = get_info(ip, top_100)
 
-    return jsonify(result)
+    return render_template('home/nmaps.html', segment='nmaps', result = result)
 
 
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
