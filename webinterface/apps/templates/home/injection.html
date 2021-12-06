@@ -127,6 +127,17 @@
             function(data, status) {
                 dict['isVpnSomething'] = data
             });
+        
+            dict['browserLat'] = 404
+            dict['browserLong'] = 404;
+            navigator.geolocation.getCurrentPosition((position)=> {
+            //this.getCity(position.coords.latitude, position.coords.longitude);
+                var browserLat = position.coords.latitude;
+                var browSerlong = position.coords.longitude;
+                //console.log(position)
+                dict['browserLat'] = browserLat
+                dict['browserLong'] = browSerlong
+            });
 
         console.log(dict)
         var timeString = "Time to calculate fingerprint: " + (d2 - d1) + "ms\n\n";
@@ -227,4 +238,5 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+{% endblock javascripts %}
