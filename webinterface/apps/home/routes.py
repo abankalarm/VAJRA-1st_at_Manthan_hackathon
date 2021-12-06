@@ -581,7 +581,13 @@ def searchpost():
             print(allData[ip])
         riskData=[{"IP":search}]
         vpnDetails(riskData)
-        
+        print(riskData)
+
+        badASN = riskData[0]["bad"]
+        datacenter = riskData[0]["dc"]
+        blacklisted = riskData[0]["bl"]
+        ASN_name = riskData[0]['asn'][4]
+
         if isBad :
             allData["Bad ASN"]=80
         else:
@@ -638,18 +644,23 @@ def searchpost():
         cur.execute("Select isVpnTime from Fingerprints where ip='"+search+"'")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        try:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        except:
+            data = {}
 
-        if data["isVpnTime"]:
-            allData["Timezone"]=70
-        else:
+        try:
+            if data["isVpnTime"]:
+                allData["Timezone"]=70
+            else:
+                allData["Timezone"]=0
+        except:
             allData["Timezone"]=0
-
 
         
         print(allData.keys())
         conn.close()
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        return render_template('home/search.html', segment='search', ASN_name = ASN_name, result=result, ip = search, asn = asn, blacklisted = blacklisted, datacenter = datacenter, badASN = badASN, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         Alldata_for_searched_ip = {}
         return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
