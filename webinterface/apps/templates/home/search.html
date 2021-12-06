@@ -401,8 +401,12 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
-
-
+                            try {
+                                var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
+                                console.log(allData)
+                            } catch(e) {
+                                console.log("Error");
+                            }
 
                             //console.log(cities);
                             var destinations = [];
