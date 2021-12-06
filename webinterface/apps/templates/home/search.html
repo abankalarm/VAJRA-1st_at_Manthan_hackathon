@@ -67,32 +67,26 @@
 
                         var parsed = JSON.parse(myvar);
                         console.log(parsed);
-                        console.log(parsed['0']);
-                        console.log(parsed['0']['ip']);
+                        console.log(parsed.data['0']);
+                        console.log(parsed.data['0']['ip']);
 
-
-                        // function htmlDecode(input) {
-                        //     var doc = new DOMParser().parseFromString(input, "text/html");
-                        //     return doc.documentElement.textContent;
-                        // }
-
-                        // var myJSONString = htmlDecode("{{Alldata_for_searched_ip}}");
-                        // var myEscapedJSONString = myJSONString.replace(/\\n/g, "\\n")
-                        //     .replace(/\\'/g, "\\'")
-                        //     .replace(/\\"/g, '\\"')
-                        //     .replace(/\\&/g, "\\&")
-                        //     .replace(/\\r/g, "\\r")
-                        //     .replace(/\\t/g, "\\t")
-                        //     .replace(/\\b/g, "\\b")
-                        //     .replace(/\\f/g, "\\f");
-                        // myEscapedJSONString = myEscapedJSONString.replace(/[\u0000-\u0019]+/g, "");
-                        // console.log(myEscapedJSONString);
-                        // //var Alldata_for_searched = JSON.stringify(myEscapedJSONString);
-                        // var Alldata_for_searched_ip = JSON.parse(myEscapedJSONString);
-                        // //Alldata_for_searched_ip = JSON.parse(Alldata_for_searched);
-                        // console.log(Alldata_for_searched_ip);
-                        // console.log(Alldata_for_searched_ip['_id']);
-                        // {///% for key, value in valuem.items() %}
+                        var getJSON = function(url, callback) {
+                            var xhr = new XMLHttpRequest();
+                            xhr.open('GET', url, true);
+                            xhr.responseType = 'json';
+                            xhr.onload = function() {
+                                var status = xhr.status;
+                                if (status === 200) {
+                                    callback(null, xhr.response);
+                                } else {
+                                    callback(status, xhr.response);
+                                }
+                            };
+                            xhr.send();
+                        };
+                        responseObj = getJSON('/api/vpnDetails');
+                        var count = responseObj.asn;
+                        console.log(responseObj);
                     </script>
 
                     <table class="table " id="">
@@ -115,29 +109,29 @@
                                     ASN
                                 </td>
                                 <td>
-                                    ID AS123123
+                                    {{asn}}
                                 </td>
                                 <td>
-                                    JIO telecom
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    ASN
-                                </td>
-                                <td>
-                                    ID AS123123
-                                </td>
-                                <td>
-                                    JIO telecom
+                                    ADD HERE ASN NAME
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    ASN
+                                    Blacklisted
                                 </td>
                                 <td>
-                                    ID AS123123
+                                    {{bad}}
+                                </td>
+                                <td>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    DataCentre
+                                </td>
+                                <td>
+                                    {{datacentre}}
                                 </td>
                                 <td>
                                     JIO telecom
