@@ -3,7 +3,7 @@
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}
 <style>
-    .hidden{
+    .hidden {
         visibility: hidden;
     }
 </style>
@@ -50,17 +50,14 @@
                             </form>
                         </div>
                     </div>
-                    <div id='details'>
-                        {{content}}
-                    </div>
+
 
                 </h4>
             </div>
         </div>
     </div>
 </div>
-
-{% endblock content %}
+{{content}} {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}{% endblock javascripts %}

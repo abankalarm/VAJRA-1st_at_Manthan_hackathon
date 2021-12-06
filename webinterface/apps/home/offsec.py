@@ -8,15 +8,17 @@ def get_info(ip, ports):
     nm.scan(ip, ports)
     nm.command_line()
     #print(nm.scaninfo())
+    output = ""
     for host in nm.all_hosts():
-        print('----------------------------------------------------')
-        print('Host : %s (%s)' % (host, nm[host].hostname()))
-        print('State : %s' % nm[host].state())
+        output += '----------------------------------------------------\n<br>'
+        output += '\n<br>Host : %s (%s)' % (host, nm[host].hostname())
+        output += '\nState : %s' % nm[host].state()
         for proto in nm[host].all_protocols():
-            print('----------')
-            print('Protocol : %s' % proto)
+            output+= '\n----------'
+            output+='\nProtocol : %s' % proto
             lport = sorted(nm[host][proto].keys())
             
             for port in lport:
-                print ('port : %s\tstate : %s' % (port, nm[host][proto][port]['state']))
-
+                output += '\nport : %s\tstate : %s' % (port, nm[host][proto][port]['state'])
+    
+    return output
