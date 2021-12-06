@@ -76,7 +76,7 @@
         dict['bookmarked'] = 0;
 
 
-        var xyz = "111.223.26.8"
+        var xyz = "23.106.56.14"
         $.post("/api/ip/identity", {
                 ip: xyz,
             },
@@ -146,6 +146,7 @@
             for (var index in components) {
                 var obj = components[index];
                 var value = obj.value;
+
                 if (value !== null) {
                     dict[obj.key] = value;
                 }
