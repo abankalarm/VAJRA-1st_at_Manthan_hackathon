@@ -553,6 +553,23 @@ def searchpost():
             allData[ip]=cur.fetchall()
             print(allData[ip])
         
+
+        intip=int(ipaddress.ip_address(search))
+        s="SELECT * FROM blacklisted WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        a=cur.fetchall()
+        
+        s="SELECT * FROM datacenters WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        b=cur.fetchall()
+
+        s="SELECT * FROM asns WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        c=cur.fetchall()
+        
+        s="SELECT * FROM countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        d=cur.fetchall()
         # change hardcoded
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -568,7 +585,7 @@ def searchpost():
         # all data returned for ip is what you need for most of the top part of search page
         
         conn.close()
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', segment='search', datacentre = b,result=result, ip = search, asn = asn, asn_d = a, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip)
     else:
         Alldata_for_searched_ip = {}
         return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
