@@ -581,22 +581,30 @@ def searchpost():
             print(allData[ip])
         riskData=[{"IP":search}]
         vpnDetails(riskData)
-        
-        if isBad :
-            allData["Bad ASN"]=80
-        else:
+        try:
+
+            if isBad :
+                allData["Bad ASN"]=80
+            else:
+                allData["Bad ASN"]=0
+        except:
             allData["Bad ASN"]=0
         
-        if riskData[0]["dc"] :
-            allData["data center"]=50
-        else:
+        try:
+
+            if riskData[0]["dc"] :
+                allData["data center"]=50
+            else:
+                allData["data center"]=0
+        except:
             allData["data center"]=0
-        
-        if riskData[0]["bl"] :
-            allData["blacklisted"]=100
-        else:
+        try:
+            if riskData[0]["bl"] :
+                allData["blacklisted"]=100
+            else:
+                allData["blacklisted"]=0
+        except:
             allData["blacklisted"]=0
-        
 
         # change hardcoded
         conn.row_factory = sqlite3.Row
@@ -614,7 +622,7 @@ def searchpost():
         conn1 = sqlite3.connect('ip-index.db')
         cur1=conn1.cursor()
         intip=int(ipaddress.ip_address(search))
-        s="SELECT country FROM countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        s="SELECT country FROM Countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
         cur1.execute(s)
         cname=cur1.fetchall()[0][0]
         conn1.close()
@@ -625,26 +633,37 @@ def searchpost():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
         print("@@@@@@@",data)
         
-        if data["blocked"]==1 :
-            allData["grey "]=50
-        else:
+        try:   
+            if data["blocked"]==1 :
+                allData["grey "]=50
+            else:
+                allData["grey"]=0
+        except:
             allData["grey"]=0
 
-        if data["blocked"]==2 :
-            allData["black "]=100
-        else:
+        try:
+            if data["blocked"]==2 :
+                allData["black "]=100
+            else:
+                allData["black"]=0
+
+        except:
             allData["black"]=0
 
         cur.execute("Select isVpnTime from Fingerprints where ip='"+search+"'")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        try:
 
-        if data["isVpnTime"]:
-            allData["Timezone"]=70
-        else:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+            
+            if data["isVpnTime"]:
+                allData["Timezone"]=70
+            else:
+                allData["Timezone"]=0
+
+        except:
             allData["Timezone"]=0
-
 
         
         print(allData.keys())
