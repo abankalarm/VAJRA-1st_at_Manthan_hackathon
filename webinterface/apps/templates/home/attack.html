@@ -44,8 +44,8 @@
                         <div>
                             <form class="form-group" action="/attack" method="post">
                                 <label>Search IP:</label>
-                                <input class="form-control" name="ipaddr" required="" type="text" value="">
-                                <input class="form-control hidden" name="mode" value="search" id=''>
+                                <input class="form-control" name="ipaddr" required="" type="text" style="display:inline;" value="">
+                                <input class="hidden" name="mode" value="search" id='' style="display:inline;">
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
                                 <div>
                                     <table class="table tablesorter " id="">
@@ -83,6 +83,23 @@
                         </div>
                     </div>
                     {{alldetails}}, {{allAttacked}},{{allIpsToBeAttacked}}
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">All ids</h4>
+                <div class="col-md-3 px-md-1">
+                    <div>
+
+                    </div>
+                </div>
+
                 </h4>
             </div>
         </div>
