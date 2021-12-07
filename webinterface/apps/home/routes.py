@@ -93,29 +93,13 @@ def display_image(filename):
 	#print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("Select userAgent from Fingerprints where ip = '" + ip + "';")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        conn.close()
-        print(data)
-        parsed_string = user_agent_parser.Parse( str(data[0]['userAgent']))
-        data={
-            "ip":ip,
-            "id":filename,
-            "timestamp":str(time.time()),
-            "userAgent": parsed_string
-        }
-    except:
-        data={
-            "ip":ip,
-            "id":filename,
-            "timestamp":str(time.time()),
-            "userAgent": 'not in db'
-        }
+    parsed_string = user_agent_parser.Parse(request.headers.get('User-Agent'))
+    data={
+        "ip":ip,
+        "id":filename,
+        "timestamp":str(time.time()),
+        "userAgent": parsed_string
+    }
     storeInTrackingTable(data)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
@@ -866,7 +850,6 @@ def uploadfiles():
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         trackingdata['comment'] = data
         allData = request.args.get('allData', None)
-
         try:
             cur.execute("Select ip, userAgent, timestamp from Tracking where id ='" + name + "';" )
             desc = cur.description
@@ -876,10 +859,34 @@ def uploadfiles():
             conn.close()
         except:
             trackingdata['ips'] = "Nothing to show"
-
+        
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData)
     else:
-        return render_template('home/tracking.html', segment='tracking')
+        allData1 = {}
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("SELECT id, comment FROM TrackingComments;")
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                allData1[i['id']] = data1
+            allData1['keyList'] = ids
+            allData1['comments'] = comments
+            conn.close()
+        except:
+            print("No Data")
+        return render_template('home/tracking.html', segment='tracking', allData = allData1)
 
 @blueprint.route('/api/vpnIsASN', methods=['POST'])
 def vpnIsASN():
@@ -1022,32 +1029,31 @@ def attack():
 
 @blueprint.route('/trackinglogs')
 def trackinglogs():
-    allData = {}
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
+    if(request.method == 'POST'):
+        idImg = request.form['idsearch']
+        allData = {}
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("SELECT comment FROM TrackingComments where id = '" + idImg + "';")
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData['comment'] = data
             s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]
             data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
             allData[i['id']] = data1
-        allData['keyList'] = ids
-        allData['comments'] = comments
-        conn.close()
-        return redirect(url_for('tracking', allData=allData, segment='tracking'))
-    except:
-        print('No data')
-    return render_template('home/trackinglogs.html', segment='tracking', allData = allData)
+            conn.close()
+            return redirect(url_for('tracking', allData=allData, segment='tracking'))
+        except:
+            print('No data')
+            return render_template('home/trackinglogs.html', segment='tracking', allData = allData)
+    else:
+        allData = {}
+        return render_template('home/trackinglogs.html', segment='tracking', allData = {})
 
 
 
