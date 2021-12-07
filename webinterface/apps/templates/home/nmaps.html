@@ -55,7 +55,13 @@
 <div>
     <h3>Output</h3>
     <p>The results would appear here</p>
-    <div id='result'>{{result}}</div>
+    <div id='result'>
+        <h2>{{hostname}} ( {{hoststate}} )</div>
+    </h2>
+    <h2></h2>
+    {% for key, value in oports.items() %}
+    <h4>Port: {{key}} ( state: {{value}} )</h4>
+    {% endfor %}
 </div>
 
 

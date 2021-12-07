@@ -93,6 +93,8 @@ def storeInTrackingTable(content):
 def display_image(filename):
 	##print('display_image filename: ' + filename)
     # call db unique name
+    # get useragent
+
     ip = request.environ['REMOTE_ADDR']
     data={
         "ip":ip,
@@ -342,8 +344,8 @@ def index():
 
 @blueprint.route('/nmap')
 def nmap():
-
-    return render_template('home/nmaps.html', segment='nmaps')
+    oports = {}
+    return render_template('home/nmaps.html', segment='nmaps', oports = oports)
 
 @blueprint.route('/dash')
 def dash():
@@ -730,14 +732,19 @@ def searchpost():
 def portscan():
     ip = request.args['ip']
     type = request.args['speed']
+    
     if type=='top10':
-        result = get_info(ip, top_10)
-    if type=='top50':
-        result = get_info(ip, top_50)
-    if type=='top100':
-        result = get_info(ip, top_100)
-
-    return render_template('home/nmaps.html', segment='nmaps', result = result)
+        hostname, hoststate, oports = get_info(ip, top_10)
+    elif type=='top50':
+        hostname, hoststate, oports = get_info(ip, top_50)
+    elif type=='top100':
+        hostname, hoststate, oports = get_info(ip, top_100)
+    else:
+        hostname = ""
+        hoststate = "" 
+        oports = ""
+    
+    return render_template('home/nmaps.html', segment='nmaps', hostname = hostname, hoststate = hoststate, oports = oports)
 
 
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
