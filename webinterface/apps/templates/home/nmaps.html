@@ -1,6 +1,5 @@
 {% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %} {% block stylesheets %}{% endblock stylesheets %} {% block javascripts %} {%endblock javascripts%} {% block content %}
 <div style="padding-top: 70px;">
-    <h2>Enter IP</h2>
     <div>
         <script>
             function on_submit() {
@@ -35,34 +34,58 @@
             }
         </script>
 
-        <form action="/api/portscan">
-
-            <label for="fname">Enter IP</label><br>
-            <input type="text" id="ip" name="ip"><br><br>
-
-            <input type="radio" id="Button1" name="speed" value="top10">
-            <label for="Button1">Top 10 ports</label><br>
-            <input type="radio" id="Button2" name="speed" value="top50">
-            <label for="Button2">Top 50 ports</label><br>
-            <input type="radio" id="Button3" name="speed" value="top100">
-            <label for="Button3">Top 100 ports</label><br>
-
-            <button value="Submit">Submit</button>
-        </form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">
+                    <form action="/api/portscan" class='form-group'>
+                        <label for="fname"><h4>Enter IP</h4></label>
+                        <input type="text" id="ip" name="ip" class='form-control'>
+                        <input type="radio" id="Button1" name="speed" value="top10">
+                        <label for="Button1"><h5>Top 10 ports</h5></label><br>
+                        <input type="radio" id="Button2" name="speed" value="top50">
+                        <label for="Button2"><h5>Top 50 ports</h5></label><br>
+                        <input type="radio" id="Button3" name="speed" value="top100">
+                        <label for="Button3"><h5>Top 100 ports</h5></label><br>
+            
+                        <button value="Submit" class="btn btn-primary btn-round">Submit</button>
+                    </form>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div> 
+       
     </div>
 </div>
-<br><br><br>
-<div>
-    <h3>Output</h3>
-    <p>The results would appear here</p>
-    <div id='result'>
-        <h2>{{hostname}} ( {{hoststate}} )</div>
-    </h2>
-    <h2></h2>
-    {% for key, value in oports.items() %}
-    <h4>Port: {{key}} ( state: {{value}} )</h4>
-    {% endfor %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">
+                    <div>
+                        <h4>Output</h4>
+                        <p>The results would appear here</p>
+                        <div id='result'>
+                            <h2>{{hostname}} ( {{hoststate}} )</div>
+                        </h2>
+                        <h2></h2>
+                        {% for key, value in oports.items() %}
+                        <h4>Port: {{key}} ( state: {{value}} )</h4>
+                        {% endfor %}
+                    </div>
+                </h4>
+
+
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 

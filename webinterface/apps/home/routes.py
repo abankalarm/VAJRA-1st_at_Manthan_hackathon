@@ -866,6 +866,7 @@ def uploadfiles():
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         trackingdata['comment'] = data
+        allData = request.args.get('allData', None)
 
         try:
             cur.execute("Select ip, userAgent, timestamp from Tracking where id ='" + name + "';" )
@@ -877,7 +878,7 @@ def uploadfiles():
         except:
             trackingdata['ips'] = "Nothing to show"
 
-        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
+        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData)
     else:
         return render_template('home/tracking.html', segment='tracking')
 
@@ -1037,9 +1038,10 @@ def trackinglogs():
         allData['keyList'] = ids
         allData['comments'] = comments
         conn.close()
+        return redirect(url_for('tracking', allData=allData, segment='tracking'))
     except:
         print('No data')
-    return render_template('home/trackinglogs.html', segment='index', allData = allData)
+    return render_template('home/trackinglogs.html', segment='tracking', allData = allData)
 
 
 
