@@ -93,7 +93,6 @@ def display_image(filename):
 	#print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
-    print("@@@@@@@@@@@")
     parsed_string = user_agent_parser.Parse(request.headers.get('User-Agent'))
     data={
         "ip":ip,
@@ -1026,33 +1025,31 @@ def attack():
 
 @blueprint.route('/trackinglogs')
 def trackinglogs():
-    allData = {}
-    try:
-        print("hererer")
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
+    if(request.method == 'POST'):
+        idImg = request.form['idsearch']
+        allData = {}
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            cur.execute("SELECT comment FROM TrackingComments where id = '" + idImg + "';")
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData['comment'] = data
             s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]
             data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
             allData[i['id']] = data1
-        allData['keyList'] = ids
-        allData['comments'] = comments
-        conn.close()
-        return redirect(url_for('tracking', allData=allData, segment='tracking'))
-    except:
-        print('No data')
-    return render_template('home/trackinglogs.html', segment='tracking', allData = allData)
+            conn.close()
+            return redirect(url_for('tracking', allData=allData, segment='tracking'))
+        except:
+            print('No data')
+            return render_template('home/trackinglogs.html', segment='tracking', allData = allData)
+    else:
+        allData = {}
+        return render_template('home/trackinglogs.html', segment='tracking', allData = {})
 
 
 
