@@ -573,6 +573,9 @@ def searchpost():
         print(ips,type(ips))
         uip = list(set(ips))
         allData={}
+
+
+
         for ip in uip:
             cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
             desc = cur.description 
@@ -581,29 +584,43 @@ def searchpost():
             allData[ip]=data
             print(allData[ip])
         riskData=[{"IP":search}]
+
+
+
         vpnDetails(riskData)
+        print(riskData)
+        
+        ASN_name = riskData[0]['asn'][4]
         try:
 
             if isBad :
                 allData["Bad ASN"]=80
+                badASN=" Is a Bad ASN"
             else:
                 allData["Bad ASN"]=0
+                badASN="Not a Bad ASN "
         except:
             allData["Bad ASN"]=0
+            badASN="Not a Bad ASN"
         
         try:
 
             if riskData[0]["dc"] :
                 allData["data center"]=50
+                datacenter= "Is a Data Center"
             else:
                 allData["data center"]=0
+                datacenter="Not a Data Center"
         except:
             allData["data center"]=0
+            datacenter="Not a Data Center"
         try:
             if riskData[0]["bl"] :
                 allData["blacklisted"]=100
+                blacklisted="Blacklisted"
             else:
                 allData["blacklisted"]=0
+                blacklisted="Not Blacklisted"
         except:
             allData["blacklisted"]=0
 
@@ -668,7 +685,7 @@ def searchpost():
 
         print(allData.keys())
         conn.close()
-        return render_template('home/search.html', segment='search', result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        return render_template('home/search.html', segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         Alldata_for_searched_ip = {}
         return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
