@@ -20,6 +20,7 @@ import time
 import pandas
 import base64
 import pickle 
+from datetime import datetime
 
 import string
 import random
@@ -847,9 +848,15 @@ def attack():
         if request.form.get('mode') == "search":
             IP = request.form.get('ipaddr')
             content = {}
+            content["ip"] = IP
             # search for js respective to partivular ip
-            l = getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
-            return render_template('home/attack.html', segment='attack', search = content)
+            l = getfromdb("Attacking",["ip"], [content["ip"]])
+            #print("@@@@", l[0][0])
+            #ipOfAttack = l[0][0]
+            #jsOfAttack = l[0][1]
+            #tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
+            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack)
     else:
         content = {}
         content['ip'] = '0.0.1.0'
