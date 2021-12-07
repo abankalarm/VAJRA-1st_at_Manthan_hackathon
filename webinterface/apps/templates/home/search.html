@@ -69,8 +69,10 @@
                         console.log(parsed);
                         console.log(parsed.data['0']);
                         console.log(parsed.data['0']['ip']);
-                    </script>
 
+                        console.log("AllData")
+                    </script>
+                    {% for x in Alldata_for_searched_ip["data"]%} {% for y in x.keys()%} {{y}} {{x[y]}} <br> {% endfor %} {% endfor %}
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -401,6 +403,8 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
+                            <<
+                            << << < HEAD
                             try {
                                 var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
                                 console.log(allData);
@@ -412,7 +416,11 @@
                                 addvalues(tobeadded, cities);
                             } catch (e) {
                                 console.log(e);
-                            }
+                            } ===
+                            === =
+
+                            >>>
+                            >>> > 65733 d232632c6a577f2c0ceb5e0a936904cf80f
 
                             //console.log(cities);
                             var destinations = [];
@@ -566,13 +574,23 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div id='riskbar' class="c100 p50 orange dark">
-                                        <span><b>25%</b></span>
-                                        <div class="slice ">
-                                            <div class="bar "></div>
-                                            <div class="fill "></div>
+                                    <<<<<<< HEAD <div id='riskbar' class="c100 p50 orange dark">
+                                        =======
+                                        <div id='riskbar' class="c100 p50 orange dark">
+                                            {% if allData %}
+                                            <span><b>{{allData["per"]}}%</b></span>
+                                            <div class="slice ">
+                                                <div class="bar "></div>
+                                                <div class="fill "></div>
+                                            </div>
+                                            {% else %} >>>>>>> 65733d232632c6a577f2c0ceb5e0a936904cf80f
+                                            <span><b>25%</b></span>
+                                            <div class="slice ">
+                                                <div class="bar "></div>
+                                                <div class="fill "></div>
+                                            </div>
+                                            {% endif %}
                                         </div>
-                                    </div>
                                 </div>
                             </td>
                             <td>
