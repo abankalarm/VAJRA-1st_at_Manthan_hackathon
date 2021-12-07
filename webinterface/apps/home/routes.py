@@ -386,7 +386,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['domainCount'] = data
     
-    cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
+    cur.execute("SELECT ip, isVpnTime, parentDomain, timestamp FROM Fingerprints; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -529,6 +529,7 @@ def injectionpost():
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():
     if (request.method == 'POST'):
+        print("WWW",request.form)
         search = request.form['search']
         isBad,asn,result=getDetails(search)
 
@@ -887,15 +888,19 @@ def checkip_attack():
 
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    cur.execute("Select count(*) as cnt from Attacking;" )
-    desc = cur.description 
-    column_names = [col[0] for col in desc] 
-    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    l = getfromdb('Attacking', ['timestamp'], [''])
-    allAttacked = int(data[0]['cnt']) - 1
-    allIpsToBeAttacked = len(l) - 1
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select count(*) as cnt from Attacking;" )
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        l = getfromdb('Attacking', ['timestamp'], [''])
+        allAttacked = int(data[0]['cnt']) - 1
+        allIpsToBeAttacked = len(l) - 1
+    except:
+        allAttacked = 0
+        allIpsToBeAttacked = 0
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -915,7 +920,10 @@ def attack():
             #print("@@@@", l[0][0])
             #ipOfAttack = l[0][0]
             #jsOfAttack = l[0][1]
-            tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            try:
+                tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            except:
+                tsAttack = "Not Attacked"
             #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
             return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
     else:
