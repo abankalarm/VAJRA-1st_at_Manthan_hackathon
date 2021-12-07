@@ -37,7 +37,7 @@ def storeInTrackingTable(content):
     others = {}
     reals = {}
     for i in content:
-        #print(i, ": ", content[i], " ", type(content[i]))
+        ##print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
         if isinstance(content[i], str):
             strs[i] = 1
@@ -66,7 +66,7 @@ def storeInTrackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    #print(col)
+    ##print(col)
     cur.execute(s)
     #insert
     s = "INSERT INTO Tracking (" + col + ") VALUES ("
@@ -82,7 +82,7 @@ def storeInTrackingTable(content):
     colList[-1] = ';'
     colList[-2] = ')'
     s = ''.join(colList)
-    #print(s)
+    ##print(s)
     cur.execute(s)
     conn.commit()
     conn.close()
@@ -90,7 +90,7 @@ def storeInTrackingTable(content):
 
 @blueprint.route('/display/<filename>')
 def display_image(filename):
-	#print('display_image filename: ' + filename)
+	##print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
     data={
@@ -98,7 +98,7 @@ def display_image(filename):
         "id":filename,
         "timestamp":str(time.time())
     }
-    print(data)
+    #print(data)
     storeInTrackingTable(data)
 
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
@@ -114,7 +114,7 @@ def getfromdb(table, columns, values):
             query += columns[i] + " = '" + values[i] + "';"
         else:
             query += columns[i] + " = '" + values[i] + "' and "
-    #print(query)
+    ##print(query)
     cur.execute(query)
     rows = cur.fetchall()
     conn.close()
@@ -167,7 +167,91 @@ def storeInDB(content):
     others = {}
     reals = {}
     for i in content:
-        print(i, ": ", content[i], " ", type(content[i]))
+        #print(i, ": ", content[i], " ", type(content[i]))
+        col += i + ", "
+        if isinstance(content[i], str):
+            strs[i] = 1
+            s += i + " TEXT, "
+        elif isinstance(content[i], int):
+            ints[i] = 1
+            s += i + " INTEGER, "
+        elif isinstance(content[i], float):
+            reals[i] = 1
+            s += i + " REAL, "
+        elif isinstance(content[i], bool):
+            if content[i] == False:
+                content[i] = 0
+            else:
+                content[i] = 1 
+            bools[i] = 1
+            s += i + " INTEGER, "
+        else:
+            others[i] = 1
+            content[i] = json.dumps(content[i])
+            s += i + " BLOB, "
+    colList = list(s)
+    colList[-1] = ';'
+    colList[-2] = ')'
+    s = ''.join(colList)
+    anotherList = list(col)
+    anotherList = anotherList[: -2]
+    col = ''.join(anotherList)
+    ##print(col)
+    cur.execute(s)
+    l = getfromdb("Fingerprints", ["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
+    if(len(l) == 0):
+        #insert
+        s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
+        for i in content:
+            if i in strs:
+                s += "'" + content[i] + "', "
+            elif i in others:
+                
+                s += "'" + content[i] + "', "
+            else:
+                s += str(content[i]) + ", "
+        colList = list(s)
+        colList[-1] = ';'
+        colList[-2] = ')'
+        s = ''.join(colList)
+        #print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+    else:
+        s = "UPDATE Fingerprints SET "
+        for i in content:
+            if i == 'clientID' or i == 'cookie' or i == 'ip':
+                print("Dont Change")
+            elif i in strs:
+                s += i + " = '" + content[i] + "', "
+            elif i in others:
+                s += i + " = '" + content[i] + "', "
+            else:
+                s += i + " = " + str(content[i]) + ", "
+        colList = list(s)
+        colList = colList[:-2]
+        s = ''.join(colList)
+        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
+        ##print(s)
+        cur.execute(s)
+        conn.commit()
+        conn.close()
+
+
+def storeInAttackingTable(content):
+    #print(content)
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    s = "CREATE TABLE IF NOT EXISTS Attacking ("
+    col = ""
+    bools = {}
+    strs = {}
+    ints = {}
+    others = {}
+    reals = {}
+    for i in content:
+        #print(i, ": ", content[i], " ", type(content[i]))
         col += i + ", "
         if isinstance(content[i], str):
             strs[i] = 1
@@ -198,90 +282,6 @@ def storeInDB(content):
     col = ''.join(anotherList)
     #print(col)
     cur.execute(s)
-    l = getfromdb("Fingerprints", ["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
-    if(len(l) == 0):
-        #insert
-        s = "INSERT INTO Fingerprints (" + col + ") VALUES ("
-        for i in content:
-            if i in strs:
-                s += "'" + content[i] + "', "
-            elif i in others:
-                
-                s += "'" + content[i] + "', "
-            else:
-                s += str(content[i]) + ", "
-        colList = list(s)
-        colList[-1] = ';'
-        colList[-2] = ')'
-        s = ''.join(colList)
-        print(s)
-        cur.execute(s)
-        conn.commit()
-        conn.close()
-    else:
-        s = "UPDATE Fingerprints SET "
-        for i in content:
-            if i == 'clientID' or i == 'cookie' or i == 'ip':
-                print("Dont Change")
-            elif i in strs:
-                s += i + " = '" + content[i] + "', "
-            elif i in others:
-                s += i + " = '" + content[i] + "', "
-            else:
-                s += i + " = " + str(content[i]) + ", "
-        colList = list(s)
-        colList = colList[:-2]
-        s = ''.join(colList)
-        s += " where clientID = '" + content['clientID'] + "' and cookie = '" + content["cookie"] + "' and ip = '" + content["ip"] + "';"
-        #print(s)
-        cur.execute(s)
-        conn.commit()
-        conn.close()
-
-
-def storeInAttackingTable(content):
-    print(content)
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    s = "CREATE TABLE IF NOT EXISTS Attacking ("
-    col = ""
-    bools = {}
-    strs = {}
-    ints = {}
-    others = {}
-    reals = {}
-    for i in content:
-        print(i, ": ", content[i], " ", type(content[i]))
-        col += i + ", "
-        if isinstance(content[i], str):
-            strs[i] = 1
-            s += i + " TEXT, "
-        elif isinstance(content[i], int):
-            ints[i] = 1
-            s += i + " INTEGER, "
-        elif isinstance(content[i], float):
-            reals[i] = 1
-            s += i + " REAL, "
-        elif isinstance(content[i], bool):
-            if content[i] == False:
-                content[i] = 0
-            else:
-                content[i] = 1 
-            bools[i] = 1
-            s += i + " INTEGER, "
-        else:
-            others[i] = 1
-            content[i] = json.dumps(content[i])
-            s += i + " BLOB, "
-    colList = list(s)
-    colList[-1] = ';'
-    colList[-2] = ')'
-    s = ''.join(colList)
-    anotherList = list(col)
-    anotherList = anotherList[: -2]
-    col = ''.join(anotherList)
-    print(col)
-    cur.execute(s)
     #insert
     l = getfromdb('Attacking', ['ip'], [content['ip']])
     if len(l) == 0: 
@@ -299,8 +299,8 @@ def storeInAttackingTable(content):
         colList[-1] = ';'
         colList[-2] = ')'
         s = ''.join(colList)
+        ##print(s)
         #print(s)
-        print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
@@ -319,7 +319,7 @@ def storeInAttackingTable(content):
         colList = colList[:-2]
         s = ''.join(colList)
         s += " where ip = '" + content['ip'] + "';"
-        print(s)
+        #print(s)
         cur.execute(s)
         conn.commit()
         conn.close()
@@ -328,10 +328,10 @@ def getJSWithThisIP(ip):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     s = "SELECT js from Attacking where ip = '" + str(ip) + "';"
-    print(s)
+    #print(s)
     cur.execute(s)
     rows = cur.fetchall()
-    print(rows[0][0])
+    #print(rows[0][0])
     return str(rows[0][0])
 
 @blueprint.route('/index')
@@ -356,7 +356,7 @@ def dash():
     # desc = cur.description 
     # column_names = [col[0] for col in desc] 
     #data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    # print(data)
+    # #print(data)
     
     # allData["IP"]=data
     
@@ -365,7 +365,7 @@ def dash():
     
         
     allData['uniqueIpCount'] = len(allData["IP"])
-    print(allData)
+    #print(allData)
     
     cur.execute("SELECT countryCode as id, COUNT( DISTINCT ip) as value FROM Fingerprints GROUP BY countryCode; ")
     desc = cur.description 
@@ -509,7 +509,7 @@ def injection():
 @blueprint.route('/injection/post', methods=['POST'])
 def injectionpost():
     content = request.json
-    print(content)
+    #print(content)
     if checkBookmarkDB(content['ip']):
         content['bookmarked'] = 1
     
@@ -547,9 +547,9 @@ def searchpost():
             data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
             temp=[]
             if len(data1)>0:
-                print(data1)
+                #print(data1)
                 temp=[x["ip"] for x in data1]
-                print("$$$$$$",temp)
+                #print("$$$$$$",temp)
             ips.extend(temp)
             
         
@@ -564,12 +564,12 @@ def searchpost():
             data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
             temp=[]
             if len(data1)>0:
-                print(data1)
+                #print(data1)
                 temp=[x["ip"] for x in data1]
-                print("$$$$$$",temp)
+                #print("$$$$$$",temp)
             
             ips.extend(temp)
-        print(ips,type(ips))
+        #print(ips,type(ips))
         uip = list(set(ips))
         allData={}
 
@@ -581,13 +581,13 @@ def searchpost():
             column_names = [col[0] for col in desc] 
             data = [dict(zip(column_names, row)) for row in cur.fetchall()]
             allData[ip]=data
-            print(allData[ip])
+            #print(allData[ip])
         riskData=[{"IP":search}]
 
 
 
         vpnDetails(riskData)
-        print(riskData)
+        #print(riskData)
         
         ASN_name = riskData[0]['asn'][4]
         try:
@@ -624,16 +624,20 @@ def searchpost():
             allData["blacklisted"]=0
 
         # change hardcoded
+        Alldata_for_searched_ip = {}
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("Select * from Fingerprints where ip='"+search+"'" )
         #Alldata_for_searched_ip={ search : cur.fetchall()}
 
-        Alldata_for_searched_ip = {}
+        
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        print("@!!!@!@!@!",type(data))
         Alldata_for_searched_ip['data'] = data
+        
+    
         # return Alldata_for_searched_ip
         # all data returned for ip is what you need for most of the top part of search page
         conn1 = sqlite3.connect('ip-index.db')
@@ -648,7 +652,8 @@ def searchpost():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
-        print("@@@@@@@",data)
+
+        #print("@@@@@@@",data)
         
         try:   
             if data["blocked"]==1 :
@@ -682,8 +687,9 @@ def searchpost():
         except:
             allData["Timezone"]=0
 
-        print(allData.keys())
+        #print(allData.keys())
         conn.close()
+        ##print("@@@@@@",Alldata_for_searched_ip)
         return render_template('home/search.html', segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         Alldata_for_searched_ip = {}
@@ -758,7 +764,7 @@ def getDetailsFromUserAgent():
     userAgent = request.form['user-agent']
     #userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
     parsed_string = user_agent_parser.Parse(userAgent)
-    print(parsed_string)
+    #print(parsed_string)
     return jsonify(parsed_string)
 
 @blueprint.route('/tracking', methods=['GET','POST'])
@@ -769,7 +775,7 @@ def uploadfiles():
         res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = N))
         name =  str(res) + '.' + uploadf.filename.rsplit('.', 1)[1].lower()
 
-        print(name)
+        #print(name)
         # name = request.form['outputfile'] + '.' + request.form['extension']
         if(uploadf):
             try:
@@ -778,7 +784,7 @@ def uploadfiles():
                 uploadf.save(os.path.join('apps/static/uploads/', name))
             # return redirect(url_for('download_file', name=name))
         
-        print(name)
+        #print(name)
         storeIpCommentTable(name, 'AAA')
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
@@ -798,7 +804,7 @@ def vpnDetails(data):
             ip=data[i]["IP"]
             intip=int(ipaddress.ip_address(ip))
             cur=conn.cursor()
-            print(ip,type(ip),intip,type(intip))
+            #print(ip,type(ip),intip,type(intip))
             s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
             cur.execute(s)
             a=cur.fetchall()
@@ -816,7 +822,7 @@ def vpnDetails(data):
             data[i]["dc"]=b
             data[i]["asn"]=c[0]
             data[i]["cn"]=d[0]
-            print(a,b,c,d)
+            #print(a,b,c,d)
             inBad=c[0][3] in badASN
             data[i]["bad"]=inBad
         except:
@@ -914,9 +920,9 @@ def countryblock():
 
     if(request.method == 'POST'):
         if "Bid" in request.form.keys():
-            print("here")
+            #print("here")
             id = request.form.get('Bid')
-            print(id)
+            #print(id)
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
             cur.execute('Update Countries set blocked = 2 where id = "' + id + '";')
@@ -924,7 +930,7 @@ def countryblock():
             conn.close()
         if "Uid" in request.form.keys():
             id = request.form.get('Uid')
-            print(id)
+            #print(id)
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
             cur.execute('Update Countries set blocked = 0 where id = "' + id + '";')
@@ -932,7 +938,7 @@ def countryblock():
             conn.close()
         if "Gid" in request.form.keys():
             id = request.form.get('Gid')
-            print(id)
+            #print(id)
             conn = sqlite3.connect('db.sqlite3')
             cur = conn.cursor()
             cur.execute('Update Countries set blocked = 1 where id = "' + id + '";')
@@ -953,7 +959,7 @@ def countryblock():
         m[-1] = ';'
         m[-2] = ' '
         s = ''.join(m)
-        print(s)
+        #print(s)
         cur.execute(s)
         conn.commit()
     allData = {}
