@@ -76,7 +76,7 @@
         dict['bookmarked'] = 0;
 
 
-        var xyz = "23.106.56.14"
+        var xyz = "{{ip}}"
         $.post("/api/ip/identity", {
                 ip: xyz,
             },
@@ -113,7 +113,7 @@
             });
 
         //Method 2 - ASN    
-        $.post("/api/vpnidentification/time", {
+        $.post("/api/vpnIsASN", {
                 ip: xyz,
             },
             function(data, status) {
@@ -125,7 +125,7 @@
                 ip: xyz,
             },
             function(data, status) {
-                dict['isVpnSomething'] = data
+                dict['isVpnSomething'] = "NA"
             });
         
             dict['browserLat'] = 404
