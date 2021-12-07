@@ -94,14 +94,31 @@ def display_image(filename):
 	##print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
-    data={
-        "ip":ip,
-        "id":filename,
-        "timestamp":str(time.time())
-    }
-    #print(data)
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select userAgent from Fingerprints where ip = '" + ip + "';")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        conn.close()
+        print(data)
+        parsed_string = user_agent_parser.Parse( str(data[0]['userAgent']))
+        data={
+            "ip":ip,
+            "id":filename,
+            "timestamp":str(time.time()),
+            "userAgent": parsed_string
+        }
+    except:
+        print("here catch")
+        data={
+            "ip":ip,
+            "id":filename,
+            "timestamp":str(time.time()),
+            "userAgent": 'not in db'
+        }
     storeInTrackingTable(data)
-
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
@@ -342,8 +359,8 @@ def index():
 
 @blueprint.route('/nmap')
 def nmap():
-
-    return render_template('home/nmaps.html', segment='nmaps')
+    oports = {}
+    return render_template('home/nmaps.html', segment='nmaps', oports = oports)
 
 @blueprint.route('/dash')
 def dash():
@@ -688,8 +705,14 @@ def searchpost():
 
         except:
             allData["Timezone"]=0
+
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
-        allData["per"]=allData["per"]/4
+        ratingcolor = "green"
+        if(allData["per"]>100):
+            ratingcolor = "orange"
+        if(allData["per"]>100):
+            allData["per"] = 100
+            ratingcolor = "red"
 
 
         try:
@@ -723,6 +746,7 @@ def searchpost():
         print(allDataIP.keys())
         return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
+        ratingcolor = "green"
         allData={}
         allData["per"]=0
         allData["Timezone"]=0
@@ -732,20 +756,25 @@ def searchpost():
         allData["data center"]=0
         allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan')
 def portscan():
     ip = request.args['ip']
     type = request.args['speed']
+    
     if type=='top10':
-        result = get_info(ip, top_10)
-    if type=='top50':
-        result = get_info(ip, top_50)
-    if type=='top100':
-        result = get_info(ip, top_100)
-
-    return render_template('home/nmaps.html', segment='nmaps', result = result)
+        hostname, hoststate, oports = get_info(ip, top_10)
+    elif type=='top50':
+        hostname, hoststate, oports = get_info(ip, top_50)
+    elif type=='top100':
+        hostname, hoststate, oports = get_info(ip, top_100)
+    else:
+        hostname = ""
+        hoststate = "" 
+        oports = ""
+    
+    return render_template('home/nmaps.html', segment='nmaps', hostname = hostname, hoststate = hoststate, oports = oports)
 
 
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
@@ -828,6 +857,26 @@ def uploadfiles():
         
         #print(name)
         storeIpCommentTable(name, 'AAA')
+        print(name)
+        trackingdata = {}
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select comment from TrackingComments where id = '" + name + "';" )
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        trackingdata['comment'] = data
+
+        try:
+            cur.execute("Select ip, userAgent, timestamp from Tracking where id ='" + name + "';" )
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            trackingdata['ips'] = data
+            conn.close()
+        except:
+            trackingdata['ips'] = "Nothing to show"
+
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
         return render_template('home/tracking.html', segment='tracking')
@@ -924,6 +973,7 @@ def attack():
         l = getfromdb('Attacking', ['timestamp'], [''])
         allAttacked = int(data[0]['cnt']) - 1
         allIpsToBeAttacked = len(l) - 1
+        conn.close()
     except:
         allAttacked = 0
         allIpsToBeAttacked = 0
@@ -978,7 +1028,7 @@ def trackinglogs():
         for i in data:
             ids.append(i['id'])
             comments.append(i['comment'])
-            s = "SELECT ip, timestamp from Tracking where id ='" + i['id'] + "';"
+            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]

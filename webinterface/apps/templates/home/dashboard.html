@@ -13,7 +13,7 @@
     document.getElementById("currentDomains").innerHTML = allData['uniqueDomains'][0]['cnt']
     var domainsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>Domain Name</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IP's Traced</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Block</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Action</th></tr>";
     for (let i = 0; i < Math.min(10, Object.keys(allData['domainCount']).length); i++) {
-        domainsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='" + allData['domainCount'][i]['parentDomain'] + "'>" + allData['domainCount'][i]['parentDomain'] + "</a></td>" + "<td class ='text-uppercase text-secondary text-xxs'>   </td>" +"<td class ='text-uppercase text-secondary text-xxs'>   <button style='text-align:right'>View Full Details</button> </td>" +  "<td class ='text-uppercase text-secondary text-xxs'> <button style='text-align:right'>View Full Details</button>  </td>" + "</tr>"
+        domainsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><h4><a href='" + allData['domainCount'][i]['parentDomain'] + "'>" + allData['domainCount'][i]['parentDomain'] + "</a> </h4></td>" + "<td class ='text-uppercase text-secondary text-xxs'>   </td>" +"<td class ='text-uppercase text-secondary text-xxs'>   <button style='text-align:right' class='btn btn-round'>View Full Details</button> </td>" +  "<td class ='text-uppercase text-secondary text-xxs'> <button style='text-align:right' class='btn btn-round'>View Full Details</button>  </td>" + "</tr>"
     }
     domainsDetected += "</table>"
     document.getElementById("domainsDetected").innerHTML = domainsDetected
@@ -43,7 +43,7 @@
 
                     <h4 class="card-title">Map</h4>
 
-                    <div id="chartdiv" style="width: 100%; height: 250px"></div>
+                    <div id="chartdiv" style="width: 100%; height: 400px"></div>
 
                 </div>
             </div>
@@ -175,11 +175,12 @@
                         </div>
 
                         <div class="col-md-3 px-md-3">
-                            <div class="form-group">
+                            <form action=""></form>
+                            <div class="form-group form-control">
 
                                 <div class="card">
                                     <a href="ipl" target="_blank">
-                                        <div class="container" type="button">
+                                        <div class="container" type="button" class='btn btn-primary btn-round'>
                                             <h4><b>View Full Log</b></h4>
 
                                         </div>

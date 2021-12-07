@@ -572,26 +572,26 @@
                     <tbody>
                         <tr>
                             <td>
-                                <div class="center " style="justify-content: center;  ">
+                                <div class="center clearfix" style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div id='riskbar' class="c100 p50 orange dark">
 
-                                        <div id='riskbar' class="c100 p50 orange dark">
-                                            {% if allData %}
-                                            <span><b>{{allData["per"]}}%</b></span>
-                                            <div class="slice ">
-                                                <div class="bar "></div>
-                                                <div class="fill "></div>
-                                            </div>
-                                            {% else %}
-                                            <span><b>25%</b></span>
-                                            <div class="slice ">
-                                                <div class="bar "></div>
-                                                <div class="fill "></div>
-                                            </div>
-                                            {% endif %}
+
+                                    <div id='riskbar' class="c100 p{{allData['per']}} {{ratingcolor}} dark">
+                                        {% if allData %}
+                                        <span><b>{{allData["per"]}}%</b></span>
+                                        <div class="slice">
+                                            <div class="bar"></div>
+                                            <div class="fill"></div>
                                         </div>
+                                        {% else %}
+                                        <span><b>25%</b></span>
+                                        <div class="slice">
+                                            <div class="bar "></div>
+                                            <div class="fill "></div>
+                                        </div>
+                                        {% endif %}
                                     </div>
+
                             </td>
                             <td>
                                 Is VPN<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
@@ -615,6 +615,7 @@
                         </div>
                     </p>
                     <div class="card-description ">
+                        The scores above are added to form risk factor, the max value is 100
                     </div>
                 </div>
                 <div class="card-footer ">

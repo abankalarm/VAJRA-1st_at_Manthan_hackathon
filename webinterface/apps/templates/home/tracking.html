@@ -42,12 +42,9 @@
                 <div class="card-body">
                     <h6 class="card-category text-gray">Tracking ---</h6>
                     <h4 class="card-title">
-                        <div>
-                            
                             <form action="/tracking" method="post" enctype="multipart/form-data">
                                 Select image to upload:
                                 <br>
-                               
                                 <input id='inputfile' type='file' name='inputfile' class='form-control'>
                                 <br>
                                 <!-- Output Filename <input id='outputfile' type='text' name='outputfile' class='form-control'><br>
@@ -56,9 +53,40 @@
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
                             </form>
                           {{name}}
-                        </div>
                     </h4>
                     
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
+                    <h6 class="card-category text-gray">search</h6>
+                    <h4 class="card-title">
+                        <form action="POST" action='' class='form-group'>
+                                Search ID:
+                               <input type="text" name='idsearch' value='' class='form-control'>
+                               <br>
+                               <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                            
+                        </form>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
+                    <h6 class="card-category text-gray">IP logs</h6>
+                    <h4 class="card-title">
+                        <div id='logsip'>
+
+                        </div>
+                    </h4>
                 </div>
             </div>
         </div>
