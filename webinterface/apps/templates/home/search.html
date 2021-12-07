@@ -66,9 +66,9 @@
                         var myvar = "{{ Alldata_for_searched_ip | tojson}}";
 
                         var parsed = JSON.parse(myvar);
-                        //console.log(parsed);
-                        //console.log(parsed.data['0']);
-                        //console.log(parsed.data['0']['ip']);
+                        console.log(parsed);
+                        console.log(parsed.data['0']);
+                        console.log(parsed.data['0']['ip']);
 
                         //console.log("AllData")
                     </script>
@@ -670,7 +670,6 @@
         var results =  JSON.parse('{{allDataIP | tojson}}');
         var resultHead = document.getElementById("resultheads")
         var resultBody = document.getElementById("resultbody");
-        console.log("here", results);
         var one = "<th>IP</th>";
         var two = "";
         for (let i = 0; i < Object.keys(results['cols']).length; i++) {
@@ -689,8 +688,8 @@
     </script>
 
     <script>
-        /* This is for Related IPs display*/
-        var related =  JSON.parse('{{allDataIP | tojson}}');
+        /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+        var related =  JSON.parse('{{dataWithThisIp | tojson}}');
         var relatedHead = document.getElementById("relatedheads")
         var relatedBody = document.getElementById("relatedbody");
         var one = "";
@@ -698,15 +697,14 @@
         for (let i = 0; i < Object.keys(related['cols']).length; i++) {
             one += "<th>" + related['cols'][i] + "</th>";
         }
-        for(let i = 0; i < Object.keys(related['keyList']).length; i++) {
-            for(let j = 0; j < Object.keys(related['cols']).length; j++) {
-                two += "<td>" + related[related['keyList'][i]][0][related['cols'][j]] + "</td>";
-            }
-            two += "</tr>"
+        one += "<th>Further Analysis</th>";
+        for(let j = 0; j < Object.keys(related['cols']).length; j++) {
+            two += "<td>" + related['data'][related['cols'][j]] + "</td>";
         }
+        two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] +"'>Here</a></td></tr>"
         relatedHead.innerHTML = one;
         relatedBody.innerHTML = two;
-        console.log("here", related)
+        //console.log("here", related)
     </script>
 
 

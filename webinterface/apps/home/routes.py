@@ -94,7 +94,7 @@ def display_image(filename):
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
     parsed_string = user_agent_parser.Parse( str(request.headers.get('User-Agent')))
-    print(parsed_string)
+    #print(parsed_string)
     data={
         "ip":ip,
         "id":filename,
@@ -529,11 +529,9 @@ def injectionpost():
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():
     if (request.method == 'POST'):
-        print("WWW",request.form)
+        #print("WWW",request.form)
         search = request.form['search']
         isBad,asn,result=getDetails(search)
-
-        
         ips=[]
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
@@ -585,11 +583,11 @@ def searchpost():
             allDataIP[ip]=data
             #print(allData[ip])
         riskData=[{"IP":search}]
-        print(allDataIP)
+        #print(allDataIP)
 
 
         vpnDetails(riskData)
-        print(riskData)
+        #print(riskData)
         allData={}
         ASN_name = riskData[0]['asn'][4]
         try:
@@ -724,14 +722,22 @@ def searchpost():
         except:
             country="Not Available"
         #print(allData.keys())
+        cur.execute("Select * from Fingerprints where ip ='" + search + "'")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
         allDataIP['keyList'] = list(allDataIP.keys())
         allDataIP['cols'] = ['cookie', 'timezone', 'userAgent', 'timestamp']
-        results1 = {'cols': ['A', 'B', 'C'], 'keyList': ['127.0.0.1'], '127.0.0.1' :{'A': 'Something', 'B': 'Something', 'C': 'Something'}}
-        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData, results1 = results1)
+        dataWithThisIp = {}
+        dataWithThisIp['data'] = data
+        dataWithThisIp['cols'] = ['cookie', 'userAgent', 'timestamp', 'parentDomain']
+        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData, dataWithThisIp = dataWithThisIp)
     else:
         allDataIP = {}
+        dataWithThisIp = {}
+        print(dataWithThisIp)
         ratingcolor = "green"
         allData={}
         allData["per"]=0
@@ -742,8 +748,7 @@ def searchpost():
         allData["data center"]=0
         allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        results1 = {'cols': ['A', 'B', 'C'], 'keyList': ['127.0.0.1'], '127.0.0.1' :{'A': 'Something', 'B': 'Something', 'C': 'Something'}}
-        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, results1 = results1, allDataIP = allDataIP)
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, dataWithThisIp = dataWithThisIp, allDataIP = allDataIP)
     
 @blueprint.route('/api/portscan')
 def portscan():
@@ -928,7 +933,7 @@ def vpnIsASN():
         cur.execute(s)
         c=cur.fetchall()
         conn.close()
-        print("->>>",c)
+        #print("->>>",c)
         if len(c)>0 :
             return "True"
     return "false"
@@ -1040,7 +1045,7 @@ def attack():
                 tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
             except:
                 tsAttack = "Not Attacked"
-            print("######", l[0][0], " ", l[0][1], " ", tsAttack, " ")
+            #print("######", l[0][0], " ", l[0][1], " ", tsAttack, " ")
             return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allData = allData)
     else:
         content = {}
@@ -1160,6 +1165,17 @@ def ipDetail(template):
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
     cur.execute("select * from Fingerprints where ip = '" + template + "';")
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    return jsonify(data)
+
+@blueprint.route('/cookieDetail/<template>')
+def cookieDetail(template):  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("select * from Fingerprints where cookie = '" + template + "';")
     desc = cur.description
     column_names = [col[0] for col in desc]
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]

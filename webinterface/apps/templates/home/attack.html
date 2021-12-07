@@ -170,7 +170,7 @@
 {% block javascripts %}
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
-    console.log(allData)
+    //console.log(allData)
     document.getElementById("attacked").innerHTML = "All IPs attacked: " + allData['allAttacked'] + "<br>Total attacks made: " + (allData['allAttacked'] + allData['allIpsToBeAttacked']);
 </script>
 {% endblock javascripts %}
