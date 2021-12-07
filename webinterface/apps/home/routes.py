@@ -604,7 +604,7 @@ def searchpost():
 
 
         vpnDetails(riskData)
-        #print(riskData)
+        print(riskData)
         allData={}
         ASN_name = riskData[0]['asn'][4]
         try:
@@ -973,6 +973,10 @@ def attack():
         l = getfromdb('Attacking', ['timestamp'], [''])
         allAttacked = int(data[0]['cnt']) - 1
         allIpsToBeAttacked = len(l) - 1
+
+        s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        a=cur.fetchall()
         conn.close()
     except:
         allAttacked = 0
