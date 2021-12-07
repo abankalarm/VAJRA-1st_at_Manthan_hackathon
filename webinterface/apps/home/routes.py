@@ -20,6 +20,7 @@ import time
 import pandas
 import base64
 import pickle 
+from datetime import datetime
 
 import string
 import random
@@ -857,6 +858,15 @@ def checkip_attack():
 
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("Select count(*) as cnt from Attacking;" )
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    l = getfromdb('Attacking', ['timestamp'], [''])
+    allAttacked = int(data[0]['cnt']) - 1
+    allIpsToBeAttacked = len(l) - 1
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -870,9 +880,15 @@ def attack():
         if request.form.get('mode') == "search":
             IP = request.form.get('ipaddr')
             content = {}
+            content["ip"] = IP
             # search for js respective to partivular ip
-            l = getfromdb("Attacking",['ip',"js"],[content["ip"],content["js"]])
-            return render_template('home/attack.html', segment='attack', search = content)
+            l = getfromdb("Attacking",["ip"], [content["ip"]])
+            #print("@@@@", l[0][0])
+            #ipOfAttack = l[0][0]
+            #jsOfAttack = l[0][1]
+            tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
+            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
     else:
         content = {}
         content['ip'] = '0.0.1.0'
@@ -882,7 +898,7 @@ def attack():
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
         
-        return render_template('home/attack.html', segment='attack', alldetails = content)
+        return render_template('home/attack.html', segment='attack', alldetails = content, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
 
 @blueprint.route('/trackinglogs')
 def trackinglogs():
