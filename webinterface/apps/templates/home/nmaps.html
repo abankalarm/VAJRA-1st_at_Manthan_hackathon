@@ -1,4 +1,11 @@
-{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %} {% block stylesheets %}{% endblock stylesheets %} {% block javascripts %} {%endblock javascripts%} {% block content %}
+{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %} {% block stylesheets %}
+<style>
+    .hidden {
+        visibility: hidden;
+    }
+</style>
+{% endblock stylesheets %} {% block javascripts %} {%endblock javascripts%} {% block content %}
+<div style="padding-top: 70px;">
     <div>
         <script>
             function on_submit() {
