@@ -403,8 +403,7 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
-                            <<
-                            << << < HEAD
+
                             try {
                                 var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
                                 console.log(allData);
@@ -416,11 +415,7 @@
                                 addvalues(tobeadded, cities);
                             } catch (e) {
                                 console.log(e);
-                            } ===
-                            === =
-
-                            >>>
-                            >>> > 65733 d232632c6a577f2c0ceb5e0a936904cf80f
+                            }
 
                             //console.log(cities);
                             var destinations = [];
@@ -574,8 +569,8 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <<<<<<< HEAD <div id='riskbar' class="c100 p50 orange dark">
-                                        =======
+                                    <div id='riskbar' class="c100 p50 orange dark">
+
                                         <div id='riskbar' class="c100 p50 orange dark">
                                             {% if allData %}
                                             <span><b>{{allData["per"]}}%</b></span>
@@ -583,7 +578,7 @@
                                                 <div class="bar "></div>
                                                 <div class="fill "></div>
                                             </div>
-                                            {% else %} >>>>>>> 65733d232632c6a577f2c0ceb5e0a936904cf80f
+                                            {% else %}
                                             <span><b>25%</b></span>
                                             <div class="slice ">
                                                 <div class="bar "></div>
@@ -591,7 +586,7 @@
                                             </div>
                                             {% endif %}
                                         </div>
-                                </div>
+                                    </div>
                             </td>
                             <td>
                                 ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
@@ -619,47 +614,47 @@
                 <div class="card-footer ">
                     hello
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card card-profile">
-            <div class="card-body">
-
-                <h4 class="card-title">result</h4>
-                <div class="row">
-
                 </div>
             </div>
         </div>
     </div>
-</div>
-{%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
-<script>
-    document.write(`
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
+
+                    <h4 class="card-title">result</h4>
+                    <div class="row">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
+    <script>
+        document.write(`
         {{result}}
         `)
-</script>
-{% endblock content %} {% block javascripts %}
-<script type="text/javascript ">
-    function notif() {
-        var text = 'True';
-        if (text == 'False') {
-            var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+    </script>
+    {% endblock content %} {% block javascripts %}
+    <script type="text/javascript ">
+        function notif() {
+            var text = 'True';
+            if (text == 'False') {
+                var notVpn = "This is not a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
-        } else if (text == 'True') {
-            var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
+            } else if (text == 'True') {
+                var isVPN = "This is a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
+            }
         }
-    }
 
-    notif();
-</script>
+        notif();
+    </script>
 
-{% endblock javascripts %}
+    {% endblock javascripts %}
