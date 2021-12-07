@@ -639,7 +639,7 @@ def searchpost():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        print("@!!!@!@!@!",type(data))
+        Alldata_for_searched_ip_list = data
         Alldata_for_searched_ip['data'] = data
         
     
@@ -693,10 +693,20 @@ def searchpost():
             allData["Timezone"]=0
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
         allData["per"]=allData["per"]/4
+
+        isVPN = "False"
+        if Alldata_for_searched_ip_list[0]['isVpnASN'] or Alldata_for_searched_ip_list[0]['isVpnTime'] or Alldata_for_searched_ip_list[0]['isVpnSomething']:
+            isVPN = "True"
+
+        isp = Alldata_for_searched_ip_list[0]['isp']
+        region = Alldata_for_searched_ip_list[0]['regionName']
+        zipcode = Alldata_for_searched_ip_list[0]['zip']
+        lat_long = str(Alldata_for_searched_ip_list[0]["lat"]) + " & " + str(Alldata_for_searched_ip_list[0]["lon"])
+        country = Alldata_for_searched_ip_list[0]['country']
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        return render_template('home/search.html', segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        return render_template('home/search.html', isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         allData={}
         allData["per"]=0
