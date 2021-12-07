@@ -871,7 +871,7 @@ def attack():
             #print("@@@@", l[0][0])
             #ipOfAttack = l[0][0]
             #jsOfAttack = l[0][1]
-            #tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
             #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
             return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack)
     else:
