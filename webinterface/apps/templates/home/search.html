@@ -404,18 +404,7 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
-                            try {
-                                var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
-                                console.log(allData);
-                                var tobeadded = [];
-                                for(let i = 0; i < Object.keys(allData.data).length; i++) {
-                                    tobeadded.push([allData.data[i].isVpnASN || allData.data[i].isVPNTime, allData.data[i].countryCode, allData.data[i].country, "Point", [allData.data[i].lat, allData.data[i].lon]])
-                                }
-                                console.log(tobeadded);
-                                addvalues(tobeadded, cities);
-                            } catch(e) {
-                                console.log(e);
-                            }
+         
 
                             //console.log(cities);
                             var destinations = [];
@@ -570,11 +559,19 @@
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
                                     <div id ='riskbar' class="c100 p50 orange dark">
+                                        {% if allData %}
+                                        <span><b>{{allData["per"]}}%</b></span>
+                                        <div class="slice ">
+                                            <div class="bar "></div>
+                                            <div class="fill "></div>
+                                        </div>
+                                        {% else %}
                                         <span><b>25%</b></span>
                                         <div class="slice ">
                                             <div class="bar "></div>
                                             <div class="fill "></div>
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
