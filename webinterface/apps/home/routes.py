@@ -503,7 +503,7 @@ def get_segment(request):
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    ip="207.244.71.82"
+    ip="111.223.26.202"
     #ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='injection', ip=ip)
 
@@ -573,7 +573,7 @@ def searchpost():
             ips.extend(temp)
         #print(ips,type(ips))
         uip = list(set(ips))
-        allData={}
+        allDataIP={}
 
 
 
@@ -582,7 +582,7 @@ def searchpost():
             desc = cur.description 
             column_names = [col[0] for col in desc] 
             data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            allData[ip]=data
+            allDataIP[ip]=data
             #print(allData[ip])
         riskData=[{"IP":search}]
 
@@ -590,7 +590,7 @@ def searchpost():
 
         vpnDetails(riskData)
         #print(riskData)
-        
+        allData={}
         ASN_name = riskData[0]['asn'][4]
         try:
 
@@ -629,11 +629,8 @@ def searchpost():
         Alldata_for_searched_ip = {}
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-
-        
         cur.execute("Select * from Fingerprints where ip='"+str(search)+"'")
-        #Alldata_for_searched_ip={ search : cur.fetchall()}
-        
+    
         Alldata_for_searched_ip = {}
         
         desc = cur.description 
@@ -694,7 +691,7 @@ def searchpost():
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
         allData["per"]=allData["per"]/4
 
-        print("!!!!!!!!!!!!!!",type(Alldata_for_searched_ip["data"]),type(Alldata_for_searched_ip["data"][0]) )
+
         try:
             if Alldata_for_searched_ip["data"][0]['isVpnASN'] or Alldata_for_searched_ip["data"][0]['isVpnTime']:
                 isVPN = "True"
@@ -723,7 +720,8 @@ def searchpost():
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        return render_template('home/search.html', isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        print(allDataIP.keys())
+        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
         allData={}
         allData["per"]=0
@@ -764,8 +762,11 @@ def vpn_time():
 
     if(json_response['timezone'] == browser_timzone):
         return jsonify("false")
+    elif( json_response['timezone'] != browser_timzone and len(browser_timzone)>5):
+        return jsonify("false")
 
-    return jsonify("true")
+
+    return jsonify("unknown")
 
 @blueprint.route('/api/ip/identity', methods=['GET','POST'])
 def ip_identity():
@@ -831,6 +832,21 @@ def uploadfiles():
     else:
         return render_template('home/tracking.html', segment='tracking')
 
+@blueprint.route('/api/vpnIsASN', methods=['POST'])
+def vpnIsASN():
+    if request.method == 'POST':
+        ip = request.form['ip']
+        intip=int(ipaddress.ip_address(ip))
+        s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        conn = sqlite3.connect('ip-index.db')
+        cur=conn.cursor()
+        cur.execute(s)
+        c=cur.fetchall()
+        conn.close()
+        print("->>>",c)
+        if len(c)>0 :
+            return "True"
+    return "false"
 
 @blueprint.route('/api/vpnDetails')
 def vpnDetails(data):
