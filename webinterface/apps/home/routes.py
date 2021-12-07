@@ -687,7 +687,8 @@ def searchpost():
 
         except:
             allData["Timezone"]=0
-
+        allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
+        allData["per"]=allData["per"]/4
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
