@@ -40,12 +40,12 @@
             <label for="fname">Enter IP</label><br>
             <input type="text" id="ip" name="ip"><br><br>
 
-            <input type="radio" id="Button1" name="speed" value="top10">
-            <label for="Button1">Top 10 ports</label><br>
-            <input type="radio" id="Button2" name="speed" value="top50">
-            <label for="Button2">Top 50 ports</label><br>
-            <input type="radio" id="Button3" name="speed" value="top100">
-            <label for="Button3">Top 100 ports</label><br>
+            <input class='btn' type="radio" id="Button1" name="speed" value="top10">
+            <label class='btn' for="Button1">Top 10 ports</label><br>
+            <input class='btn' type="radio" id="Button2" name="speed" value="top50">
+            <label class='btn' for="Button2">Top 50 ports</label><br>
+            <input class='btn' type="radio" id="Button3" name="speed" value="top100">
+            <label class='btn' for="Button3">Top 100 ports</label><br>
 
             <button value="Submit">Submit</button>
         </form>
@@ -56,11 +56,11 @@
     <h3>Output</h3>
     <p>The results would appear here</p>
     <div id='result'>
-        <h2>{{hostname}} ( {{hoststate}} )</div>
+        <h2>{{hostname}} : {{hoststate}} </div>
     </h2>
     <h2></h2>
     {% for key, value in oports.items() %}
-    <h4>Port: {{key}} ( state: {{value}} )</h4>
+    <h4>Port: {{key}} (state: {{value}})</h4>
     {% endfor %}
 </div>
 
