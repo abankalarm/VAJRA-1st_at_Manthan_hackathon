@@ -778,8 +778,7 @@ def portscan():
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
 def vpn_time():
     ip = request.form['ip']
-    timezome = request.form['time']
-    print(timezone)
+    timezone = request.form['time']
     GEO_IP_API_URL  = 'http://ip-api.com/json/'
 
     req             = urllib.request.Request(GEO_IP_API_URL+ip)
@@ -787,7 +786,7 @@ def vpn_time():
     json_response   = json.loads(response.decode('utf-8'))
 
     # search in db for ip
-    browser_timzone = ''
+    browser_timzone = timezone
 
     if(json_response['timezone'] == browser_timzone):
         return jsonify("false")
