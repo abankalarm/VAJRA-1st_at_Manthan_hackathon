@@ -63,14 +63,15 @@
 
                     <script>
                         // not working, found another way to get work done - karan
-                        myvar = "{{ Alldata_for_searched_ip | tojson}}";
+                        var myvar = "{{ Alldata_for_searched_ip | tojson}}";
 
                         var parsed = JSON.parse(myvar);
                         console.log(parsed);
                         console.log(parsed.data['0']);
                         console.log(parsed.data['0']['ip']);
-                    </script>
 
+                        console.log("AllData")
+                    </script>
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -139,27 +140,33 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ISP</label>
-                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" readonly>
+                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{isp}}" readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 pr-md-1">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>City</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="Mike" readonly>
+                                        <label>latitude and longitude</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{lat_long}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-4 px-md-1">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Region or city</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{region}}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Country</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="Andrew" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{country}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-4 pl-md-1">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Postal Code</label>
-                                        <input type="number" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{zipcode}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -349,7 +356,7 @@
                             }
 
                             dump1 = [
-                                [true, "india", "india", "point", [80, 40]],//VPN, ID, TITLE, Point, Coordinates{Lat, Long}
+                                [true, "india", "india", "point", [80, 40]], //VPN, ID, TITLE, Point, Coordinates{Lat, Long}
                                 [false, "indo", "indo", "point", [40, 80]]
                             ];
                             addvalues(dump1, cities);
@@ -401,16 +408,17 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
+
                             try {
                                 var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
                                 console.log(allData);
                                 var tobeadded = [];
-                                for(let i = 0; i < Object.keys(allData.data).length; i++) {
+                                for (let i = 0; i < Object.keys(allData.data).length; i++) {
                                     tobeadded.push([allData.data[i].isVpnASN || allData.data[i].isVPNTime, allData.data[i].countryCode, allData.data[i].country, "Point", [allData.data[i].lat, allData.data[i].lon]])
                                 }
                                 console.log(tobeadded);
                                 addvalues(tobeadded, cities);
-                            } catch(e) {
+                            } catch (e) {
                                 console.log(e);
                             }
 
@@ -566,22 +574,33 @@
                             <td>
                                 <div class="center " style="justify-content: center;  ">
                                     <!-- available colors green, orange, red-->
-                                    <div id ='riskbar' class="c100 p50 orange dark">
-                                        <span><b>25%</b></span>
-                                        <div class="slice ">
-                                            <div class="bar "></div>
-                                            <div class="fill "></div>
+                                    <div id='riskbar' class="c100 p50 orange dark">
+
+                                        <div id='riskbar' class="c100 p50 orange dark">
+                                            {% if allData %}
+                                            <span><b>{{allData["per"]}}%</b></span>
+                                            <div class="slice ">
+                                                <div class="bar "></div>
+                                                <div class="fill "></div>
+                                            </div>
+                                            {% else %}
+                                            <span><b>25%</b></span>
+                                            <div class="slice ">
+                                                <div class="bar "></div>
+                                                <div class="fill "></div>
+                                            </div>
+                                            {% endif %}
                                         </div>
                                     </div>
-                                </div>
                             </td>
                             <td>
-                                ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
+                                Is VPN<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
+                            </td>
+                            <td>{{allData["Timezone"]}}
+                                <br><br>{{allData["black"]}}<br><br>{{allData["grey"]}}<br><br>{{allData["data center"]}}<br><br>{{allData["Bad ASN"]}} <br><br>{{allData["blacklisted"]}}
 
                             </td>
-                            <td>
-                                ID AS123123<br><br> ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
-                            </td>
+
                         </tr>
 
                     </tbody>
@@ -601,47 +620,47 @@
                 <div class="card-footer ">
                     hello
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card card-profile">
-            <div class="card-body">
-
-                <h4 class="card-title">result</h4>
-                <div class="row">
-
                 </div>
             </div>
         </div>
     </div>
-</div>
-{%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
-<script>
-    document.write(`
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
+
+                    <h4 class="card-title">result</h4>
+                    <div class="row">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
+    <script>
+        document.write(`
         {{result}}
         `)
-</script>
-{% endblock content %} {% block javascripts %}
-<script type="text/javascript ">
-    function notif() {
-        var text = 'True';
-        if (text == 'False') {
-            var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+    </script>
+    {% endblock content %} {% block javascripts %}
+    <script type="text/javascript ">
+        function notif() {
+            var text = "{{isVPN}}";
+            if (text == 'False') {
+                var notVpn = "This is not a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
-        } else if (text == 'True') {
-            var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
+            } else if (text == 'True') {
+                var isVPN = "This is a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
+            }
         }
-    }
 
-    notif();
-</script>
+        notif();
+    </script>
 
-{% endblock javascripts %}
+    {% endblock javascripts %}
