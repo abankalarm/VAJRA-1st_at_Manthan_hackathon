@@ -72,7 +72,6 @@
 
                         console.log("AllData")
                     </script>
-
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -595,12 +594,13 @@
                                     </div>
                             </td>
                             <td>
-                                ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
+                                Is VPN<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
+                            </td>
+                            <td>{{allData["Timezone"]}}
+                                <br><br>{{allData["black"]}}<br><br>{{allData["grey"]}}<br><br>{{allData["data center"]}}<br><br>{{allData["Bad ASN"]}} <br><br>{{allData["blacklisted"]}}
 
                             </td>
-                            <td>
-                                ID AS123123<br><br> ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
-                            </td>
+
                         </tr>
 
                     </tbody>
