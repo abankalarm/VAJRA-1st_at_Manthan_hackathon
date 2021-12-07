@@ -386,7 +386,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['domainCount'] = data
     
-    cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
+    cur.execute("SELECT ip, isVpnTime, parentDomain, timestamp FROM Fingerprints; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
