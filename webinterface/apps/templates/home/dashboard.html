@@ -134,57 +134,53 @@
                             <div class="card">
 
                                 <div class="container">
-                                    <<<<<<< HEAD <div id="domainsDetected" style="text-align: center">
+                                    <div id="domainsDetected" style="text-align: center">
 
-                                </div>
-                                =======
-                                <div id="domainsDetected" style="text-align: center">
+                                        <!-- <div id = "domains"></div> -->
 
-                                    <!-- <div id = "domains"></div> -->
 
-                                    >>>>>>> 65733d232632c6a577f2c0ceb5e0a936904cf80f
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3 px-md-2">
-                        <div class="form-group">
+                        <div class="col-md-3 px-md-2">
+                            <div class="form-group">
 
-                            <div class="card">
-                                <a href="fdl" target="_blank">
-                                    <div class="container" type="button">
-                                        <br>
-                                        <h4><b>View Full List</b></h4>
+                                <div class="card">
+                                    <a href="fdl" target="_blank">
+                                        <div class="container" type="button">
+                                            <br>
+                                            <h4><b>View Full List</b></h4>
 
-                                </a>
+                                    </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
+    <!--IP LOG -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
 
-</div>
-<!--IP LOG -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card card-profile">
-            <div class="card-body">
+                    <h4 class="card-title">IP Log</h4>
+                    <div class="row">
 
-                <h4 class="card-title">IP Log</h4>
-                <div class="row">
+                        <div class="col-md-9 px-md-1">
+                            <div class="form-group">
 
-                    <div class="col-md-9 px-md-1">
-                        <div class="form-group">
+                                <div class="card">
 
-                            <div class="card">
-
-                                <div class="container">
-                                    <<<<<<< HEAD <h4><b>Last 10 IPs</b></h4>
+                                    <div class="container">
+                                        <h4><b>Last 10 IPs</b></h4>
                                         <div id="ipsDetected" style="text-align: center;">
                                             {% for x in allData["IP"]%}
                                             <ul>
@@ -194,34 +190,34 @@
                                             </ul>
                                             {% endfor %}
                                         </div>
-                                        =======
+
                                         <h4><b>Last 10 IPs</b></h4>
 
                                         <div id="ipsDetected" style="text-align: center;">
 
                                         </div>
-                                        >>>>>>> 65733d232632c6a577f2c0ceb5e0a936904cf80f
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-3 px-md-3">
-                        <div class="form-group">
+                        <div class="col-md-3 px-md-3">
+                            <div class="form-group">
 
-                            <div class="card">
-                                <a href="ipl" target="_blank">
-                                    <div class="container" type="button">
-                                        <h4><b>View Full Log</b></h4>
+                                <div class="card">
+                                    <a href="ipl" target="_blank">
+                                        <div class="container" type="button">
+                                            <h4><b>View Full Log</b></h4>
 
-                                    </div>
+                                        </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-</div>
-{% endblock content %}
+    </div>
+    {% endblock content %}
