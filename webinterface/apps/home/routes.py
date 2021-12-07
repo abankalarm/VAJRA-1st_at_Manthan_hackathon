@@ -503,7 +503,7 @@ def get_segment(request):
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    ip="23.106.56.14"
+    ip="207.244.71.82"
     #ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='injection', ip=ip)
 
@@ -630,8 +630,8 @@ def searchpost():
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
-        search1 = '127.0.0.1'
-        cur.execute("Select * from Fingerprints where ip='"+str(search1)+"'")
+        
+        cur.execute("Select * from Fingerprints where ip='"+str(search)+"'")
         #Alldata_for_searched_ip={ search : cur.fetchall()}
         
         Alldata_for_searched_ip = {}
@@ -639,7 +639,7 @@ def searchpost():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        Alldata_for_searched_ip_list = data
+        #Alldata_for_searched_ip["data"] = data
         Alldata_for_searched_ip['data'] = data
         
     
@@ -694,15 +694,32 @@ def searchpost():
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
         allData["per"]=allData["per"]/4
 
-        isVPN = "False"
-        if Alldata_for_searched_ip_list[0]['isVpnASN'] or Alldata_for_searched_ip_list[0]['isVpnTime'] or Alldata_for_searched_ip_list[0]['isVpnSomething']:
-            isVPN = "True"
-
-        isp = Alldata_for_searched_ip_list[0]['isp']
-        region = Alldata_for_searched_ip_list[0]['regionName']
-        zipcode = Alldata_for_searched_ip_list[0]['zip']
-        lat_long = str(Alldata_for_searched_ip_list[0]["lat"]) + " & " + str(Alldata_for_searched_ip_list[0]["lon"])
-        country = Alldata_for_searched_ip_list[0]['country']
+        print("!!!!!!!!!!!!!!",type(Alldata_for_searched_ip["data"]),type(Alldata_for_searched_ip["data"][0]) )
+        try:
+            if Alldata_for_searched_ip["data"][0]['isVpnASN'] or Alldata_for_searched_ip["data"][0]['isVpnTime']:
+                isVPN = "True"
+        except:
+            isVPN="False"
+        try:
+            isp = Alldata_for_searched_ip["data"][0]['isp']
+        except:
+            isp="Not Available"
+        try:
+            region = Alldata_for_searched_ip["data"][0]['regionName']
+        except:
+            region="Not Available"
+        try:
+            zipcode = Alldata_for_searched_ip["data"][0]['zip']
+        except:
+            zipcode="Not Available"
+        try:
+            lat_long = str(Alldata_for_searched_ip["data"][0]["lat"]) + " & " + str(Alldata_for_searched_ip["data"][0]["lon"])
+        except:
+            lat_long="Not Available"
+        try:
+            country = Alldata_for_searched_ip["data"][0]['country']
+        except:
+            country="Not Available"
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
