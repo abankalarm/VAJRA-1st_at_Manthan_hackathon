@@ -107,6 +107,7 @@
         //Method 3 - TIME
         $.post("/api/vpnidentification/time", {
                 ip: xyz,
+                time: Intl.DateTimeFormat().resolvedOptions().timeZone
             },
             function(data, status) {
                 dict['isVpnTime'] = data

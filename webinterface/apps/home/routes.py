@@ -87,11 +87,10 @@ def storeInTrackingTable(content):
     cur.execute(s)
     conn.commit()
     conn.close()
-    #storeIpCommentTable(ip, '')
 
 @blueprint.route('/display/<filename>')
 def display_image(filename):
-	##print('display_image filename: ' + filename)
+	#print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
     try:
@@ -111,7 +110,6 @@ def display_image(filename):
             "userAgent": parsed_string
         }
     except:
-        print("here catch")
         data={
             "ip":ip,
             "id":filename,
@@ -765,6 +763,8 @@ def portscan():
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
 def vpn_time():
     ip = request.form['ip']
+    timezome = request.form['time']
+    print(timezone)
     GEO_IP_API_URL  = 'http://ip-api.com/json/'
 
     req             = urllib.request.Request(GEO_IP_API_URL+ip)
