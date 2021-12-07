@@ -627,15 +627,17 @@ def searchpost():
         # change hardcoded
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("Select * from Fingerprints where ip='"+search+"'" )
-        #Alldata_for_searched_ip={ search : cur.fetchall()}
 
+        search1 = '127.0.0.1'
+        cur.execute("Select * from Fingerprints where ip='"+str(search1)+"'")
+        #Alldata_for_searched_ip={ search : cur.fetchall()}
+        
         Alldata_for_searched_ip = {}
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
         Alldata_for_searched_ip['data'] = data
-        # return Alldata_for_searched_ip
+        
         # all data returned for ip is what you need for most of the top part of search page
         conn1 = sqlite3.connect('ip-index.db')
         cur1=conn1.cursor()
