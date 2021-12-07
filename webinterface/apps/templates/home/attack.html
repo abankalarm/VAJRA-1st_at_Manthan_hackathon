@@ -47,6 +47,38 @@
                                 <input class="form-control" name="ipaddr" required="" type="text" value="">
                                 <input class="form-control hidden" name="mode" value="search" id=''>
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                                <div>
+                                    <table class="table tablesorter " id="">
+                                        <thead class=" text-primary">
+                                            <tr>
+
+                                                <th>
+                                                    IP
+                                                </th>
+                                                <th>
+                                                    jsOfAttack
+                                                </th>
+                                                <th class="text-center">
+                                                    Time stamp
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+
+                                                <td>
+                                                    {{ipOfAttack}}
+                                                </td>
+                                                <td>
+                                                    {{jsOfAttack}}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ts}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </form>
                         </div>
                     </div>
