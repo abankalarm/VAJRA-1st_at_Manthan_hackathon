@@ -697,8 +697,16 @@ def searchpost():
         ##print("@@@@@@",Alldata_for_searched_ip)
         return render_template('home/search.html', segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
+        allData={}
+        allData["per"]=0
+        allData["Timezone"]=0
+        allData["black"]=0
+        allData["grey"]=0
+        allData["blacklisted"]=0
+        allData["data center"]=0
+        allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan')
 def portscan():
