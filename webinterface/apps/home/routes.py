@@ -93,6 +93,7 @@ def display_image(filename):
 	#print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
+    print("@@@@@@@@@@@")
     try:
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
