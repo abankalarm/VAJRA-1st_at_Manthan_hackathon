@@ -63,14 +63,17 @@
 
                     <script>
                         // not working, found another way to get work done - karan
-                        myvar = "{{ Alldata_for_searched_ip | tojson}}";
-
-                        var parsed = JSON.parse(myvar);
-                        console.log(parsed);
-                        console.log(parsed.data['0']);
-                        console.log(parsed.data['0']['ip']);
+                        
+                        console.log("AllData")
+                        
+                      
+                        
                     </script>
-
+                    {% for x in Alldata_for_searched_ip["data"]%}
+                        {% for y in x.keys()%}
+                        {{y}}  {{x[y]}} <br>
+                        {% endfor %}
+                    {% endfor %}
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
