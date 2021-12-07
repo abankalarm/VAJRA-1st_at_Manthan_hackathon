@@ -1018,8 +1018,11 @@ def attack():
         # store a ip and js pair together , make it unique and overwrite
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
-        
-        return render_template('home/attack.html', segment='attack', alldetails = content, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
+        search = ""
+        ipOfAttack = ""
+        jsOfAttack = ""
+        ts = ""
+        return render_template('home/attack.html', segment='attack', search=search, ipOfAttack=ipOfAttack, jsOfAttack=jsOfAttack,ts=ts,alldetails = content, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
 
 @blueprint.route('/trackinglogs')
 def trackinglogs():
