@@ -690,8 +690,14 @@ def searchpost():
 
         except:
             allData["Timezone"]=0
+
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
-        allData["per"]=allData["per"]/4
+        ratingcolor = "green"
+        if(allData["per"]>100):
+            ratingcolor = "orange"
+        if(allData["per"]>100):
+            allData["per"] = 100
+            ratingcolor = "red"
 
         isVPN = "False"
         if Alldata_for_searched_ip_list[0]['isVpnASN'] or Alldata_for_searched_ip_list[0]['isVpnTime'] or Alldata_for_searched_ip_list[0]['isVpnSomething']:
@@ -705,8 +711,9 @@ def searchpost():
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        return render_template('home/search.html', isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        return render_template('home/search.html', ratingcolor=ratingcolor, isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
+        ratingcolor = "green"
         allData={}
         allData["per"]=0
         allData["Timezone"]=0
@@ -716,7 +723,7 @@ def searchpost():
         allData["data center"]=0
         allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan')
 def portscan():
