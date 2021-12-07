@@ -72,7 +72,7 @@
 
                         console.log("AllData")
                     </script>
-                    {% for x in Alldata_for_searched_ip["data"]%} {% for y in x.keys()%} {{y}} {{x[y]}} <br> {% endfor %} {% endfor %}
+
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -141,27 +141,33 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ISP</label>
-                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09" readonly>
+                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{isp}}" readonly>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4 pr-md-1">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label>City</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="Mike" readonly>
+                                        <label>latitude and longitude</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{lat_long}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-4 px-md-1">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Region or city</label>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{region}}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Country</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="Andrew" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{country}}" readonly>
                                     </div>
                                 </div>
-                                <div class="col-md-4 pl-md-1">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Postal Code</label>
-                                        <input type="number" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{zipcode}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -640,7 +646,7 @@
     {% endblock content %} {% block javascripts %}
     <script type="text/javascript ">
         function notif() {
-            var text = 'True';
+            var text = "{{isVPN}}";
             if (text == 'False') {
                 var notVpn = "This is not a VPN ip ";
                 document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
