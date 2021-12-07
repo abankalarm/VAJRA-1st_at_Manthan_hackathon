@@ -638,11 +638,6 @@ def searchpost():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        print("@!!!@!@!@!",data)
-        print("======================")
-        for x in range(len(data)):
-            print(data[x])
-            print("======================")
         Alldata_for_searched_ip_list = data
         Alldata_for_searched_ip['data'] = data
         
