@@ -584,7 +584,7 @@ def searchpost():
             allDataIP[ip]=data
             #print(allData[ip])
         riskData=[{"IP":search}]
-
+        print(allDataIP)
 
 
         vpnDetails(riskData)
@@ -725,9 +725,12 @@ def searchpost():
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        print(allDataIP.keys())
-        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        allDataIP['keyList'] = list(allDataIP.keys())
+        allDataIP['cols'] = ['cookie', 'timezone', 'userAgent', 'timestamp']
+        results1 = {'cols': ['A', 'B', 'C'], 'keyList': ['127.0.0.1'], '127.0.0.1' :{'A': 'Something', 'B': 'Something', 'C': 'Something'}}
+        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData, results1 = results1)
     else:
+        allDataIP = {}
         ratingcolor = "green"
         allData={}
         allData["per"]=0
@@ -738,7 +741,8 @@ def searchpost():
         allData["data center"]=0
         allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        results1 = {'cols': ['A', 'B', 'C'], 'keyList': ['127.0.0.1'], '127.0.0.1' :{'A': 'Something', 'B': 'Something', 'C': 'Something'}}
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, results1 = results1, allDataIP = allDataIP)
     
 @blueprint.route('/api/portscan')
 def portscan():
@@ -970,6 +974,7 @@ def checkip_attack():
 
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
+    allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
@@ -984,6 +989,8 @@ def attack():
     except:
         allAttacked = 0
         allIpsToBeAttacked = 0
+    allData['allAttacked'] = allAttacked
+    allData['allIpsToBeAttacked'] = allIpsToBeAttacked
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -1000,15 +1007,12 @@ def attack():
             content["ip"] = IP
             # search for js respective to partivular ip
             l = getfromdb("Attacking",["ip"], [content["ip"]])
-            #print("@@@@", l[0][0])
-            #ipOfAttack = l[0][0]
-            #jsOfAttack = l[0][1]
             try:
                 tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
             except:
                 tsAttack = "Not Attacked"
-            #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
-            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
+            print("######", l[0][0], " ", l[0][1], " ", tsAttack, " ")
+            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allData = allData)
     else:
         content = {}
         content['ip'] = '0.0.1.0'
@@ -1021,7 +1025,7 @@ def attack():
         ipOfAttack = ""
         jsOfAttack = ""
         ts = ""
-        return render_template('home/attack.html', segment='attack', search=search, ipOfAttack=ipOfAttack, jsOfAttack=jsOfAttack,ts=ts,alldetails = content, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
+        return render_template('home/attack.html', segment='attack', search=search, ipOfAttack = ipOfAttack, jsOfAttack = jsOfAttack,ts = ts, alldetails = content, allData = allData)
 
 @blueprint.route('/trackinglogs')
 def trackinglogs():
@@ -1149,3 +1153,15 @@ def unblock():
             conn.close()
     except:
         print('Table DNE')
+
+
+@blueprint.route('/ipDetail/<template>')
+def ipDetail(template):  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("select * from Fingerprints where ip = '" + template + "';")
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    return jsonify(data)
