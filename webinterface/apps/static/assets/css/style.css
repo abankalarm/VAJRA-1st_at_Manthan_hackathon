@@ -17,3 +17,10 @@ body {
   width: 100%;
   height: 600px;
 }
+table,th{
+    
+  opacity:7px;
+}
+button {
+  border-radius: 8px;
+}

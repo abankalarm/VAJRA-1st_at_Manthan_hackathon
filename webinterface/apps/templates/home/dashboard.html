@@ -10,22 +10,23 @@
 <script src="static/assets/js/map2.js"></script>
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
-    
-
-    
     console.log(allData);
     document.getElementById("currentIps").innerHTML = allData['uniqueIpCount']
     document.getElementById("currentVpns").innerHTML = allData['vpns'][0]['cnt']
     document.getElementById("currentDomains").innerHTML = allData['uniqueDomains'][0]['cnt']
-    var domainsDetected = "";
+    var domainsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>Domain Name</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IP's Traced</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Action</th></tr>";
     for(let i = 0; i < Math.min(10, Object.keys(allData['domainCount']).length); i++) {
-        domainsDetected += "<a href='"+ allData['domainCount'][i]['parentDomain'] +"'>" + allData['domainCount'][i]['parentDomain'] + "</a><br>"
+        domainsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='"+ allData['domainCount'][i]['parentDomain'] +"'>" + allData['domainCount'][i]['parentDomain'] + "</a></td>"+ "<td class ='text-uppercase text-secondary text-xxs'>   </td>"+ "<td class ='text-uppercase text-secondary text-xxs'>   </td>"+"</tr>"
     }
-    document.getElementById("domainsDetect").innerHTML = "<p>output</p>"
-    var ipsDetected = "";
+    domainsDetected += "</table>"
+    document.getElementById("domainsDetected").innerHTML = domainsDetected
+    var ipsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>IP</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IsVPN</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>ParentDomain</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>TimeStamp</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Action</th></tr>";
     for(let i = 0; i < Math.min(10, Object.keys(allData['distinctIp']).length); i++) {
-        ipsDetected += "<a href='"+ allData['distinctIp'][i]['ip'] +"'>" + allData['distinctIp'][i]['ip'] + "&emsp;&emsp;<b>VPN: " + allData['distinctIp'][i]['isVpnTime'] + "<b></a><br>"
-    }
+        ipsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='"+ allData['distinctIp'][i]['ip'] +"'>" + allData['distinctIp'][i]['ip'] + "</a></td> <td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['isVpnTime'] + "</td>" +"<td class ='text-uppercase text-secondary text-xxs'></td><td class ='text-uppercase text-secondary text-xxs'></td>"     + "<b><td class ='text-uppercase text-secondary text-xxs'><button style='text-align:right'>View Full Details</button></td></tr>"
+    
+            // + allData['domainCount'][i]['parentDomain'] + "</td><td>" + allData['timeStamp']
+        }
+    ipsDetected += "</table>"
     document.getElementById("ipsDetected").innerHTML = ipsDetected
 
     setData(allData['countryCount']);
@@ -37,7 +38,7 @@
 {% block content %}
 <link rel="stylesheet" href="static/assets/css/style.css">
 <!-- MAP -->
-<!-- <div class="row">
+<div class="row">
 <div class="col-md-3">
    
             
@@ -49,7 +50,7 @@
 
                 <h4 class="card-title">Map</h4>
                 
-<div id="chartdiv" style = "width: 100%"></div>
+<div id="chartdiv" style = "width: 100%; height:250px"></div>
 
 </div>
 </div>
@@ -62,7 +63,7 @@
 
 </div>
 <br>
- -->
+
 
 <!-- LIVE STATISTICS -->
 <link rel="stylesheet" href="static/assets/css/circle.css">
@@ -105,7 +106,7 @@
                                 
                                 <div class="container">
                                   <h4><b>Proxies Detected</b></h4>
-                                  <p id = "currentVpns" style = "text-align: center">736758</p>
+                                  <p id = "currentVpns" style = "text-align: center"></p>
                                 </div>
                             </div>
                         </div>
@@ -133,7 +134,7 @@
                             <div class="card">
                                 
                                 <div class="container">
-                                  <div id = "domainsDetect" style = "text-align: center">
+                                  <div id = "domainsDetected" style = "text-align: center">
                                    
                                         <!-- <div id = "domains"></div> -->
                                     
@@ -181,14 +182,9 @@
                                 
                                 <div class="container">
                                   <h4><b>Last 10 IPs</b></h4>
-                                  <div id="ipsDetected" style = "text-align: center;">
-                                    {% for x in allData["IP"]%}
-                                        <ul>
-                                            {% for e in x.keys()%}
-                                            <li>{{e}}:  {{x[e]}}</li>
-                                            {%endfor%}
-                                        </ul>
-                                    {% endfor %}
+                                  
+                                        <div id="ipsDetected" style = "text-align: center;">
+                                    
                                   </div>
                                 </div>
                             </div>
