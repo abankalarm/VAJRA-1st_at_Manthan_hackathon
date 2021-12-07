@@ -93,15 +93,32 @@ def storeInTrackingTable(content):
 def display_image(filename):
 	##print('display_image filename: ' + filename)
     # call db unique name
-    ip = request.environ['REMOTE_ADDR']
-    data={
-        "ip":ip,
-        "id":filename,
-        "timestamp":str(time.time())
-    }
-    #print(data)
+    ip = "23.106.56.14"#request.environ['REMOTE_ADDR']
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select userAgent from Fingerprints where ip = '" + ip + "';")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        conn.close()
+        print(data)
+        parsed_string = user_agent_parser.Parse( str(data[0]['userAgent']))
+        data={
+            "ip":ip,
+            "id":filename,
+            "timestamp":str(time.time()),
+            "userAgent": parsed_string
+        }
+    except:
+        print("here catch")
+        data={
+            "ip":ip,
+            "id":filename,
+            "timestamp":str(time.time()),
+            "userAgent": 'not in db'
+        }
     storeInTrackingTable(data)
-
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
@@ -810,6 +827,26 @@ def uploadfiles():
         
         #print(name)
         storeIpCommentTable(name, 'AAA')
+        print(name)
+        trackingdata = {}
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select comment from TrackingComments where id = '" + name + "';" )
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        trackingdata['comment'] = data
+
+        try:
+            cur.execute("Select ip, userAgent, timestamp from Tracking where id ='" + name + "';" )
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            trackingdata['ips'] = data
+            conn.close()
+        except:
+            trackingdata['ips'] = "Nothing to show"
+
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
     else:
         return render_template('home/tracking.html', segment='tracking')
@@ -891,6 +928,7 @@ def attack():
         l = getfromdb('Attacking', ['timestamp'], [''])
         allAttacked = int(data[0]['cnt']) - 1
         allIpsToBeAttacked = len(l) - 1
+        conn.close()
     except:
         allAttacked = 0
         allIpsToBeAttacked = 0
@@ -945,7 +983,7 @@ def trackinglogs():
         for i in data:
             ids.append(i['id'])
             comments.append(i['comment'])
-            s = "SELECT ip, timestamp from Tracking where id ='" + i['id'] + "';"
+            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
             cur.execute(s)
             desc = cur.description
             column_names = [col[0] for col in desc]
