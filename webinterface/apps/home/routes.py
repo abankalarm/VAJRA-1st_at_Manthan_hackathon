@@ -529,6 +529,7 @@ def injectionpost():
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():
     if (request.method == 'POST'):
+        print("WWW",request.form)
         search = request.form['search']
         isBad,asn,result=getDetails(search)
 
