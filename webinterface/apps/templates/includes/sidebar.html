@@ -1,60 +1,65 @@
+<div class="sidebar" style="padding-top: 20px;">
+    <div class="sidebar-wrapper">
 
-
-    <div class="sidebar" style="padding-top: 20px;">
-      <div class="sidebar-wrapper">
-        
 
         <ul class="nav">
-        {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated %}
 
-          <li class="{% if 'dash' in segment %} active {% endif %}">
-            <a href="/dash">
-              <i class="tim-icons icon-chart-pie-36"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          
-          <li class="{% if 'search' in segment %} active {% endif %}">
-            <a href="/search">
-              <i class="tim-icons icon-pin"></i>
-              <p>Search</p>
-            </a>
-          </li>
-          <li class="{% if 'attack' in segment %} active {% endif %}">
-            <a href="/attack">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>Attack</p>
-            </a>
-          </li>
+            <li class="{% if 'dash' in segment %} active {% endif %}">
+                <a href="/dashboard">
+                    <i class="tim-icons icon-chart-pie-36"></i>
+                    <p>Dashboard</p>
+                </a>
+            </li>
 
-          <li class="{% if 'tracking' in segment %} active {% endif %}">
-            <a href="/tracking">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>Upload Image</p>
-            </a>
-          </li>
+            <li class="{% if 'search' in segment %} active {% endif %}">
+                <a href="/search">
+                    <i class="tim-icons icon-pin"></i>
+                    <p>Search</p>
+                </a>
+            </li>
+            <li class="{% if 'attack' in segment %} active {% endif %}">
+                <a href="/attack">
+                    <i class="tim-icons icon-bell-55"></i>
+                    <p>Attack</p>
+                </a>
+            </li>
 
-          <li class="{% if 'bookmarks' in segment %} active {% endif %}">
-            <a href="/bookmarks">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>Bookmarks</p>
-            </a>
-          </li>
+            <li class="{% if 'tracking' in segment %} active {% endif %}">
+                <a href="/tracking">
+                    <i class="tim-icons icon-bell-55"></i>
+                    <p>Upload Image</p>
+                </a>
+            </li>
 
-          <li class="{% if 'nmaps' in segment %} active {% endif %}">
-            <a href="/nmap">
-              <i class="tim-icons icon-bell-55"></i>
-              <p>Nmaps</p>
-            </a>
-          </li>
-          
-          {% else %}
-          <li class="active">
-            
-          </li>   
-          {% endif %}
-                    
+            <li class="{% if 'bookmarks' in segment %} active {% endif %}">
+                <a href="/bookmarks">
+                    <i class="tim-icons icon-bell-55"></i>
+                    <p>Bookmarks</p>
+                </a>
+            </li>
+
+            <li class="{% if 'nmaps' in segment %} active {% endif %}">
+                <a href="/nmap">
+                    <i class="tim-icons icon-bell-55"></i>
+                    <p>Nmaps</p>
+                </a>
+            </li>
+
+            <li class="{% if 'nmaps' in segment %} active {% endif %}">
+                <a href="/blockManage">
+                    <i class="tim-icons icon-bell-55"></i>
+                    <p>blockManage</p>
+                </a>
+            </li>
+
+            {% else %}
+            <li class="active">
+
+            </li>
+            {% endif %}
+
         </ul>
-        
-      </div>
+
     </div>
+</div>
