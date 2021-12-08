@@ -877,6 +877,7 @@ def uploadfiles():
             storeIpCommentTable(name,comment)
             searchData = {}
             trackingdata = {}
+            allData = {}
         else:
             uploadf = {}
             allData = {}
@@ -899,47 +900,54 @@ def uploadfiles():
                 allData['ips'] = "Nothing to show"
 
         searchData = {}
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
-            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
-            cur.execute(s)
+        try:
+            cur.execute("SELECT id, comment FROM TrackingComments;")
             desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            searchData[i['id']] = data1
-        searchData['keyList'] = ids
-        searchData['comments'] = comments
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+        except:
+            searchData={}
+
         conn.close()
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData, searchData=searchData)
     else:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        searchData = {}
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
-            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
-            cur.execute(s)
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            searchData = {}
+            cur.execute("SELECT id, comment FROM TrackingComments;")
             desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            searchData[i['id']] = data1
-        searchData['keyList'] = ids
-        searchData['comments'] = comments
-        conn.close()
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+            conn.close()
+        except:
+            searchData = {}
         return render_template('home/tracking.html', segment='tracking',searchData=searchData)
 
 @blueprint.route('/api/vpnIsASN', methods=['POST'])
