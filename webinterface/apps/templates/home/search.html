@@ -588,16 +588,11 @@
                                         </div>
                                         {% endif %}
                                     </div>
-
                             </td>
                             <td>
-                                Is VPN<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
-                            </td>
-                            <td>{{allData["Timezone"]}}
-                                <br><br>{{allData["black"]}}<br><br>{{allData["grey"]}}<br><br>{{allData["data center"]}}<br><br>{{allData["Bad ASN"]}} <br><br>{{allData["blacklisted"]}}
+                                ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
 
                             </td>
-
                         </tr>
 
                     </tbody>
@@ -618,14 +613,14 @@
                 <div class="card-footer ">
                     hello
                 </div>
-                </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-profile">
-                <div class="card-body">
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
 
                     <h4 class="card-title">Result</h4>
                     <div class="card-body">
@@ -645,9 +640,10 @@
             </div>
         </div>
     </div>
-    {%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
-    <script>
-        document.write(`
+</div>
+{%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
+<script>
+    document.write(`
         {{result}}
         `)
     </script>
@@ -704,15 +700,15 @@
                 document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
-            } else if (text == 'True') {
-                var isVPN = "This is a VPN ip ";
-                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
+        } else if (text == 'True') {
+            var isVPN = "This is a VPN ip ";
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
                         </div>`;
-            }
         }
+    }
 
-        notif();
-    </script>
+    notif();
+</script>
 
-    {% endblock javascripts %}
+{% endblock javascripts %}

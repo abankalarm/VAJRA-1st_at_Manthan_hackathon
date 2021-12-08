@@ -336,16 +336,18 @@ def getJSWithThisIP(ip):
     return str(rows[0][0])
 
 @blueprint.route('/index')
+@login_required
 def index():
-
-    return render_template('home/index.html', segment='index')
+    return redirect("/dashboard", code=302)
 
 @blueprint.route('/nmap')
+@login_required
 def nmap():
     oports = {}
     return render_template('home/nmaps.html', segment='nmaps', oports = oports)
 
-@blueprint.route('/dash')
+@blueprint.route('/dashboard')
+@login_required
 def dash():
     allData = {}
     allData["IP"]=[]
@@ -408,6 +410,7 @@ def dash():
     return render_template('home/dashboard.html', segment='dash', allData = allData)
 
 @blueprint.route('/fdl')
+@login_required
 def fdl():
     allData = {}
     try:
@@ -434,11 +437,13 @@ def fdl():
 
 
 @blueprint.route('/bookmarks')
+@login_required
 def bkmark():
     #receive an IP and call flagBookmarkDB(ip)
     return render_template('home/bookmarks.html', segment='bookmarks')
 
 @blueprint.route('/ipl')
+@login_required
 def ipl():
     allData = {}
     try:
@@ -524,9 +529,10 @@ def injectionpost():
     
     storeInDB(content)
     #l = getfromdb(['ip'], [content['ip']])
-    return render_template('home/page-404.html', segment='index'), 404
+    return jsonify('true')
 
 @blueprint.route('/search', methods=['GET','POST'])
+@login_required
 def searchpost():
     if (request.method == 'POST'):
         #print("WWW",request.form)
@@ -537,9 +543,12 @@ def searchpost():
         cur = conn.cursor()
         cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        
+        column_names = [col[0] for col in desc]
+        try: 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        except:
+            data = []
+
         for e in data:
             cur.execute("Select ip from Fingerprints where cookie='"+e["cookie"]+"'")
             desc1 = cur.description 
@@ -556,7 +565,10 @@ def searchpost():
         cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        try:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        except:
+            data = []
         for e in data:
             cur.execute("Select ip from Fingerprints where clientID='"+e["clientID"]+"'")
             desc1 = cur.description 
@@ -650,7 +662,6 @@ def searchpost():
         
         cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
 
         #print("@@@@@@@",data)
@@ -725,7 +736,11 @@ def searchpost():
         cur.execute("Select * from Fingerprints where ip ='" + search + "'")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        try:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        except:
+            data = []
+        
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
         allDataIP['keyList'] = list(allDataIP.keys())
@@ -751,6 +766,7 @@ def searchpost():
         return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, dataWithThisIp = dataWithThisIp, allDataIP = allDataIP)
     
 @blueprint.route('/api/portscan')
+@login_required
 def portscan():
     ip = request.args['ip']
     type = request.args['speed']
@@ -832,6 +848,7 @@ def getDetailsFromUserAgent():
     return jsonify(parsed_string)
 
 @blueprint.route('/tracking', methods=['GET','POST'])
+@login_required
 def uploadfiles():
     if(request.method == 'POST'):
         conn = sqlite3.connect('db.sqlite3')
@@ -857,6 +874,7 @@ def uploadfiles():
             storeIpCommentTable(name,comment)
             searchData = {}
             trackingdata = {}
+            allData = {}
         else:
             uploadf = {}
             allData = {}
@@ -879,47 +897,54 @@ def uploadfiles():
                 allData['ips'] = "Nothing to show"
 
         searchData = {}
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
-            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
-            cur.execute(s)
+        try:
+            cur.execute("SELECT id, comment FROM TrackingComments;")
             desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            searchData[i['id']] = data1
-        searchData['keyList'] = ids
-        searchData['comments'] = comments
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+        except:
+            searchData={}
+
         conn.close()
         return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData, searchData=searchData)
     else:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        searchData = {}
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
-            s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
-            cur.execute(s)
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            searchData = {}
+            cur.execute("SELECT id, comment FROM TrackingComments;")
             desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            searchData[i['id']] = data1
-        searchData['keyList'] = ids
-        searchData['comments'] = comments
-        conn.close()
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+            conn.close()
+        except:
+            searchData = {}
         return render_template('home/tracking.html', segment='tracking',searchData=searchData)
 
 @blueprint.route('/api/vpnIsASN', methods=['POST'])
@@ -1003,6 +1028,7 @@ def checkip_attack():
 
 
 @blueprint.route('/attack',methods=['GET','POST'])
+@login_required
 def attack():
     allData = {}
     try:
@@ -1076,6 +1102,7 @@ def attack():
 
 
 @blueprint.route('/blockManage',methods=['GET','POST'])
+@login_required
 def countryblock():  
 
     if(request.method == 'POST'):
