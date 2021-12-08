@@ -505,6 +505,240 @@ def get_segment(request):
     except:
         return None
 
+
+
+
+def getAllRelatedIP(search):
+    ips=[]
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    
+
+    for e in data:
+        cur.execute("Select ip from Fingerprints where cookie='"+e["cookie"]+"'")
+        desc1 = cur.description 
+        column_names1 = [col[0] for col in desc1] 
+        data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
+        temp=[]
+        if len(data1)>0:
+            #print(data1)
+            temp=[x["ip"] for x in data1]
+            #print("$$$$$$",temp)
+        ips.extend(temp)
+        
+    
+    cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    try:
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    except:
+        data = []
+    for e in data:
+        cur.execute("Select ip from Fingerprints where clientID='"+e["clientID"]+"'")
+        desc1 = cur.description 
+        column_names1 = [col[0] for col in desc1] 
+        data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
+        temp=[]
+        if len(data1)>0:
+            #print(data1)
+            temp=[x["ip"] for x in data1]
+            #print("$$$$$$",temp)
+        
+        ips.extend(temp)
+    #print(ips,type(ips))
+    uip = list(set(ips))
+    allDataIP={}
+    print(ips)
+    print(uip)
+
+    for ip in uip:
+        cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        allDataIP[ip]=data
+    conn.close()
+    return allDataIP
+
+
+
+
+
+
+
+
+
+def getRiskVal(allData,search):
+    riskData={}
+    try:
+        if allData["bad"] :
+            riskData["badAsnVal"]=80
+            riskData["badAsn"]=" Is a Bad ASN"
+        else:
+            riskData["badAsnVal"]=0
+            riskData["badAsn"]="Not a Bad ASN "
+    except:
+        riskData["badAsnVal"]=0
+        riskData["badAsn"]="Not a Bad ASN"
+    
+    try:
+        if allData["dc"] :
+            riskData["dataCenterVal"]=50
+            riskData["dataCenter"]= "Is a Data Center"
+        else:
+            riskData["dataCenterVal"]=0
+            riskData["dataCenter"]="Not a Data Center"
+    except:
+        riskData["dataCenterVal"]=0
+        riskData["dataCenter"]="Not a Data Center"
+    try:
+        if allData["bl"] :
+            riskData["blacklistedVal"]=100
+            riskData["blacklisted"]="Blacklisted"
+        else:
+            riskData["blacklistedVal"]=0
+            riskData["blacklisted"]="Not Blacklisted"
+    except:
+        riskData["blacklistedVal"]=0
+        riskData["blacklisted"]="Not Blacklisted"
+    
+    
+    conn1 = sqlite3.connect('ip-index.db')
+    cur1=conn1.cursor()
+    intip=int(ipaddress.ip_address(search))
+    s="SELECT country FROM Countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur1.execute(s)
+    desc1 = cur1.description 
+    column_names1 = [col[0] for col in desc1] 
+    data = [dict(zip(column_names1, row)) for row in cur1.fetchall()][0]
+    cname=data['country']
+    conn1.close()
+    
+    conn = sqlite3.connect('db.sqlite3')
+    cur=conn.cursor()
+    cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+
+    
+    try:   
+        if data["blocked"]==1 :
+            riskData["grey"]=50
+        else:
+            riskData["grey"]=0
+    except:
+        riskData["grey"]=0
+
+    try:
+        if data["blocked"]==2 :
+            riskData["black "]=100
+        else:
+            riskData["black"]=0
+
+    except:
+        riskData["black"]=0
+
+
+    return riskData
+
+
+def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
+    details={"isVPN":"False"}
+    try:
+        
+        if allDataIP[search][0]["isVpnTime"]:
+            riskData["Timezone"]=70
+        else:
+            riskData["Timezone"]=0
+
+    except:
+        riskData["Timezone"]=0
+
+    riskData["per"]=riskData["Timezone"]+riskData["black"]+riskData["grey"]+ riskData["blacklistedVal"]+riskData["dataCenterVal"]+riskData["badAsnVal"]
+    details["ratingcolor"] = "green"
+    if(riskData["per"]>100):
+        riskData["ratingcolor"] = "orange"
+    if(riskData["per"]>100):
+        riskData["per"] = 100
+        riskData["ratingcolor"] = "red"
+
+
+    try:
+        if riskData['blacklistedVal']+ riskData['Timezone'] + riskData['badAsnVal'] >0:
+            riskData["isVPN"] = "True"
+    except:
+        details["isVPN"]="False"
+    try:
+        details["isp"] = allDataIP[search][0]['isp']
+    except:
+        details["isp"]="Not Available"
+    try:
+        details["region"] = allDataIP[search][0]['regionName']
+    except:
+        details["region"]="Not Available"
+    try:
+        details["zipcode"] = allDataIP[search][0]['zip']
+    except:
+        details["zipcode"]="Not Available"
+    try:
+        details["lat_long"] = str(allDataIP[search][0]["lat"]) + " & " + str(allDataIP[search][0]["lon"])
+    except:
+        details["lat_long"]="Not Available"
+    try:
+        details["country"] = allDataIP[search][0]['country']
+    except:
+        details["country"]="Not Available"
+    #print(allData.keys())
+
+    ##print("@@@@@@",Alldata_for_searched_ip)
+    try:
+        allDataIP['keyList'] = list(allDataIP.keys())
+        allDataIP['cols'] = ['cookie', 'timezone', 'userAgent', 'timestamp']
+        
+
+        dataWithThisIp['data'] = allDataIP[search]
+        dataWithThisIp['cols'] = ['cookie', 'userAgent', 'timestamp', 'parentDomain']
+    except:
+        dataWithThisIp={}
+    return details
+
+@blueprint.route('/search', methods=['GET','POST'])
+@login_required
+def searchpost():
+    if (request.method == 'POST'):
+
+        search = request.form['search']
+
+        allDataIP=getAllRelatedIP(search)
+
+        allData=json.loads(vpnDetails(search).data)
+        riskData=getRiskVal(allData,search)
+        #print(allData)
+        dataWithThisIp = {}
+        
+        details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+        print(dataWithThisIp)
+  
+     
+        return render_template('home/search.html', allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp)
+    else:
+        allDataIP = {}
+        dataWithThisIp = {}
+        allData={}
+        details  = {}
+        riskData={}
+        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details)
+
+
+
+
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
@@ -530,240 +764,6 @@ def injectionpost():
     storeInDB(content)
     #l = getfromdb(['ip'], [content['ip']])
     return jsonify('true')
-
-@blueprint.route('/search', methods=['GET','POST'])
-@login_required
-def searchpost():
-    if (request.method == 'POST'):
-        #print("WWW",request.form)
-        search = request.form['search']
-        isBad,asn,result=getDetails(search)
-        ips=[]
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
-        desc = cur.description 
-        column_names = [col[0] for col in desc]
-        try: 
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        except:
-            data = []
-
-        for e in data:
-            cur.execute("Select ip from Fingerprints where cookie='"+e["cookie"]+"'")
-            desc1 = cur.description 
-            column_names1 = [col[0] for col in desc1] 
-            data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
-            temp=[]
-            if len(data1)>0:
-                #print(data1)
-                temp=[x["ip"] for x in data1]
-                #print("$$$$$$",temp)
-            ips.extend(temp)
-            
-        
-        cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        try:
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        except:
-            data = []
-        for e in data:
-            cur.execute("Select ip from Fingerprints where clientID='"+e["clientID"]+"'")
-            desc1 = cur.description 
-            column_names1 = [col[0] for col in desc1] 
-            data1 = [dict(zip(column_names1, row)) for row in cur.fetchall()]
-            temp=[]
-            if len(data1)>0:
-                #print(data1)
-                temp=[x["ip"] for x in data1]
-                #print("$$$$$$",temp)
-            
-            ips.extend(temp)
-        #print(ips,type(ips))
-        uip = list(set(ips))
-        allDataIP={}
-
-
-
-        for ip in uip:
-            cur.execute("Select * from Fingerprints where ip='"+ip+"'" )
-            desc = cur.description 
-            column_names = [col[0] for col in desc] 
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            allDataIP[ip]=data
-            #print(allData[ip])
-        riskData=[{"IP":search}]
-        #print(allDataIP)
-
-
-        vpnDetails(riskData)
-        #print(riskData)
-        allData={}
-        ASN_name = riskData[0]['asn'][4]
-        try:
-
-            if isBad :
-                allData["Bad ASN"]=80
-                badASN=" Is a Bad ASN"
-            else:
-                allData["Bad ASN"]=0
-                badASN="Not a Bad ASN "
-        except:
-            allData["Bad ASN"]=0
-            badASN="Not a Bad ASN"
-        
-        try:
-
-            if riskData[0]["dc"] :
-                allData["data center"]=50
-                datacenter= "Is a Data Center"
-            else:
-                allData["data center"]=0
-                datacenter="Not a Data Center"
-        except:
-            allData["data center"]=0
-            datacenter="Not a Data Center"
-        try:
-            if riskData[0]["bl"] :
-                allData["blacklisted"]=100
-                blacklisted="Blacklisted"
-            else:
-                allData["blacklisted"]=0
-                blacklisted="Not Blacklisted"
-        except:
-            allData["blacklisted"]=0
-
-        # change hardcoded
-        Alldata_for_searched_ip = {}
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute("Select * from Fingerprints where ip='"+str(search)+"'")
-    
-        Alldata_for_searched_ip = {}
-        
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        #Alldata_for_searched_ip["data"] = data
-        Alldata_for_searched_ip['data'] = data
-        
-    
-        # return Alldata_for_searched_ip
-        # all data returned for ip is what you need for most of the top part of search page
-        conn1 = sqlite3.connect('ip-index.db')
-        cur1=conn1.cursor()
-        intip=int(ipaddress.ip_address(search))
-        s="SELECT country FROM Countries WHERE start ="+ search.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-        cur1.execute(s)
-        cname=cur1.fetchall()[0][0]
-        conn1.close()
-        
-        cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
-        desc = cur.description 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
-
-        #print("@@@@@@@",data)
-        
-        try:   
-            if data["blocked"]==1 :
-                allData["grey "]=50
-            else:
-                allData["grey"]=0
-        except:
-            allData["grey"]=0
-
-        try:
-            if data["blocked"]==2 :
-                allData["black "]=100
-            else:
-                allData["black"]=0
-
-        except:
-            allData["black"]=0
-
-        cur.execute("Select isVpnTime from Fingerprints where ip='"+search+"'")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        try:
-
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
-            
-            if data["isVpnTime"]:
-                allData["Timezone"]=70
-            else:
-                allData["Timezone"]=0
-
-        except:
-            allData["Timezone"]=0
-
-        allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
-        ratingcolor = "green"
-        if(allData["per"]>100):
-            ratingcolor = "orange"
-        if(allData["per"]>100):
-            allData["per"] = 100
-            ratingcolor = "red"
-
-
-        try:
-            if Alldata_for_searched_ip["data"][0]['isVpnASN'] or Alldata_for_searched_ip["data"][0]['isVpnTime']:
-                isVPN = "True"
-        except:
-            isVPN="False"
-        try:
-            isp = Alldata_for_searched_ip["data"][0]['isp']
-        except:
-            isp="Not Available"
-        try:
-            region = Alldata_for_searched_ip["data"][0]['regionName']
-        except:
-            region="Not Available"
-        try:
-            zipcode = Alldata_for_searched_ip["data"][0]['zip']
-        except:
-            zipcode="Not Available"
-        try:
-            lat_long = str(Alldata_for_searched_ip["data"][0]["lat"]) + " & " + str(Alldata_for_searched_ip["data"][0]["lon"])
-        except:
-            lat_long="Not Available"
-        try:
-            country = Alldata_for_searched_ip["data"][0]['country']
-        except:
-            country="Not Available"
-        #print(allData.keys())
-        cur.execute("Select * from Fingerprints where ip ='" + search + "'")
-        desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        try:
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
-        except:
-            data = []
-        
-        conn.close()
-        ##print("@@@@@@",Alldata_for_searched_ip)
-        allDataIP['keyList'] = list(allDataIP.keys())
-        allDataIP['cols'] = ['cookie', 'timezone', 'userAgent', 'timestamp']
-        dataWithThisIp = {}
-        dataWithThisIp['data'] = data
-        dataWithThisIp['cols'] = ['cookie', 'userAgent', 'timestamp', 'parentDomain']
-        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData, dataWithThisIp = dataWithThisIp)
-    else:
-        allDataIP = {}
-        dataWithThisIp = {}
-        print(dataWithThisIp)
-        ratingcolor = "green"
-        allData={}
-        allData["per"]=0
-        allData["Timezone"]=0
-        allData["black"]=0
-        allData["grey"]=0
-        allData["blacklisted"]=0
-        allData["data center"]=0
-        allData["Bad ASN"]=0
-        Alldata_for_searched_ip = {}
-        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, dataWithThisIp = dataWithThisIp, allDataIP = allDataIP)
     
 @blueprint.route('/api/portscan')
 @login_required
@@ -966,44 +966,55 @@ def vpnIsASN():
 @blueprint.route('/api/vpnDetails')
 def vpnDetails(data):
     conn = sqlite3.connect('ip-index.db')
-    if data==[]:
-        ip = request.environ['REMOTE_ADDR']
-        #TODO delete default value after hosting
-        ip='203.192.236.244'
-        data=[{"IP":ip}]
-    for i in range (len(data)):
-        try:
-            ip=data[i]["IP"]
-            intip=int(ipaddress.ip_address(ip))
-            cur=conn.cursor()
-            #print(ip,type(ip),intip,type(intip))
-            s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-            cur.execute(s)
-            a=cur.fetchall()
-            s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-            cur.execute(s)
-            b=cur.fetchall()
-            s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-            cur.execute(s)
-            c=cur.fetchall()
-            s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-            cur.execute(s)
-            d=cur.fetchall()
-            conn.close()
-            data[i]["bl"]=a
-            data[i]["dc"]=b
-            data[i]["asn"]=c[0]
-            data[i]["cn"]=d[0]
-            #print(a,b,c,d)
-            inBad=c[0][3] in badASN
-            data[i]["bad"]=inBad
-        except:
-            data[i]["bl"]=[]
-            data[i]["dc"]=[]
-            data[i]["asn"]=[]
-            data[i]["cn"]=[]
-            data[i]["bad"]=False
-            
+    ip=data
+    intip=int(ipaddress.ip_address(ip))
+    data={}
+    data["bl"]={}
+    data["dc"]={}
+    data["asn"]={}
+    data["cn"]={}
+    data["bad"]=False
+    cur=conn.cursor()
+    #print(ip,type(ip),intip,type(intip))
+    s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"    
+    cur.execute(s)
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    a = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    
+    s="SELECT * FROM datacenters WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    b = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    
+    s="SELECT * FROM asns WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    c = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    s="SELECT * FROM countries WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+    cur.execute(s)
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    d = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    data={}
+    if(len(a)>0):
+        data["bl"]=a[0]
+    if(len(b)>0):
+        data["dc"]=b[0]
+    if(len(c)>0):
+        data["asn"]=c[0]
+    if(len(d)>0):
+        data["cn"]=d[0]
+    print(a,b,c,d)
+    inBad=c[0]['id'] in badASN
+    data["bad"]=inBad
+    print(data)
+
+    print()
+        
     return jsonify(data)
 
 

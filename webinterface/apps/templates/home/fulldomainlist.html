@@ -6,14 +6,18 @@
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
     console.log(allData);
+    var parent = "<table style='padding-left:100px; width:70% '><tr><th class='text-uppercase text-secondary text-xxs'>Client IP</th><th class='text-uppercase text-secondary text-xxs'>Client Location</th><th class='text-uppercase text-secondary text-xxs'>Client User-Agent</th><th class=' text-uppercase text-secondary text-xxs'>Timestamp</th><th class=' text-uppercase text-secondary text-xxs'>Is Safe</th></tr>";
+
+    parent += "</table>"
+    document.getElementById("domainlist").innerHTML = parent
 </script>
 {%endblock javascripts%}
 {% block content %}
-<h2> Full Domain List</h2>
+<h2> Complete Domain Details</h2>
 <div id="domainlist">
 </div>
 
-<button onclick="window.print()">Print Domain List</button>
+<button onclick="window.print()">Print Details</button>
 
 {% endblock content %}
 
