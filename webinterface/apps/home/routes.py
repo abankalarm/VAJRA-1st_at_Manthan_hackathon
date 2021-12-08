@@ -21,7 +21,7 @@ import pandas
 import base64
 import pickle 
 from datetime import datetime
-
+from user_agents import parse
 import string
 import random
 # import rsplit
@@ -844,9 +844,9 @@ def getDetailsFromUserAgent():
 
     userAgent = request.form['user-agent']
     #userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
-    parsed_string = user_agent_parser.Parse(userAgent)
+    parsed_string = parse(userAgent)
     #print(parsed_string)
-    return jsonify(parsed_string)
+    return str(parsed_string)
 
 @blueprint.route('/tracking', methods=['GET','POST'])
 @login_required
