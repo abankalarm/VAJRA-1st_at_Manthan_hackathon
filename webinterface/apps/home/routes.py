@@ -1220,3 +1220,14 @@ def cookieDetail(template):
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     conn.close()
     return jsonify(data)
+
+@blueprint.route('/parentDomain/<template>')
+def parentDomainDetail(template):  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("select * from Fingerprints where parentDomain = '" + template + "';")
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    return jsonify(data)
