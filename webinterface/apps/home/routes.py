@@ -663,10 +663,10 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     riskData["per"]=riskData["Timezone"]+riskData["black"]+riskData["grey"]+ riskData["blacklistedVal"]+riskData["dataCenterVal"]+riskData["badAsnVal"]
     details["ratingcolor"] = "green"
     if(riskData["per"]>100):
-        ratingcolor = "orange"
+        riskData["ratingcolor"] = "orange"
     if(riskData["per"]>100):
         riskData["per"] = 100
-        ratingcolor = "red"
+        riskData["ratingcolor"] = "red"
 
 
     try:
