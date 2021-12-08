@@ -663,10 +663,8 @@ def searchpost():
         cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
         desc = cur.description 
         column_names = [col[0] for col in desc]
-        try: 
-            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
-        except:
-            data = []
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+
         #print("@@@@@@@",data)
         
         try:   
