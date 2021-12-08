@@ -662,7 +662,6 @@ def searchpost():
         
         cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc]
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
 
         #print("@@@@@@@",data)
@@ -1039,19 +1038,30 @@ def attack():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        l = getfromdb('Attacking', ['timestamp'], [''])
+        l = getfromdb('Attacking', ['timestamp'], ['Not Attacked'])
         allAttacked = int(data[0]['cnt']) - 1
         allIpsToBeAttacked = len(l) - 1
-
-        s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
-        cur.execute(s)
-        a=cur.fetchall()
+        #s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        #cur.execute(s)
+        #a=cur.fetchall()
         conn.close()
     except:
         allAttacked = 0
         allIpsToBeAttacked = 0
     allData['allAttacked'] = allAttacked
     allData['allIpsToBeAttacked'] = allIpsToBeAttacked
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select * from Attacking where ip != '0.0.1.0';" )
+        data = cur.fetchall()
+        allData['data'] = []
+        allData['js'] = []
+        for i in range (0, len(data)):
+            allData['data'].append({'ip': str(data[i][0]), 'js': str(data[i][1]).replace('"', "'"), 'timestamp': str(data[i][2])})
+        allData['cols'] = ['ip', 'js', 'timestamp']
+    except:
+        allData['data'] = {}
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -1060,6 +1070,7 @@ def attack():
             content = {}
             content['ip'] = IP
             content['js'] = JS
+            content['timestamp'] = "Not Attacked"
             storeInAttackingTable(content)
             return redirect("/attack", code=302)
         if request.form.get('mode') == "search":
@@ -1078,7 +1089,7 @@ def attack():
         content = {}
         content['ip'] = '0.0.1.0'
         content['js'] = ''
-        content['timestamp'] = ''
+        content['timestamp'] = 'Not Attacked'
         # store a ip and js pair together , make it unique and overwrite
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])

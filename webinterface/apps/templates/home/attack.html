@@ -48,41 +48,41 @@
                                 <input class="hidden" name="mode" value="search" id='' style="display:inline;">
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
                                 <div>
-                                    <table class="table tablesorter " id="">
-                                        <thead class=" text-primary">
-                                            <tr>
-
-                                                <th>
-                                                    IP
-                                                </th>
-                                                <th>
-                                                    jsOfAttack
-                                                </th>
-                                                <th class="text-center">
-                                                    Time stamp
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-
-                                                <td>
-                                                    {{ipOfAttack}}
-                                                </td>
-                                                <td>
-                                                    {{jsOfAttack}}
-                                                </td>
-                                                <td class="text-center">
-                                                    {{ts}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </form>
                         </div>
                     </div>
-                    {{alldetails}}
+                    <table class="table tablesorter " id="">
+                      <thead class=" text-primary">
+                          <tr>
+
+                              <th>
+                                  IP
+                              </th>
+                              <th>
+                                  jsOfAttack
+                              </th>
+                              <th class="text-center">
+                                  Time stamp
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+
+                              <td>
+                                  {{ipOfAttack}}
+                              </td>
+                              <td>
+                                  {{jsOfAttack}}
+                              </td>
+                              <td class="text-center">
+                                  {{ts}}
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                    <!--{{alldetails}}-->
                 </h4>
                 <div class="card ">
                     <div class="card-header">
@@ -92,55 +92,12 @@
                       <div class="table-responsive">
                         <table class="table tablesorter " id="">
                           <thead class=" text-primary">
-                            <tr>
-                              <th>
-                                IP
-                              </th>
-                              <th>
-                                JS Of Attack
-                              </th>
-                              <th>
-                                Timestamp
-                              </th>
+                            <tr id="attackheads">
                             </tr>
                           </thead>
-                          <tbody>
-                            <tr>
-                              <td>
-                                Dakota Rice
-                              </td>
-                              <td>
-                                Niger
-                              </td>
-                              <td>
-                                Oud-Turnhout
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                Minerva Hooper
-                              </td>
-                              <td>
-                                Curaçao
-                              </td>
-                              <td>
-                                Sinaai-Waas
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                Sage Rodriguez
-                              </td>
-                              <td>
-                                Netherlands
-                              </td>
-                              <td>
-                                Baileux
-                              </td>
-                            </tr>
+                          <tbody id = "attackbody">
                           </tbody>
                         </table>
-                      </div>
                     </div>
                   </div>
             </div>
@@ -170,7 +127,29 @@
 {% block javascripts %}
 <script>
     var allData = JSON.parse('{{allData | tojson}}');
-    //console.log(allData)
-    document.getElementById("attacked").innerHTML = "All IPs attacked: " + allData['allAttacked'] + "<br>Total attacks made: " + (allData['allAttacked'] + allData['allIpsToBeAttacked']);
+    console.log(allData)
+    document.getElementById("attacked").innerHTML = "All IPs attacked: " + (allData['allAttacked'] - allData['allIpsToBeAttacked']) + "<br>Total attacks made: " + allData['allAttacked'];
+    var attackheads = document.getElementById("attackheads");
+    var attackbody = document.getElementById("attackbody");
+    var one = "";
+    var two = "<tr>";
+    console.log(allData['data'][0][allData['cols'][0]])
+    try {
+      for (let i = 0; i < Object.keys(allData['cols']).length; i++) {
+        one += "<th>" + allData['cols'][i] + "</th>";
+      }
+      for(let i = 0; i < Object.keys(allData['data']).length; i++) {
+        for(let j = 0; j < Object.keys(allData['cols']).length; j++) {
+          two += "<td>" + allData['data'][i][allData['cols'][j]] + "</td>";
+        }
+        two +="<tr>";
+      }
+      attackheads.innerHTML = one;
+      attackbody.innerHTML = two;
+    } catch(e) {
+      console.log(e)
+      attackbody.style.visibility = "hidden";
+      attackheads.style.visibility = "hidden";
+    }
 </script>
 {% endblock javascripts %}
