@@ -351,6 +351,7 @@
                                 }
                                 console.log("hhh", tobeadded);
                                 addvalues(tobeadded, cities);
+                                console.log("aaa", cities)
                             } catch (e) {
                                 console.log(e);
                             }
@@ -487,70 +488,104 @@
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
                     <div class="table-responsive p-0">
+                        <h2>Targeted Attacks</h2>
                         <table class="table align-items-center mb-0">
-                          <thead>
-                            <tr>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
-                              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
-                              <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>
-                                <div class="d-flex px-2 py-1">
-                                  <div class="d-flex flex-column justify-content-center">
-                                    <h6 class="mb-0 text-sm"></h6>
-                                    <p class="text-xs text-secondary mb-0"></p>
-                                    <h5><a href="/attack.html">Attacking</a></h5>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <p class="text-xs font-weight-bold mb-0"></p>
-                                <p class="text-xs text-secondary mb-0"></p>
-                                <h5><a href="/tracking.html">Tracking</a></h5>
-                              </td>
-                              <td class="align-middle text-center text-sm">
-                                <span class="badge badge-sm bg-gradient-success"></span>
-                                <h5><a href="/nmaps.html">Nmaps</a></h5>
-                              </td>
-                            </tr>
-                            </table>
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm"></h6>
+                                                <p class="text-xs text-secondary mb-0"></p>
+                                                <h5><a href="/attack.html">Attacking</a></h5>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0"></p>
+                                        <p class="text-xs text-secondary mb-0"></p>
+                                        <h5><a href="/tracking.html">Tracking</a></h5>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-success"></span>
+                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
+                                    </td>
+                                </tr>
+                        </table>
+                        <h2>Tracking</h2>
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm"></h6>
+                                                <p class="text-xs text-secondary mb-0"></p>
+                                                <h5><a href="/attack.html">Attacking</a></h5>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0"></p>
+                                        <p class="text-xs text-secondary mb-0"></p>
+                                        <h5><a href="/tracking.html">Tracking</a></h5>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-success"></span>
+                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
+                                    </td>
+                                </tr>
+                        </table>
+
+                        <!-- nmap button -->
 
                 </h4>
 
 
 
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="title">Edit Profile</h5>
-            </div>
-            <div class="card-body">
-                <div>
-                    <table class="table tablesorter " id="">
-                      <thead class=" text-primary">
-                        <tr id="relatedheads">
-                        </tr>
-                      </thead>
-                      <tbody id = "relatedbody">
-                      </tbody>
-                    </table>
                 </div>
             </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-fill btn-primary">Save</button>
-            </div>
         </div>
     </div>
-    <!-- <script>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="title">Edit Profile</h5>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <table class="table tablesorter " id="">
+                            <thead class=" text-primary">
+                                <tr id="relatedheads">
+                                </tr>
+                            </thead>
+                            <tbody id="relatedbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-fill btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+        <!-- <script>
         var riskp, colour;
         var country;
         function calcrisk(){
@@ -585,103 +620,103 @@
         }
     </script> -->
 
-    <div class="col-md-4">
-        <div class="card card-user">
-            <div class="card-body">
-                <table class="table " id="">
-                    <h2 class="title center">
-                        Risk rating
-                    </h2>
-                    <a href=" javascript:void(0) ">
-                        <div class="block block-one"></div>
-                        <div class="block block-two"></div>
-                        <div class="block block-three"></div>
-                        <div class="block block-four"></div>
-
-
-                    </a>
-                    <thead class="text-primary">
-                        <tr>
-                            <th>
-                                Rating
-                            </th>
-                            <th>
-                                Parameter
-                            </th>
-                            <th>
-                                Value
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="center clearfix" style="justify-content: center;  ">
-                                    <!-- available colors green, orange, red-->
-
-
-                                    <div id='riskbar' class="c100 p{{allData['per']}} {{ratingcolor}} dark">
-                                        {% if allData %}
-                                        <span><b>{{allData["per"]}}%</b></span>
-                                        <div class="slice">
-                                            <div class="bar"></div>
-                                            <div class="fill"></div>
-                                        </div>
-                                        {% else %}
-                                        <span><b>25%</b></span>
-                                        <div class="slice">
-                                            <div class="bar "></div>
-                                            <div class="fill "></div>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                            </td>
-                            <td>
-                                ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
-
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-                <div>
-                    <p class="card-text">
-                        <div class="author">
+        <div class="col-md-4">
+            <div class="card card-user">
+                <div class="card-body">
+                    <table class="table " id="">
+                        <h2 class="title center">
+                            Risk rating
+                        </h2>
+                        <a href=" javascript:void(0) ">
                             <div class="block block-one"></div>
                             <div class="block block-two"></div>
                             <div class="block block-three"></div>
                             <div class="block block-four"></div>
+
+
+                        </a>
+                        <thead class="text-primary">
+                            <tr>
+                                <th>
+                                    Rating
+                                </th>
+                                <th>
+                                    Parameter
+                                </th>
+                                <th>
+                                    Value
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="center clearfix" style="justify-content: center;  ">
+                                        <!-- available colors green, orange, red-->
+
+
+                                        <div id='riskbar' class="c100 p{{allData['per']}} {{ratingcolor}} dark">
+                                            {% if allData %}
+                                            <span><b>{{allData["per"]}}%</b></span>
+                                            <div class="slice">
+                                                <div class="bar"></div>
+                                                <div class="fill"></div>
+                                            </div>
+                                            {% else %}
+                                            <span><b>25%</b></span>
+                                            <div class="slice">
+                                                <div class="bar "></div>
+                                                <div class="fill "></div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                </td>
+                                <td>
+                                    ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <div>
+                        <p class="card-text">
+                            <div class="author">
+                                <div class="block block-one"></div>
+                                <div class="block block-two"></div>
+                                <div class="block block-three"></div>
+                                <div class="block block-four"></div>
+                            </div>
+                        </p>
+                        <div class="card-description ">
+                            The scores above are added to form risk factor, the max value is 100
                         </div>
-                    </p>
-                    <div class="card-description ">
-                        The scores above are added to form risk factor, the max value is 100
                     </div>
-                </div>
-                <div class="card-footer ">
-                    hello
+                    <div class="card-footer ">
+                        hello
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card card-profile">
-            <div class="card-body">
-
-                    <h4 class="card-title">Result</h4>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-profile">
                     <div class="card-body">
-                        <div class="table-responsive">
-                          <table class="table tablesorter " id="">
-                            <thead class=" text-primary">
-                              <tr id="resultheads">
-                              </tr>
-                            </thead>
-                            <tbody id = "resultbody">
-                            </tbody>
-                          </table>
+
+                        <h4 class="card-title">Result</h4>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table tablesorter " id="">
+                                    <thead class=" text-primary">
+                                        <tr id="resultheads">
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resultbody">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                      </div>
                     </div>
                 </div>
             </div>
@@ -693,58 +728,57 @@
     document.write(`
         {{result}}
         `)
-    </script>
-    {% endblock content %}
-    {% block javascripts %}
-    <script>
-        /* This is for Result display*/
-        var results =  JSON.parse('{{allDataIP | tojson}}');
-        var resultHead = document.getElementById("resultheads")
-        var resultBody = document.getElementById("resultbody");
-        var one = "<th>IP</th>";
-        var two = "";
-        for (let i = 0; i < Object.keys(results['cols']).length; i++) {
-            one += "<th>" + results['cols'][i] + "</th>";
+</script>
+{% endblock content %} {% block javascripts %}
+<script>
+    /* This is for Result display*/
+    var results = JSON.parse('{{allDataIP | tojson}}');
+    var resultHead = document.getElementById("resultheads")
+    var resultBody = document.getElementById("resultbody");
+    var one = "<th>IP</th>";
+    var two = "";
+    for (let i = 0; i < Object.keys(results['cols']).length; i++) {
+        one += "<th>" + results['cols'][i] + "</th>";
+    }
+    one += "<th>Further Analysis</th>";
+    for (let i = 0; i < Object.keys(results['keyList']).length; i++) {
+        two += "<tr><td>" + results['keyList'][i] + "</td>";
+        for (let j = 0; j < Object.keys(results['cols']).length; j++) {
+            two += "<td>" + results[results['keyList'][i]][0][results['cols'][j]] + "</td>";
         }
-        one += "<th>Further Analysis</th>";
-        for(let i = 0; i < Object.keys(results['keyList']).length; i++) {
-            two += "<tr><td>" + results['keyList'][i] + "</td>";
-            for(let j = 0; j < Object.keys(results['cols']).length; j++) {
-                two += "<td>" + results[results['keyList'][i]][0][results['cols'][j]] + "</td>";
-            }
-            two += "<td><a href = '/ipDetail/" + results['keyList'][i] +"'>Here</a></td></tr>"
-        }
-        resultHead.innerHTML = one;
-        resultBody.innerHTML = two;
-    </script>
+        two += "<td><a href = '/ipDetail/" + results['keyList'][i] + "'>Here</a></td></tr>"
+    }
+    resultHead.innerHTML = one;
+    resultBody.innerHTML = two;
+</script>
 
-    <script>
-        /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
-        var related =  JSON.parse('{{dataWithThisIp | tojson}}');
-        var relatedHead = document.getElementById("relatedheads")
-        var relatedBody = document.getElementById("relatedbody");
-        var one = "";
-        var two = "<tr>";
-        for (let i = 0; i < Object.keys(related['cols']).length; i++) {
-            one += "<th>" + related['cols'][i] + "</th>";
-        }
-        one += "<th>Further Analysis</th>";
-        for(let j = 0; j < Object.keys(related['cols']).length; j++) {
-            two += "<td>" + related['data'][related['cols'][j]] + "</td>";
-        }
-        two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] +"'>Here</a></td></tr>"
-        relatedHead.innerHTML = one;
-        relatedBody.innerHTML = two;
-        //console.log("here", related)
-    </script>
+<script>
+    /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+    var related = JSON.parse('{{dataWithThisIp | tojson}}');
+    var relatedHead = document.getElementById("relatedheads")
+    var relatedBody = document.getElementById("relatedbody");
+    var one = "";
+    var two = "<tr>";
+    for (let i = 0; i < Object.keys(related['cols']).length; i++) {
+        one += "<th>" + related['cols'][i] + "</th>";
+    }
+    one += "<th>Further Analysis</th>";
+    for (let j = 0; j < Object.keys(related['cols']).length; j++) {
+        two += "<td>" + related['data'][related['cols'][j]] + "</td>";
+    }
+    two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] + "'>Here</a></td></tr>"
+    relatedHead.innerHTML = one;
+    relatedBody.innerHTML = two;
+    //console.log("here", related)
+</script>
 
 
-    <script type="text/javascript ">
-        function notif() {
-            var text = "{{isVPN}}";
-            if (text == 'False') {
-                var notVpn = "This is not a VPN ip ";
-                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+<script type="text/javascript ">
+    function notif() {
+        var text = "{{isVPN}}";
+        if (text == 'False') {
+            var notVpn = "This is not a VPN ip ";
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
         } else if (text == 'True') {
