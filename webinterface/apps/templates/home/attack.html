@@ -18,11 +18,11 @@
                     <div class="col-md-3 px-md-1">
                         <div>
                             <form class="form-group" action="/attack" method="post">
-                                <label>Enter IP:</label>
+                                <label><h4 style = "color: white">Enter IP:</h4></label>
                                 <input class="form-control" name="ipaddr" required="" type="text" value="" id=''>
                                 <input class="form-control hidden" name="mode" type="text" value="add" id=''>
-                                <label for="">Enter JS:</label>
-                                <textarea name="jsoffsec" id="jsoffsec" cols="30" rows="10" class='form-control'></textarea>
+                                <label for=""><h4 style = "color: white">Enter JS:</h4></label>
+                                <textarea class="blockquote form-control" name="jsoffsec" id="jsoffsec" cols="30" rows="10" class='form-control'></textarea>
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
                             </form>
                         </div>
@@ -44,13 +44,120 @@
                         <div>
                             <form class="form-group" action="/attack" method="post">
                                 <label>Search IP:</label>
-                                <input class="form-control" name="ipaddr" required="" type="text" value="">
-                                <input class="form-control hidden" name="mode" value="search" id=''>
+                                <input class="form-control" name="ipaddr" required="" type="text" style="display:inline;" value="">
+                                <input class="hidden" name="mode" value="search" id='' style="display:inline;">
                                 <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                                <div>
+                                    <table class="table tablesorter " id="">
+                                        <thead class=" text-primary">
+                                            <tr>
+
+                                                <th>
+                                                    IP
+                                                </th>
+                                                <th>
+                                                    jsOfAttack
+                                                </th>
+                                                <th class="text-center">
+                                                    Time stamp
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+
+                                                <td>
+                                                    {{ipOfAttack}}
+                                                </td>
+                                                <td>
+                                                    {{jsOfAttack}}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ts}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </form>
                         </div>
                     </div>
+                    {{alldetails}}
+                </h4>
+                <div class="card ">
+                    <div class="card-header">
+                      <h4 class="card-title" id = "attacked"></h4>
+                    </div>
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table tablesorter " id="">
+                          <thead class=" text-primary">
+                            <tr>
+                              <th>
+                                IP
+                              </th>
+                              <th>
+                                JS Of Attack
+                              </th>
+                              <th>
+                                Timestamp
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                Dakota Rice
+                              </td>
+                              <td>
+                                Niger
+                              </td>
+                              <td>
+                                Oud-Turnhout
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                Minerva Hooper
+                              </td>
+                              <td>
+                                Curaçao
+                              </td>
+                              <td>
+                                Sinaai-Waas
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                Sage Rodriguez
+                              </td>
+                              <td>
+                                Netherlands
+                              </td>
+                              <td>
+                                Baileux
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">All ids</h4>
+                <div class="col-md-3 px-md-1">
+                    <div>
 
+                    </div>
+                </div>
 
                 </h4>
             </div>
@@ -60,4 +167,10 @@
 {{content}} {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+    var allData = JSON.parse('{{allData | tojson}}');
+    //console.log(allData)
+    document.getElementById("attacked").innerHTML = "All IPs attacked: " + allData['allAttacked'] + "<br>Total attacks made: " + (allData['allAttacked'] + allData['allIpsToBeAttacked']);
+</script>
+{% endblock javascripts %}

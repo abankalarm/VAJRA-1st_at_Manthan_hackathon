@@ -1,75 +1,95 @@
-{% extends "layouts/base.html" %}
-
-{% block title %} Tracking {% endblock %} 
+{% extends "layouts/base.html" %} {% block title %} Tracking {% endblock %}
 
 <!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}
-    <script>
+{% block stylesheets %}
+<style>
+    .hidden {
+        visibility: hidden;
+    }
+</style>
+{% endblock stylesheets %} {% block content %}
+<script>
     /*    function getFileData(){
-             var file = myFile.files[0];  
-               var filename1 = ;
-        }
-    
-     function getFileNameWithExt(event) {
-        if (!event || !event.target || !event.target.files || event.target.files.length === 0) {
-       return;
-     }
-    
-     const name = event.target.files[0].name;
-     const lastDot = name.lastIndexOf('.');
-    
-     const fileName = name.substring(0, lastDot);
-     const ext = name.substring(lastDot + 1);
-    
+                                                                             var file = myFile.files[0];  
+                                                                               var filename1 = ;
+                                                                        }
+                                                                    
+                                                                     function getFileNameWithExt(event) {
+                                                                        if (!event || !event.target || !event.target.files || event.target.files.length === 0) {
+                                                                       return;
+                                                                     }
+                                                                    
+                                                                     const name = event.target.files[0].name;
+                                                                     const lastDot = name.lastIndexOf('.');
+                                                                    
+                                                                     const fileName = name.substring(0, lastDot);
+                                                                     const ext = name.substring(lastDot + 1);
+                                                                    
 
 
-     var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-     var result = '';
-     for ( var i = 0; i < fileName.length; i++ ) {
-         result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-     }
+                                                                     var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                                                                     var result = '';
+                                                                     for ( var i = 0; i < fileName.length; i++ ) {
+                                                                         result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
+                                                                     }
 
-     outputfile.value = result;
-     extension.value = ext;
-    }*/
-   
-    </script>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-profile">
-                <div class="card-body">
-                    <h6 class="card-category text-gray">Tracking ---</h6>
-                    <h4 class="card-title">
-                        <div>
-                            
-                            <form action="/tracking" method="post" enctype="multipart/form-data">
-                                Select image to upload:
-                                <br>
-                               
-                                <input id='inputfile' type='file' name='inputfile' class='form-control'>
-                                <br>
-                                <!-- Output Filename <input id='outputfile' type='text' name='outputfile' class='form-control'><br>
-                                Extension <input id='extension' type='text' name='extension' class='form-control'> -->
-                                <br>
-                                <input type="submit" value="submit" class='btn btn-primary btn-round'>
-                            </form>
-                          {{name}}
-                        </div>
-                    </h4>
-                    
-                </div>
+                                                                     outputfile.value = result;
+                                                                     extension.value = ext;
+                                                                    }*/
+</script>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">Tracking ---</h6>
+                <h4 class="card-title">
+                    <form action="/tracking" method="POST" enctype="multipart/form-data">
+                        Select image to upload:
+                        <br>
+                        <input id='inputfile' type='file' name='inputfile' class='form-control'>
+                        <input class="form-control" type="text" name="comment" value="add comment here" id=''>
+                        <input class="hidden" name="mode" value="upload" id=''>
+                        <input type="submit" value="submit" class='btn btn-primary btn-round'>
+                    </form>
+                    {{name}}
+                </h4>
+
             </div>
         </div>
     </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">search</h6>
+                <h4 class="card-title">
+                    <form action="/tracking" method='POST' class='form-group'>
+                        Search ID:
+                        <input type="text" name='idsearch' value='' class='form-control'>
+                        <input class="hidden" name="mode" value="search" id=''>
+                        <input type="submit" value="submit" class='btn btn-primary btn-round'> {{searchData}}
+                    </form>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray">IP logs</h6>
+                <h4 class="card-title">
+                    <div id='logsip'>
+                        {{allData}}
+                    </div>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}                               
- 
-{% endblock javascripts %}
-
-
-
-
+{% block javascripts %} {% endblock javascripts %}

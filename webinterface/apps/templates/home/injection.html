@@ -76,7 +76,7 @@
         dict['bookmarked'] = 0;
 
 
-        var xyz = "23.106.56.14"
+        var xyz = "{{ip}}"
         $.post("/api/ip/identity", {
                 ip: xyz,
             },
@@ -104,16 +104,18 @@
                 }
             });
 
-        //Method 3 - TIME
+        //Method 1 - TIME
+        var timezone1 = Intl.DateTimeFormat().resolvedOptions().timeZone;
         $.post("/api/vpnidentification/time", {
                 ip: xyz,
+                time: timezone1
             },
             function(data, status) {
                 dict['isVpnTime'] = data
             });
 
         //Method 2 - ASN    
-        $.post("/api/vpnidentification/time", {
+        $.post("/api/vpnIsASN", {
                 ip: xyz,
             },
             function(data, status) {
@@ -121,11 +123,11 @@
             });
 
         //Method 3 - Something Else    
-        $.post("/api/vpnidentification/time", {
+        $.post("/api/vpnIsASN", {
                 ip: xyz,
             },
             function(data, status) {
-                dict['isVpnSomething'] = data
+                dict['isVpnSomething'] = "NA"
             });
         
             dict['browserLat'] = 404

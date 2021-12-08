@@ -87,21 +87,21 @@ def storeInTrackingTable(content):
     cur.execute(s)
     conn.commit()
     conn.close()
-    #storeIpCommentTable(ip, '')
 
 @blueprint.route('/display/<filename>')
 def display_image(filename):
-	##print('display_image filename: ' + filename)
+	#print('display_image filename: ' + filename)
     # call db unique name
     ip = request.environ['REMOTE_ADDR']
+    parsed_string = user_agent_parser.Parse( str(request.headers.get('User-Agent')))
+    #print(parsed_string)
     data={
         "ip":ip,
         "id":filename,
-        "timestamp":str(time.time())
+        "timestamp":str(time.time()),
+        "userAgent": parsed_string
     }
-    #print(data)
     storeInTrackingTable(data)
-
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 
@@ -336,16 +336,18 @@ def getJSWithThisIP(ip):
     return str(rows[0][0])
 
 @blueprint.route('/index')
+@login_required
 def index():
-
-    return render_template('home/index.html', segment='index')
+    return redirect("/dashboard", code=302)
 
 @blueprint.route('/nmap')
+@login_required
 def nmap():
+    oports = {}
+    return render_template('home/nmaps.html', segment='nmaps', oports = oports)
 
-    return render_template('home/nmaps.html', segment='nmaps')
-
-@blueprint.route('/dash')
+@blueprint.route('/dashboard')
+@login_required
 def dash():
     allData = {}
     allData["IP"]=[]
@@ -408,6 +410,7 @@ def dash():
     return render_template('home/dashboard.html', segment='dash', allData = allData)
 
 @blueprint.route('/fdl')
+@login_required
 def fdl():
     allData = {}
     try:
@@ -434,11 +437,13 @@ def fdl():
 
 
 @blueprint.route('/bookmarks')
+@login_required
 def bkmark():
     #receive an IP and call flagBookmarkDB(ip)
     return render_template('home/bookmarks.html', segment='bookmarks')
 
 @blueprint.route('/ipl')
+@login_required
 def ipl():
     allData = {}
     try:
@@ -503,7 +508,7 @@ def get_segment(request):
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    ip="23.106.56.14"
+    ip="111.223.26.202"
     #ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='injection', ip=ip)
 
@@ -524,24 +529,26 @@ def injectionpost():
     
     storeInDB(content)
     #l = getfromdb(['ip'], [content['ip']])
-    return render_template('home/page-404.html', segment='index'), 404
+    return jsonify('true')
 
 @blueprint.route('/search', methods=['GET','POST'])
+@login_required
 def searchpost():
     if (request.method == 'POST'):
-        print("WWW",request.form)
+        #print("WWW",request.form)
         search = request.form['search']
         isBad,asn,result=getDetails(search)
-
-        
         ips=[]
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
         cur.execute("Select cookie from Fingerprints where ip='"+str(search)+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        
+        column_names = [col[0] for col in desc]
+        try: 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        except:
+            data = []
+
         for e in data:
             cur.execute("Select ip from Fingerprints where cookie='"+e["cookie"]+"'")
             desc1 = cur.description 
@@ -558,7 +565,10 @@ def searchpost():
         cur.execute("Select clientID from Fingerprints where ip='"+str(search)+"'")
         desc = cur.description 
         column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        try:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        except:
+            data = []
         for e in data:
             cur.execute("Select ip from Fingerprints where clientID='"+e["clientID"]+"'")
             desc1 = cur.description 
@@ -573,7 +583,7 @@ def searchpost():
             ips.extend(temp)
         #print(ips,type(ips))
         uip = list(set(ips))
-        allData={}
+        allDataIP={}
 
 
 
@@ -582,15 +592,15 @@ def searchpost():
             desc = cur.description 
             column_names = [col[0] for col in desc] 
             data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            allData[ip]=data
+            allDataIP[ip]=data
             #print(allData[ip])
         riskData=[{"IP":search}]
-
+        #print(allDataIP)
 
 
         vpnDetails(riskData)
         #print(riskData)
-        
+        allData={}
         ASN_name = riskData[0]['asn'][4]
         try:
 
@@ -629,17 +639,14 @@ def searchpost():
         Alldata_for_searched_ip = {}
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-
-        search1 = '127.0.0.1'
-        cur.execute("Select * from Fingerprints where ip='"+str(search1)+"'")
-        #Alldata_for_searched_ip={ search : cur.fetchall()}
-        
+        cur.execute("Select * from Fingerprints where ip='"+str(search)+"'")
+    
         Alldata_for_searched_ip = {}
         
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        Alldata_for_searched_ip_list = data
+        #Alldata_for_searched_ip["data"] = data
         Alldata_for_searched_ip['data'] = data
         
     
@@ -655,7 +662,7 @@ def searchpost():
         
         cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc] 
+        column_names = [col[0] for col in desc]
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
 
         #print("@@@@@@@",data)
@@ -700,20 +707,53 @@ def searchpost():
             allData["per"] = 100
             ratingcolor = "red"
 
-        isVPN = "False"
-        if Alldata_for_searched_ip_list[0]['isVpnASN'] or Alldata_for_searched_ip_list[0]['isVpnTime'] or Alldata_for_searched_ip_list[0]['isVpnSomething']:
-            isVPN = "True"
 
-        isp = Alldata_for_searched_ip_list[0]['isp']
-        region = Alldata_for_searched_ip_list[0]['regionName']
-        zipcode = Alldata_for_searched_ip_list[0]['zip']
-        lat_long = str(Alldata_for_searched_ip_list[0]["lat"]) + " & " + str(Alldata_for_searched_ip_list[0]["lon"])
-        country = Alldata_for_searched_ip_list[0]['country']
+        try:
+            if Alldata_for_searched_ip["data"][0]['isVpnASN'] or Alldata_for_searched_ip["data"][0]['isVpnTime']:
+                isVPN = "True"
+        except:
+            isVPN="False"
+        try:
+            isp = Alldata_for_searched_ip["data"][0]['isp']
+        except:
+            isp="Not Available"
+        try:
+            region = Alldata_for_searched_ip["data"][0]['regionName']
+        except:
+            region="Not Available"
+        try:
+            zipcode = Alldata_for_searched_ip["data"][0]['zip']
+        except:
+            zipcode="Not Available"
+        try:
+            lat_long = str(Alldata_for_searched_ip["data"][0]["lat"]) + " & " + str(Alldata_for_searched_ip["data"][0]["lon"])
+        except:
+            lat_long="Not Available"
+        try:
+            country = Alldata_for_searched_ip["data"][0]['country']
+        except:
+            country="Not Available"
         #print(allData.keys())
+        cur.execute("Select * from Fingerprints where ip ='" + search + "'")
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        try:
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
+        except:
+            data = []
+        
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        return render_template('home/search.html', ratingcolor=ratingcolor, isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        allDataIP['keyList'] = list(allDataIP.keys())
+        allDataIP['cols'] = ['cookie', 'timezone', 'userAgent', 'timestamp']
+        dataWithThisIp = {}
+        dataWithThisIp['data'] = data
+        dataWithThisIp['cols'] = ['cookie', 'userAgent', 'timestamp', 'parentDomain']
+        return render_template('home/search.html', isVPN=isVPN,allDataIP=allDataIP, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData, dataWithThisIp = dataWithThisIp)
     else:
+        allDataIP = {}
+        dataWithThisIp = {}
+        print(dataWithThisIp)
         ratingcolor = "green"
         allData={}
         allData["per"]=0
@@ -724,25 +764,32 @@ def searchpost():
         allData["data center"]=0
         allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip, dataWithThisIp = dataWithThisIp, allDataIP = allDataIP)
     
 @blueprint.route('/api/portscan')
+@login_required
 def portscan():
     ip = request.args['ip']
     type = request.args['speed']
+    
     if type=='top10':
-        result = get_info(ip, top_10)
-    if type=='top50':
-        result = get_info(ip, top_50)
-    if type=='top100':
-        result = get_info(ip, top_100)
-
-    return render_template('home/nmaps.html', segment='nmaps', result = result)
+        hostname, hoststate, oports = get_info(ip, top_10)
+    elif type=='top50':
+        hostname, hoststate, oports = get_info(ip, top_50)
+    elif type=='top100':
+        hostname, hoststate, oports = get_info(ip, top_100)
+    else:
+        hostname = ""
+        hoststate = "" 
+        oports = ""
+    
+    return render_template('home/nmaps.html', segment='nmaps', hostname = hostname, hoststate = hoststate, oports = oports)
 
 
 @blueprint.route('/api/vpnidentification/time', methods=['POST'])
 def vpn_time():
     ip = request.form['ip']
+    timezone = request.form['time']
     GEO_IP_API_URL  = 'http://ip-api.com/json/'
 
     req             = urllib.request.Request(GEO_IP_API_URL+ip)
@@ -750,12 +797,15 @@ def vpn_time():
     json_response   = json.loads(response.decode('utf-8'))
 
     # search in db for ip
-    browser_timzone = ''
+    browser_timzone = timezone
 
     if(json_response['timezone'] == browser_timzone):
         return jsonify("false")
+    elif( json_response['timezone'] != browser_timzone and len(browser_timzone)>5):
+        return jsonify("false")
 
-    return jsonify("true")
+
+    return jsonify("unknown")
 
 @blueprint.route('/api/ip/identity', methods=['GET','POST'])
 def ip_identity():
@@ -799,28 +849,120 @@ def getDetailsFromUserAgent():
     return jsonify(parsed_string)
 
 @blueprint.route('/tracking', methods=['GET','POST'])
+@login_required
 def uploadfiles():
     if(request.method == 'POST'):
-        uploadf = request.files['inputfile']
-        N = 7
-        res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = N))
-        name =  str(res) + '.' + uploadf.filename.rsplit('.', 1)[1].lower()
-
-        #print(name)
-        # name = request.form['outputfile'] + '.' + request.form['extension']
-        if(uploadf):
-            try:
-                uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
-            except:
-                uploadf.save(os.path.join('apps/static/uploads/', name))
-            # return redirect(url_for('download_file', name=name))
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        mode = request.form.get('mode')
+        if(mode=="upload"):
+            uploadf = request.files['inputfile']
+            comment = request.form.get('comment')
+            N = 7
+            res = ''.join(random.choices(string.ascii_uppercase + string.digits, k = N))
+            name =  str(res) + '.' + uploadf.filename.rsplit('.', 1)[1].lower()
+            
+            #print(name)
+            # name = request.form['outputfile'] + '.' + request.form['extension']
+            if(uploadf):
+                try:
+                    uploadf.save(os.path.join('webinterface/apps/static/uploads/', name))
+                except:
+                    uploadf.save(os.path.join('apps/static/uploads/', name))
+                # return redirect(url_for('download_file', name=name))      
         
-        #print(name)
-        storeIpCommentTable(name, 'AAA')
-        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name)
-    else:
-        return render_template('home/tracking.html', segment='tracking')
+            #print(name)
+            storeIpCommentTable(name,comment)
+            searchData = {}
+            trackingdata = {}
+            allData = {}
+        else:
+            uploadf = {}
+            allData = {}
+            name = request.form.get('idsearch')
+            cur.execute("Select comment from TrackingComments where id = '" + name + "';" )
+            desc = cur.description 
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            allData['comment'] = data
+            
+            
+            
+            try:
+                cur.execute("Select ip, userAgent, timestamp from Tracking where id ='" + name + "';" )
+                desc = cur.description
+                column_names = [col[0] for col in desc] 
+                data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                allData['ips'] = str(data)
+            except:
+                allData['ips'] = "Nothing to show"
 
+        searchData = {}
+        try:
+            cur.execute("SELECT id, comment FROM TrackingComments;")
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+        except:
+            searchData={}
+
+        conn.close()
+        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData, searchData=searchData)
+    else:
+        try:
+            conn = sqlite3.connect('db.sqlite3')
+            cur = conn.cursor()
+            searchData = {}
+            cur.execute("SELECT id, comment FROM TrackingComments;")
+            desc = cur.description
+            column_names = [col[0] for col in desc] 
+            data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+            ids = []
+            comments = []
+            for i in data:
+                ids.append(i['id'])
+                comments.append(i['comment'])
+                s = "SELECT ip, timestamp, userAgent from Tracking where id ='" + i['id'] + "';"
+                cur.execute(s)
+                desc = cur.description
+                column_names = [col[0] for col in desc]
+                data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
+                searchData[i['id']] = data1
+            searchData['keyList'] = ids
+            searchData['comments'] = comments
+            conn.close()
+        except:
+            searchData = {}
+        return render_template('home/tracking.html', segment='tracking',searchData=searchData)
+
+@blueprint.route('/api/vpnIsASN', methods=['POST'])
+def vpnIsASN():
+    if request.method == 'POST':
+        ip = request.form['ip']
+        intip=int(ipaddress.ip_address(ip))
+        s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        conn = sqlite3.connect('ip-index.db')
+        cur=conn.cursor()
+        cur.execute(s)
+        c=cur.fetchall()
+        conn.close()
+        #print("->>>",c)
+        if len(c)>0 :
+            return "True"
+    return "false"
 
 @blueprint.route('/api/vpnDetails')
 def vpnDetails(data):
@@ -887,7 +1029,9 @@ def checkip_attack():
 
 
 @blueprint.route('/attack',methods=['GET','POST'])
+@login_required
 def attack():
+    allData = {}
     try:
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
@@ -898,9 +1042,16 @@ def attack():
         l = getfromdb('Attacking', ['timestamp'], [''])
         allAttacked = int(data[0]['cnt']) - 1
         allIpsToBeAttacked = len(l) - 1
+
+        s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
+        cur.execute(s)
+        a=cur.fetchall()
+        conn.close()
     except:
         allAttacked = 0
         allIpsToBeAttacked = 0
+    allData['allAttacked'] = allAttacked
+    allData['allIpsToBeAttacked'] = allIpsToBeAttacked
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -917,15 +1068,12 @@ def attack():
             content["ip"] = IP
             # search for js respective to partivular ip
             l = getfromdb("Attacking",["ip"], [content["ip"]])
-            #print("@@@@", l[0][0])
-            #ipOfAttack = l[0][0]
-            #jsOfAttack = l[0][1]
             try:
                 tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
             except:
                 tsAttack = "Not Attacked"
-            #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
-            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
+            #print("######", l[0][0], " ", l[0][1], " ", tsAttack, " ")
+            return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allData = allData)
     else:
         content = {}
         content['ip'] = '0.0.1.0'
@@ -934,41 +1082,16 @@ def attack():
         # store a ip and js pair together , make it unique and overwrite
         storeInAttackingTable(content)
         #getfromdb("Attacking", ["ip","js"],[content["ip"],content["js"]])
-        
-        return render_template('home/attack.html', segment='attack', alldetails = content, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
-
-@blueprint.route('/trackinglogs')
-def trackinglogs():
-    allData = {}
-    try:
-        conn = sqlite3.connect('db.sqlite3')
-        cur = conn.cursor()
-        cur.execute("SELECT id, comment FROM TrackingComments;")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        ids = []
-        comments = []
-        for i in data:
-            ids.append(i['id'])
-            comments.append(i['comment'])
-            s = "SELECT ip, timestamp from Tracking where id ='" + i['id'] + "';"
-            cur.execute(s)
-            desc = cur.description
-            column_names = [col[0] for col in desc]
-            data1 = [dict(zip(column_names, row)) for row in cur.fetchall()]
-            allData[i['id']] = data1
-        allData['keyList'] = ids
-        allData['comments'] = comments
-        conn.close()
-    except:
-        print('No data')
-    return render_template('home/trackinglogs.html', segment='index', allData = allData)
-
+        search = ""
+        ipOfAttack = ""
+        jsOfAttack = ""
+        ts = ""
+        return render_template('home/attack.html', segment='attack', search=search, ipOfAttack = ipOfAttack, jsOfAttack = jsOfAttack,ts = ts, alldetails = content, allData = allData)
 
 
 
 @blueprint.route('/blockManage',methods=['GET','POST'])
+@login_required
 def countryblock():  
 
     if(request.method == 'POST'):
@@ -1063,3 +1186,26 @@ def unblock():
             conn.close()
     except:
         print('Table DNE')
+
+
+@blueprint.route('/ipDetail/<template>')
+def ipDetail(template):  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("select * from Fingerprints where ip = '" + template + "';")
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    return jsonify(data)
+
+@blueprint.route('/cookieDetail/<template>')
+def cookieDetail(template):  
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("select * from Fingerprints where cookie = '" + template + "';")
+    desc = cur.description
+    column_names = [col[0] for col in desc]
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    conn.close()
+    return jsonify(data)

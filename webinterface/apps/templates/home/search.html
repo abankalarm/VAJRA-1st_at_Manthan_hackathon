@@ -63,11 +63,14 @@
 
                     <script>
                         // not working, found another way to get work done - karan
-                        
-                        console.log("AllData")
-                        
-                      
-                        
+                        var myvar = "{{ Alldata_for_searched_ip | tojson}}";
+
+                        var parsed = JSON.parse(myvar);
+                        console.log(parsed);
+                        console.log(parsed.data['0']);
+                        console.log(parsed.data['0']['ip']);
+
+                        //console.log("AllData")
                     </script>
                     <table class="table " id="">
                         <thead class=" text-primary">
@@ -352,12 +355,12 @@
                                 return cities;
                             }
 
-                            dump1 = [
-                                [true, "india", "india", "point", [80, 40]],//VPN, ID, TITLE, Point, Coordinates{Lat, Long}
+                            /*dump1 = [
+                                [true, "india", "india", "point", [80, 40]], //VPN, ID, TITLE, Point, Coordinates{Lat, Long}
                                 [false, "indo", "indo", "point", [40, 80]]
-                            ];
-                            addvalues(dump1, cities);
-                            console.log(cities);
+                            ];*/
+                            //addvalues(dump1, cities);
+                            //console.log(cities);
 
                             //call function;
                             // var cities1 = [{
@@ -405,7 +408,19 @@
                             citySeries.data.setAll(cities);
                             console.log(citySeries);
 
-         
+
+                            try {
+                                var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
+                                //console.log(allData);
+                                var tobeadded = [];
+                                for (let i = 0; i < Object.keys(allData.data).length; i++) {
+                                    tobeadded.push([allData.data[i].isVpnASN || allData.data[i].isVPNTime, allData.data[i].countryCode, allData.data[i].country, "Point", [allData.data[i].lat, allData.data[i].lon]])
+                                }
+                                console.log(tobeadded);
+                                addvalues(tobeadded, cities);
+                            } catch (e) {
+                                console.log(e);
+                            }
 
                             //console.log(cities);
                             var destinations = [];
@@ -484,7 +499,16 @@
                 <h5 class="title">Edit Profile</h5>
             </div>
             <div class="card-body">
-
+                <div class="table-responsive">
+                    <table class="table tablesorter " id="">
+                      <thead class=" text-primary">
+                        <tr id="relatedheads">
+                        </tr>
+                      </thead>
+                      <tbody id = "relatedbody">
+                      </tbody>
+                    </table>
+                </div>
             </div>
             <div class="card-footer">
                 <button type="submit" class="btn btn-fill btn-primary">Save</button>
@@ -610,9 +634,20 @@
         <div class="card card-profile">
             <div class="card-body">
 
-                <h4 class="card-title">result</h4>
-                <div class="row">
-
+                    <h4 class="card-title">Result</h4>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                          <table class="table tablesorter " id="">
+                            <thead class=" text-primary">
+                              <tr id="resultheads">
+                              </tr>
+                            </thead>
+                            <tbody id = "resultbody">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -624,7 +659,51 @@
         {{result}}
         `)
     </script>
-    {% endblock content %} {% block javascripts %}
+    {% endblock content %}
+    {% block javascripts %}
+    <script>
+        /* This is for Result display*/
+        var results =  JSON.parse('{{allDataIP | tojson}}');
+        var resultHead = document.getElementById("resultheads")
+        var resultBody = document.getElementById("resultbody");
+        var one = "<th>IP</th>";
+        var two = "";
+        for (let i = 0; i < Object.keys(results['cols']).length; i++) {
+            one += "<th>" + results['cols'][i] + "</th>";
+        }
+        one += "<th>Further Analysis</th>";
+        for(let i = 0; i < Object.keys(results['keyList']).length; i++) {
+            two += "<tr><td>" + results['keyList'][i] + "</td>";
+            for(let j = 0; j < Object.keys(results['cols']).length; j++) {
+                two += "<td>" + results[results['keyList'][i]][0][results['cols'][j]] + "</td>";
+            }
+            two += "<td><a href = '/ipDetail/" + results['keyList'][i] +"'>Here</a></td></tr>"
+        }
+        resultHead.innerHTML = one;
+        resultBody.innerHTML = two;
+    </script>
+
+    <script>
+        /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+        var related =  JSON.parse('{{dataWithThisIp | tojson}}');
+        var relatedHead = document.getElementById("relatedheads")
+        var relatedBody = document.getElementById("relatedbody");
+        var one = "";
+        var two = "<tr>";
+        for (let i = 0; i < Object.keys(related['cols']).length; i++) {
+            one += "<th>" + related['cols'][i] + "</th>";
+        }
+        one += "<th>Further Analysis</th>";
+        for(let j = 0; j < Object.keys(related['cols']).length; j++) {
+            two += "<td>" + related['data'][related['cols'][j]] + "</td>";
+        }
+        two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] +"'>Here</a></td></tr>"
+        relatedHead.innerHTML = one;
+        relatedBody.innerHTML = two;
+        //console.log("here", related)
+    </script>
+
+
     <script type="text/javascript ">
         function notif() {
             var text = "{{isVPN}}";
