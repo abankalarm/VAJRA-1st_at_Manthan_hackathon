@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %} {% block title %} Page Blank {% endblock %}
+{% extends "layouts/base.html" %} {% block title %} Full IP Log {% endblock %}
 {% block stylesheets %}
 <style>
     .faq_question {
@@ -34,9 +34,10 @@
         var display = '';
         for (var j = 0; j < Object.keys(allData[allData['keyList'][i]]).length; j++) {
             //display all the properties which you wish to display here
-            display += "TOR: " + (allData[allData['keyList'][i]][j]['isTOR'] === 0? "false" : "true") + " , Location: " + allData[allData['keyList'][i]][j]['city'] + ", " + allData[allData['keyList'][i]][j]['country'] + "<br>";
+            display += "TOR: " + (allData[allData['keyList'][i]][j]['isTOR'] === 0? "false" : "true") + "<br>  Location: " + allData[allData['keyList'][i]][j]['city'] + "&emsp; " + allData[allData['keyList'][i]][j]['country'] + "<br> Time-Stamp: " + allData[allData['keyList'][i]][j]['timestamp'] + "<br>Parent-Domain: " + allData[allData['keyList'][i]][j]['parentDomain'] + "<br> Client-Id: " + allData[allData['keyList'][i]][j]['clientID'] + "<br> Cookie: " + allData[allData['keyList'][i]][j]['cookie'] + "<br> User-Agent: " + allData[allData['keyList'][i]][j]['userAgent'] + "<br><br>";
+            display += "<form action = '/search' method = 'POST'><button style='text-align:right' id='search' name='search' type='submit' value='" + allData['keyList'][i] + "'>View Full Details</button></form>";
         }
-        ele += "<div class='faq_container'><div class='faq'><div class = 'faq_question' style = 'width: 100%'><div class = 'card-header'><b>" + allData['keyList'][i] + "</b><br></div></div><div class='faq_answer_container'><div class='faq_answer'><div class = 'card-block' style = 'padding: 10px'>" + display + "</div><br><br></div></div></div></div>";
+        ele += "<div class='faq_container'><div class='faq'><div class = 'faq_question' style = 'width: 100%;'><div class = 'card-header'><b>" + allData['keyList'][i] + "</b><br></div></div><div class='faq_answer_container'><div class='faq_answer'><div class = 'card-block' style = 'padding: 10px'>" + display + "</div></div></div></div></div>";
     }
 
     document.getElementById("ques").innerHTML = ele;
@@ -69,6 +70,7 @@
     </div>
 </div>
 
+<br><br>
 <button onclick="window.print()">Print Complete IP Log</button>
 
 {% endblock content %}

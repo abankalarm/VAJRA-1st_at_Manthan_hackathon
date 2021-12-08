@@ -1,4 +1,5 @@
-{% extends "layouts/base.html" %} {% block title %} Dashborad {% endblock %} {% block javascripts %}
+{% extends "layouts/base.html" %} {% block title %} Dashboard {% endblock %}
+{% block javascripts %}
 
 <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
@@ -13,13 +14,13 @@
     document.getElementById("currentDomains").innerHTML = allData['uniqueDomains'][0]['cnt']
     var domainsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>Domain Name</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IP's Traced</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Block</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Action</th></tr>";
     for (let i = 0; i < Math.min(10, Object.keys(allData['domainCount']).length); i++) {
-        domainsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='" + allData['domainCount'][i]['parentDomain'] + "'>" + allData['domainCount'][i]['parentDomain'] + "</a></td>" + "<td class ='text-uppercase text-secondary text-xxs'>   </td>" +"<td class ='text-uppercase text-secondary text-xxs'>   <button style='text-align:right'>View Full Details</button> </td>" +  "<td class ='text-uppercase text-secondary text-xxs'> <button style='text-align:right'>View Full Details</button>  </td>" + "</tr>"
+        domainsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='" + allData['domainCount'][i]['parentDomain'] + "'>" + allData['domainCount'][i]['parentDomain'] + "</a></td>" + "<td class ='text-uppercase text-secondary text-xxs'>   </td>" +"<td class ='text-uppercase text-secondary text-xxs'>   <button style='text-align:right'>Block VPN</button> </td>" +  "<td class ='text-uppercase text-secondary text-xxs'> <button style='text-align:right'>View Full Details</button>  </td>" + "</tr>"
     }
     domainsDetected += "</table>"
     document.getElementById("domainsDetected").innerHTML = domainsDetected
-    var ipsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>IP</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IsVPN</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>ParentDomain</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>TimeStamp</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>Action</th></tr>";
+    var ipsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>IP</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>IsVPN</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>ParentDomain</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>TimeStamp</th></tr>";
     for (let i = 0; i < Math.min(10, Object.keys(allData['distinctIp']).length); i++) {
-        ipsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><a href='" + allData['distinctIp'][i]['ip'] + "'>" + allData['distinctIp'][i]['ip'] + "</a></td> <td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['isVpnTime'] + "</td>" + "<td class ='text-uppercase text-secondary text-xxs'></td><td class ='text-uppercase text-secondary text-xxs'></td>" + "<b><td class ='text-uppercase text-secondary text-xxs'><button style='text-align:right'>View Full Details</button></td></tr>"
+        ipsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><form action = '/search' method = 'POST'><input style='text-align:right' id='search' name='search' type='submit' value='" + allData['distinctIp'][i]['ip'] + "'></form></td> <td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['isVpnTime'] + "</td>" + "<td class ='text-uppercase text-secondary text-xxs'></td><td class ='text-uppercase text-secondary text-xxs'></td>" + "</tr>"
 
         // + allData['domainCount'][i]['parentDomain'] + "</td><td>" + allData['timeStamp']
     }
@@ -41,7 +42,7 @@
             <div class="card card-profile">
                 <div class="card-body">
 
-                    <h4 class="card-title">Map</h4>
+                    
 
                     <div id="chartdiv" style="width: 100%; height: 350px"></div>
 

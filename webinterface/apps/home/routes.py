@@ -386,7 +386,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['domainCount'] = data
     
-    cur.execute("SELECT ip, isVpnTime FROM Fingerprints; ")
+    cur.execute("SELECT ip, isVpnTime, parentDomain, timestamp FROM Fingerprints; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -529,6 +529,7 @@ def injectionpost():
 @blueprint.route('/search', methods=['GET','POST'])
 def searchpost():
     if (request.method == 'POST'):
+        print("WWW",request.form)
         search = request.form['search']
         isBad,asn,result=getDetails(search)
 
@@ -638,7 +639,7 @@ def searchpost():
         desc = cur.description 
         column_names = [col[0] for col in desc] 
         data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        print("@!!!@!@!@!",type(data))
+        Alldata_for_searched_ip_list = data
         Alldata_for_searched_ip['data'] = data
         
     
@@ -690,15 +691,40 @@ def searchpost():
 
         except:
             allData["Timezone"]=0
+
         allData["per"]=allData["Timezone"]+allData["black"]+allData["grey"]+ allData["blacklisted"]+allData["data center"]+allData["Bad ASN"]
-        allData["per"]=allData["per"]/4
+        ratingcolor = "green"
+        if(allData["per"]>100):
+            ratingcolor = "orange"
+        if(allData["per"]>100):
+            allData["per"] = 100
+            ratingcolor = "red"
+
+        isVPN = "False"
+        if Alldata_for_searched_ip_list[0]['isVpnASN'] or Alldata_for_searched_ip_list[0]['isVpnTime'] or Alldata_for_searched_ip_list[0]['isVpnSomething']:
+            isVPN = "True"
+
+        isp = Alldata_for_searched_ip_list[0]['isp']
+        region = Alldata_for_searched_ip_list[0]['regionName']
+        zipcode = Alldata_for_searched_ip_list[0]['zip']
+        lat_long = str(Alldata_for_searched_ip_list[0]["lat"]) + " & " + str(Alldata_for_searched_ip_list[0]["lon"])
+        country = Alldata_for_searched_ip_list[0]['country']
         #print(allData.keys())
         conn.close()
         ##print("@@@@@@",Alldata_for_searched_ip)
-        return render_template('home/search.html', segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
+        return render_template('home/search.html', ratingcolor=ratingcolor, isVPN=isVPN, isp=isp, region=region, zipcode=zipcode, lat_long=lat_long, country=country, segment='search',badASN=badASN, datacentre = datacenter, blacklisted=blacklisted, ASN_name=ASN_name, result=result, ip = search, asn = asn, bad = isBad, Alldata_for_searched_ip = Alldata_for_searched_ip,allData=allData)
     else:
+        ratingcolor = "green"
+        allData={}
+        allData["per"]=0
+        allData["Timezone"]=0
+        allData["black"]=0
+        allData["grey"]=0
+        allData["blacklisted"]=0
+        allData["data center"]=0
+        allData["Bad ASN"]=0
         Alldata_for_searched_ip = {}
-        return render_template('home/search.html', segment='search',  Alldata_for_searched_ip = Alldata_for_searched_ip)
+        return render_template('home/search.html', ratingcolor=ratingcolor, segment='search', allData=allData, Alldata_for_searched_ip = Alldata_for_searched_ip)
     
 @blueprint.route('/api/portscan')
 def portscan():
@@ -862,15 +888,19 @@ def checkip_attack():
 
 @blueprint.route('/attack',methods=['GET','POST'])
 def attack():
-    conn = sqlite3.connect('db.sqlite3')
-    cur = conn.cursor()
-    cur.execute("Select count(*) as cnt from Attacking;" )
-    desc = cur.description 
-    column_names = [col[0] for col in desc] 
-    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    l = getfromdb('Attacking', ['timestamp'], [''])
-    allAttacked = int(data[0]['cnt']) - 1
-    allIpsToBeAttacked = len(l) - 1
+    try:
+        conn = sqlite3.connect('db.sqlite3')
+        cur = conn.cursor()
+        cur.execute("Select count(*) as cnt from Attacking;" )
+        desc = cur.description 
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        l = getfromdb('Attacking', ['timestamp'], [''])
+        allAttacked = int(data[0]['cnt']) - 1
+        allIpsToBeAttacked = len(l) - 1
+    except:
+        allAttacked = 0
+        allIpsToBeAttacked = 0
     if(request.method == 'POST'):
         if request.form.get('mode') == "add":
             # store a ip and js pair together , make it unique and overwrite
@@ -890,7 +920,10 @@ def attack():
             #print("@@@@", l[0][0])
             #ipOfAttack = l[0][0]
             #jsOfAttack = l[0][1]
-            tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            try:
+                tsAttack = datetime.utcfromtimestamp(int(float(l[0][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            except:
+                tsAttack = "Not Attacked"
             #print("######", ipOfAttack, " ", jsOfAttack, " ", tsAttack, " ")
             return render_template('home/attack.html', segment='attack', search = content, ipOfAttack = l[0][0], jsOfAttack = l[0][1], ts = tsAttack, allAttacked = allAttacked, allIpsToBeAttacked = allIpsToBeAttacked)
     else:
