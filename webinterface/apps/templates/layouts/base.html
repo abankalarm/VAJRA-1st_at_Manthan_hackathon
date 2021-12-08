@@ -33,10 +33,10 @@
 
     {% include 'includes/sidebar.html' %}
 
-    <div class="main-panel" style = "height:100%">
+    <div class="main-panel">
+      {% include 'includes/navigation.html' %}
 
-
-      <div class="content" style="padding-top: 20px;">
+      <div class="content" style="padding-top: 60px;">
 
         {% block content %}{% endblock content %}
 

@@ -8,50 +8,22 @@
     }
 </style>
 {% endblock stylesheets %} {% block content %}
-<script>
-    /*    function getFileData(){
-                                                                             var file = myFile.files[0];  
-                                                                               var filename1 = ;
-                                                                        }
-                                                                    
-                                                                     function getFileNameWithExt(event) {
-                                                                        if (!event || !event.target || !event.target.files || event.target.files.length === 0) {
-                                                                       return;
-                                                                     }
-                                                                    
-                                                                     const name = event.target.files[0].name;
-                                                                     const lastDot = name.lastIndexOf('.');
-                                                                    
-                                                                     const fileName = name.substring(0, lastDot);
-                                                                     const ext = name.substring(lastDot + 1);
-                                                                    
-
-
-                                                                     var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                                                                     var result = '';
-                                                                     for ( var i = 0; i < fileName.length; i++ ) {
-                                                                         result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
-                                                                     }
-
-                                                                     outputfile.value = result;
-                                                                     extension.value = ext;
-                                                                    }*/
-</script>
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
             <div class="card-body">
-                <h6 class="card-category text-gray">Tracking ---</h6>
+                <h6 class="card-category text-gray">Tracking pixel</h6>
                 <h4 class="card-title">
                     <form action="/tracking" method="POST" enctype="multipart/form-data">
                         Select image to upload:
                         <br>
                         <input id='inputfile' type='file' name='inputfile' class='form-control'>
-                        <input class="form-control" type="text" name="comment" value="add comment here" id=''>
                         <input class="hidden" name="mode" value="upload" id=''>
+                        <input class="form-control" type="text" name="comment" value="add comment here" id=''>
+
                         <input type="submit" value="submit" class='btn btn-primary btn-round'>
                     </form>
-                    {{name}}
+                    <br> Your unique hyperlink to share with the target: <br> http://127.0.0.1:5000/{{name}} <br>Your unique ID is {{name}}
                 </h4>
 
             </div>
@@ -66,9 +38,10 @@
                 <h4 class="card-title">
                     <form action="/tracking" method='POST' class='form-group'>
                         Search ID:
-                        <input type="text" name='idsearch' value='' class='form-control'>
                         <input class="hidden" name="mode" value="search" id=''>
-                        <input type="submit" value="submit" class='btn btn-primary btn-round'> {{searchData}}
+                        <input type="text" name='idsearch' value='' class='form-control'>
+
+                        <input type="submit" value="submit" class='btn btn-primary btn-round'> {{allData}}
                     </form>
                 </h4>
             </div>
@@ -79,10 +52,19 @@
     <div class="col-md-12">
         <div class="card card-profile">
             <div class="card-body">
-                <h6 class="card-category text-gray">IP logs</h6>
+                <h6 class="card-category text-gray">All IP logs</h6>
                 <h4 class="card-title">
                     <div id='logsip'>
-                        {{allData}}
+                        {% for key, values in searchData.items() %}<br> {% if key == 'keyList' or key == 'comments' %} {% else %}
+                        <strong>Unique id: {{key}}</strong><br>
+                        <i>Records: 
+                            {% for value in values %}
+                            <br> {{value}} <br>
+
+                            {% endfor %}
+                            {% endif %}
+
+                            </i> <br>{% endfor %}
                     </div>
                 </h4>
             </div>
