@@ -355,15 +355,15 @@ def dash():
     conn = sqlite3.connect('db.sqlite3')
     cur = conn.cursor()
 
-    # cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
-    # desc = cur.description 
-    # column_names = [col[0] for col in desc] 
-    #data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-    # #print(data)
+    cur.execute("SELECT DISTINCT (ip) FROM Fingerprints;")
+    desc = cur.description 
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    #print(data)
     
-    # allData["IP"]=data
+    allData["IP"]=data
     
-    allData["IP"]=json.loads(  vpnDetails(allData["IP"]).data  ) 
+    #allData["IP"]=json.loads(  vpnDetails(allData["IP"]).data  ) 
 
     
         
