@@ -344,12 +344,12 @@
                             }
                             try {
                                 var allData = JSON.parse('{{allDataIP | tojson}}');
-                                //console.log("here", allData);
+                                console.log("here", allData);
                                 var tobeadded = [];
                                 for (let i = 0; i < Object.keys(allData.keyList).length; i++) {
                                     tobeadded.push([allData[allData.keyList[i]][0].isVpnASN || allData[allData.keyList[i]][0].isVPNTime, allData[allData.keyList[i]][0].countryCode, allData[allData.keyList[i]][0].country, "Point", [allData[allData.keyList[i]][0].lat, allData[allData.keyList[i]][0].lon]])
                                 }
-                                //console.log("hhh", tobeadded);
+                                console.log("hhh", tobeadded);
                                 addvalues(tobeadded, cities);
                             } catch (e) {
                                 console.log(e);
