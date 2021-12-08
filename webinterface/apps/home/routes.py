@@ -662,7 +662,6 @@ def searchpost():
         
         cur.execute("Select blocked from Countries where id='"+cname.upper()+"'")
         desc = cur.description 
-        column_names = [col[0] for col in desc]
         data = [dict(zip(column_names, row)) for row in cur.fetchall()][0]
 
         #print("@@@@@@@",data)
