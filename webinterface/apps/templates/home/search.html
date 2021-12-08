@@ -61,17 +61,7 @@
                         </tr>
                     </table>
 
-                    <script>
-                        // not working, found another way to get work done - karan
-                        var myvar = "{{ Alldata_for_searched_ip | tojson}}";
-
-                        var parsed = JSON.parse(myvar);
-                        console.log(parsed);
-                        console.log(parsed.data['0']);
-                        console.log(parsed.data['0']['ip']);
-
-                        //console.log("AllData")
-                    </script>
+                    {%if riskData.keys() | length >0%}
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -92,10 +82,10 @@
                                     ASN
                                 </td>
                                 <td>
-                                    {{asn}}
+                                    {{allData["asn"]["id"]}}
                                 </td>
                                 <td>
-                                    {{ASN_name}}
+                                    {{allData["asn"]["name"]}}
                                 </td>
                             </tr>
                             <tr>
@@ -103,7 +93,7 @@
                                     Blacklisted
                                 </td>
                                 <td>
-                                    {{blacklisted}}
+                                    {{riskData['blacklisted']}}
                                 </td>
                                 <td>
 
@@ -114,7 +104,7 @@
                                     DataCentre
                                 </td>
                                 <td>
-                                    {{datacentre}}
+                                    {{riskData['dataCenter']}}
                                 </td>
                                 <td>
 
@@ -125,14 +115,16 @@
                                     Bad asn
                                 </td>
                                 <td>
-                                    {{badASN}}
+                                    {{riskData['badAsn']}}
                                 </td>
                                 <td>
-                                    Current ASN: {{ASN_name}}
+                                     
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    {%endif%}
+                    {% if details.keys() | length >0%}
                     <div>
                         <div>
                             <h4>IP Details:</h4><b></b>
@@ -140,7 +132,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ISP</label>
-                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{isp}}" readonly>
+                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{details['isp']}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -148,25 +140,25 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>latitude and longitude</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{lat_long}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{details['lat_long']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Region or city</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{region}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{details['region']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Country</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{country}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{details['country']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Postal Code</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{zipcode}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{details['zipcode']}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -176,6 +168,7 @@
                         <div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -410,7 +403,7 @@
 
 
                             try {
-                                var allData = JSON.parse('{{Alldata_for_searched_ip | tojson}}');
+                                var allData = JSON.parse('{{allDataIP | tojson}}');
                                 //console.log(allData);
                                 var tobeadded = [];
                                 for (let i = 0; i < Object.keys(allData.data).length; i++) {
@@ -585,9 +578,9 @@
                                     <!-- available colors green, orange, red-->
 
 
-                                    <div id='riskbar' class="c100 p{{allData['per']}} {{ratingcolor}} dark">
-                                        {% if allData %}
-                                        <span><b>{{allData["per"]}}%</b></span>
+                                    <div id='riskbar' class="c100 p{{riskData['per']}} {{details['ratingcolor']}} dark">
+                                        {% if riskData %}
+                                        <span><b>{{riskData["per"]}}%</b></span>
                                         <div class="slice">
                                             <div class="bar"></div>
                                             <div class="fill"></div>
@@ -605,8 +598,8 @@
                             <td>
                                 Is VPN<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
                             </td>
-                            <td>{{allData["Timezone"]}}
-                                <br><br>{{allData["black"]}}<br><br>{{allData["grey"]}}<br><br>{{allData["data center"]}}<br><br>{{allData["Bad ASN"]}} <br><br>{{allData["blacklisted"]}}
+                            <td>{{riskData["Timezone"]}}
+                                <br><br>{{riskData["black"]}}<br><br>{{riskData["grey"]}}<br><br>{{riskData["dataCenterVal"]}}<br><br>{{riskData["badAsnVal"]}} <br><br>{{riskData["blacklistedVal"]}}
 
                             </td>
 
@@ -663,6 +656,7 @@
         {{result}}
         `)
     </script>
+    
     {% endblock content %}
     {% block javascripts %}
     <script>
@@ -690,6 +684,7 @@
     <script>
         /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
         var related =  JSON.parse('{{dataWithThisIp | tojson}}');
+        console.log(related)
         var relatedHead = document.getElementById("relatedheads")
         var relatedBody = document.getElementById("relatedbody");
         var one = "";
@@ -726,5 +721,6 @@
 
         notif();
     </script>
-
+    
     {% endblock javascripts %}
+
