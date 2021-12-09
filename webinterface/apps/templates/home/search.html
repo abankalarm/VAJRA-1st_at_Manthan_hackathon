@@ -497,13 +497,43 @@
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
                     <script>
+                        var search_ip = '219.100.37.7';
+                        search_ip = '{{ip}}';
+                        async function pptp() {
+                            var xmlhttp = new XMLHttpRequest();
+                            var url = "/vpn/sstp?ip=" + search_ip;
+                            const response = await fetch(url);
+                            console.log(await response.text())
+                        };
+                        pptp();
+                        async function l2tp_ipsec() {
+                            var xmlhttp = new XMLHttpRequest();
+                            var url = "/vpn/l2tp_ipsec?ip=" + search_ip;
+                            const response = await fetch(url);
+                            console.log(await response.text())
+                        };
+                        l2tp_ipsec();
+                        async function openvpn() {
+                            var xmlhttp = new XMLHttpRequest();
+                            var url = "/vpn/openvpn?ip=" + search_ip;
+                            const response = await fetch(url);
+                            console.log(await response.text())
+                        };
+                        openvpn();
                         async function sstp() {
                             var xmlhttp = new XMLHttpRequest();
-                            var url = "/vpn/sstp?ip=219.100.37.7";
+                            var url = "/vpn/sstp?ip=" + search_ip;
                             const response = await fetch(url);
                             console.log(await response.text())
                         };
                         sstp();
+                        async function ike() {
+                            var xmlhttp = new XMLHttpRequest();
+                            var url = "/vpn/ike?ip=" + search_ip;
+                            const response = await fetch(url);
+                            console.log(await response.text())
+                        };
+                        ike();
                     </script>
                 </h4>
             </div>

@@ -50,14 +50,15 @@ def get_l2tp_ipsec(ip):
             for port in lport:
                 oports[port] = nm[host][proto][port]
     print(oports)
-    print('hello')
-    if(oports[500]['state'] == 'open'):
-        print('hello')
-        sudoPassword = 'ab4nk4l4rm'
-        command = 'sudo ike-scan -M 219.100.37.7'
-        result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
-        p = result
-
+    try:
+        if(oports[500]['state'] == 'open'):
+            print('hello')
+            sudoPassword = 'ab4nk4l4rm'
+            command = 'sudo ike-scan -M 219.100.37.7'
+            result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
+            p = result
+    except:
+        p = "L2TP/IPSEC not supported"
     return hostname, hoststate, oports, str(p)
 
 #print(get_l2tp_ipsec('219.100.37.7', l2tp_ipsec_port))
