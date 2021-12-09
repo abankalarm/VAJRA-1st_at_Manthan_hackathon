@@ -596,7 +596,7 @@ def getRiskVal(allData,search):
     riskData={}
     try:
         if allData["bad"] :
-            riskData["badAsnVal"]=80
+            riskData["badAsnVal"]=30
             riskData["badAsn"]=" Is a Bad ASN"
         else:
             riskData["badAsnVal"]=0
@@ -607,7 +607,7 @@ def getRiskVal(allData,search):
     
     try:
         if allData["dc"] :
-            riskData["dataCenterVal"]=50
+            riskData["dataCenterVal"]=25
             riskData["dataCenter"]= "Is a Data Center"
         else:
             riskData["dataCenterVal"]=0
@@ -617,7 +617,7 @@ def getRiskVal(allData,search):
         riskData["dataCenter"]="Not a Data Center"
     try:
         if allData["bl"] :
-            riskData["blacklistedVal"]=100
+            riskData["blacklistedVal"]=80
             riskData["blacklisted"]="Blacklisted"
         else:
             riskData["blacklistedVal"]=0
@@ -648,7 +648,7 @@ def getRiskVal(allData,search):
     
     try:   
         if data["blocked"]==1 :
-            riskData["grey"]=50
+            riskData["grey"]=40
         else:
             riskData["grey"]=0
     except:
@@ -656,7 +656,7 @@ def getRiskVal(allData,search):
 
     try:
         if data["blocked"]==2 :
-            riskData["black"]=100
+            riskData["black"]=80
         else:
             riskData["black"]=0
 
