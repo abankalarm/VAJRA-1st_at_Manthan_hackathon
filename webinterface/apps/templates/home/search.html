@@ -118,13 +118,12 @@
                                     {{riskData['badAsn']}}
                                 </td>
                                 <td>
-                                     
+
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    {%endif%}
-                    {% if details.keys() | length >0%}
+                    {%endif%} {% if details.keys() | length >0%}
                     <div>
                         <div>
                             <h4>IP Details:</h4><b></b>
@@ -641,21 +640,21 @@
                             <div class="block block-four"></div>
 
                             <td>
-                                    <div id='riskbar' class="c100 p{{riskData['per']}} {{details['ratingcolor']}} dark">
-                                        {% if riskData %}
-                                        <span><b>{{riskData["per"]}}%</b></span>
-                                        <div class="slice">
-                                            <div class="bar"></div>
-                                            <div class="fill"></div>
-                                        </div>
-                                        {% else %}
-                                        <span><b>25%</b></span>
-                                        <div class="slice">
-                                            <div class="bar "></div>
-                                            <div class="fill "></div>
-                                        </div>
-                                        {% endif %}
+                                <div id='riskbar' class="c100 p{{riskData['per']}} {{details['ratingcolor']}} dark">
+                                    {% if riskData %}
+                                    <span><b>{{riskData["per"]}}%</b></span>
+                                    <div class="slice">
+                                        <div class="bar"></div>
+                                        <div class="fill"></div>
                                     </div>
+                                    {% else %}
+                                    <span><b>25%</b></span>
+                                    <div class="slice">
+                                        <div class="bar "></div>
+                                        <div class="fill "></div>
+                                    </div>
+                                    {% endif %}
+                                </div>
 
                             </td>
                             <td>
@@ -666,10 +665,10 @@
 
                             </td>
 
-                                </td>
+                            </td>
                             </tr>
 
-                        </tbody>
+                            </tbody>
                     </table>
                     <div>
                         <p class="card-text">
@@ -687,27 +686,26 @@
                     <div class="card-footer ">
                         hello
                     </div>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-profile">
-                    <div class="card-body">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
 
-                        <h4 class="card-title">Result</h4>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table tablesorter " id="">
-                                    <thead class=" text-primary">
-                                        <tr id="resultheads">
-                                        </tr>
-                                    </thead>
-                                    <tbody id="resultbody">
-                                    </tbody>
-                                </table>
-                            </div>
+                    <h4 class="card-title">Result</h4>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table tablesorter " id="">
+                                <thead class=" text-primary">
+                                    <tr id="resultheads">
+                                    </tr>
+                                </thead>
+                                <tbody id="resultbody">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -715,65 +713,68 @@
         </div>
     </div>
 </div>
+</div>
 {%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
 <script>
     document.write(`
         {{result}}
         `)
-    </script>
-    
-    {% endblock content %}
-    {% block javascripts %}
-    <script>
-        /* This is for Result display*/
-        var results =  JSON.parse('{{allDataIP | tojson}}');
-        var resultHead = document.getElementById("resultheads")
-        var resultBody = document.getElementById("resultbody");
-        var one = "<th>IP</th>";
-        var two = "";
-        for (let i = 0; i < Object.keys(results['cols']).length; i++) {
-            one += "<th>" + results['cols'][i] + "</th>";
-        }
-        one += "<th>Further Analysis</th>";
-        for(let i = 0; i < Object.keys(results['keyList']).length; i++) {
-            two += "<tr><td>" + results['keyList'][i] + "</td>";
-            for(let j = 0; j < Object.keys(results['cols']).length; j++) {
-                two += "<td>" + results[results['keyList'][i]][0][results['cols'][j]] + "</td>";
-            }
-            two += "<td><a href = '/ipDetail/" + results['keyList'][i] +"'>Here</a></td></tr>"
-        }
-        resultHead.innerHTML = one;
-        resultBody.innerHTML = two;
-    </script>
+</script>
 
-    <script>
-        /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
-        var related =  JSON.parse('{{dataWithThisIp | tojson}}');
-        console.log(related)
-        var relatedHead = document.getElementById("relatedheads")
-        var relatedBody = document.getElementById("relatedbody");
-        var one = "";
-        var two = "<tr>";
-        for (let i = 0; i < Object.keys(related['cols']).length; i++) {
-            one += "<th>" + related['cols'][i] + "</th>";
+{% endblock content %} {% block javascripts %}
+<script>
+    /* This is for Result display*/
+    var results = JSON.parse('{{allDataIP | tojson}}');
+    var resultHead = document.getElementById("resultheads")
+    var resultBody = document.getElementById("resultbody");
+    var one = "<th>IP</th>";
+    var two = "";
+    for (let i = 0; i < Object.keys(results['cols']).length; i++) {
+        one += "<th>" + results['cols'][i] + "</th>";
+    }
+    one += "<th>Further Analysis</th>";
+    for (let i = 0; i < Object.keys(results['keyList']).length; i++) {
+        two += "<tr><td>" + results['keyList'][i] + "</td>";
+        for (let j = 0; j < Object.keys(results['cols']).length; j++) {
+            two += "<td>" + results[results['keyList'][i]][0][results['cols'][j]] + "</td>";
         }
-        one += "<th>Further Analysis</th>";
-        for(let j = 0; j < Object.keys(related['cols']).length; j++) {
-            two += "<td>" + related['data'][related['cols'][j]] + "</td>";
+        two += "<td><a href = '/ipDetail/" + results['keyList'][i] + "'>Here</a></td></tr>"
+    }
+    resultHead.innerHTML = one;
+    resultBody.innerHTML = two;
+</script>
+
+<script>
+    /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+    var related = JSON.parse('{{dataWithThisIp | tojson}}');
+    console.log(related)
+    var relatedHead = document.getElementById("relatedheads")
+    var relatedBody = document.getElementById("relatedbody");
+    var one = "";
+    var two = "<tr>";
+    for (let i = 0; i < Object.keys(related['cols']).length; i++) {
+        one += "<th>" + related['cols'][i] + "</th>";
+    }
+    one += "<th>Further Analysis</th>";
+    for (let i = 0; i < Object.keys(related['data']).length; i++) {
+        for (let j = 0; j < Object.keys(related['cols']).length; j++) {
+            two += "<td>" + related['data'][i][related['cols'][j]] + "</td>";
         }
-        two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] +"'>Here</a></td></tr>"
-        relatedHead.innerHTML = one;
-        relatedBody.innerHTML = two;
-        //console.log("here", related)
-    </script>
+        two += "<td><a href = '/cookieDetail/" + related['data'][i]['cookie'] + "'>Here</a></td></tr>"
+    }
+    relatedHead.innerHTML = one;
+    relatedBody.innerHTML = two;
+    //console.log("here", related)
+</script>
 
 
-    <script type="text/javascript ">
-        function notif() {
-            var text = "{{isVPN}}";
-            if (text == 'False') {
-                var notVpn = "This is not a VPN ip ";
-                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+<script type="text/javascript ">
+    function notif() {
+        var text = "{{details[isVPN]}}";
+        console.log("$$$$", "{{details}}");
+        if (text == 'False') {
+            var notVpn = "This is not a VPN ip ";
+            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
         } else if (text == 'True') {
@@ -784,7 +785,7 @@
         }
     }
 
-        notif();
-    </script>
-    
-    {% endblock javascripts %}
+    notif();
+</script>
+
+{% endblock javascripts %}

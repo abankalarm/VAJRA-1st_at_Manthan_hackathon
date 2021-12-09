@@ -1,50 +1,48 @@
-
 var root = am5.Root.new("chartdiv");
 
 root.setThemes([
-  am5themes_Animated.new(root)
+    am5themes_Animated.new(root)
 ]);
 
 
 var chart = root.container.children.push(am5map.MapChart.new(root, {
-  panX: "rotateX",
-  panY: "rotateY",
-  projection: am5map.geoOrthographic()
+    panX: "rotateX",
+    panY: "rotateY",
+    projection: am5map.geoOrthographic()
 }));
 
 
 
 var backgroundSeries = chart.series.push(
-  am5map.MapPolygonSeries.new(root, {})
+    am5map.MapPolygonSeries.new(root, {})
 );
 backgroundSeries.mapPolygons.template.setAll({
-  fill: root.interfaceColors.get("alternativeBackground"),
-  fillOpacity: 0.1,
-  strokeOpacity: 0
+    fill: root.interfaceColors.get("alternativeBackground"),
+    fillOpacity: 0.1,
+    strokeOpacity: 0
 });
 backgroundSeries.data.push({
-  geometry:
-    am5map.getGeoRectangle(90, 180, -90, -180)
+    geometry: am5map.getGeoRectangle(90, 180, -90, -180)
 });
 
 
 
 var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-  geoJSON: am5geodata_worldLow 
+    geoJSON: am5geodata_worldLow
 }));
 polygonSeries.mapPolygons.template.setAll({
-  fill: root.interfaceColors.get("alternativeBackground"),
-  fillOpacity: 0.15,
-  strokeWidth: 0.5,
-  stroke: root.interfaceColors.get("background")
+    fill: root.interfaceColors.get("alternativeBackground"),
+    fillOpacity: 0.15,
+    strokeWidth: 0.5,
+    stroke: root.interfaceColors.get("background")
 });
 
 
 
 var circleSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {}));
 circleSeries.mapPolygons.template.setAll({
-  templateField: "polygonTemplate",
-  tooltipText: "{name}\nIPs detected from here : {value}"
+    templateField: "polygonTemplate",
+    tooltipText: "{name}\nIPs detected from here : {value}"
 });
 
 
@@ -220,32 +218,32 @@ var data = [
     { "id": "YE", "name": "Yemen, Rep.", "value": 0, polygonTemplate: { fill: colors.getIndex(0) } },
     { "id": "ZM", "name": "Zambia", "value": 0, polygonTemplate: { fill: colors.getIndex(2) } },
     { "id": "ZW", "name": "Zimbabwe", "value": 0, polygonTemplate: { fill: colors.getIndex(2) } }
-  ];
+];
 
 var valueLow = Infinity;
 var valueHigh = -Infinity;
 
 function setData(d) {
-  for(let i = 0; i < Object.keys(d).length; i++) {
-    if(d[i].id == null) {
-      continue;
+    for (let i = 0; i < Object.keys(d).length; i++) {
+        if (d[i].id == null) {
+            continue;
+        }
+        let obj = data.find(o => o.id === d[i].id);
+        obj["value"] = d[i]["value"];
+        obj["valueSet"] = true
+        data = data.filter(function(el) { return el.id != d[i].id });
+        data.push(obj)
     }
-    let obj = data.find(o => o.id === d[i].id);
-    obj["value"] = d[i]["value"];
-    obj["valueSet"] = true
-    data = data.filter(function(el) {return el.id != d[i].id});
-    data.push(obj)
-  }
-} 
+}
 
 for (var i = 0; i < data.length; i++) {
-  var value = data[i].value;
-  if (value < valueLow) {
-    valueLow = value;
-  }
-  if (value > valueHigh) {
-    valueHigh = value;
-  }
+    var value = data[i].value;
+    if (value < valueLow) {
+        valueLow = value;
+    }
+    if (value > valueHigh) {
+        valueHigh = value;
+    }
 }
 
 
@@ -253,34 +251,34 @@ var minRadius = 0.5;
 var maxRadius = 5;
 
 
-polygonSeries.events.on("datavalidated", function () {
-  circleSeries.data.clear();
+polygonSeries.events.on("datavalidated", function() {
+    circleSeries.data.clear();
 
-  for (var i = 0; i < data.length; i++) {
-    var dataContext = data[i];
-    var countryDataItem = polygonSeries.getDataItemById(dataContext.id);
-    var countryPolygon = countryDataItem.get("mapPolygon");
+    for (var i = 0; i < data.length; i++) {
+        var dataContext = data[i];
+        var countryDataItem = polygonSeries.getDataItemById(dataContext.id);
+        var countryPolygon = countryDataItem.get("mapPolygon");
 
-    var value = dataContext.value;
+        var value = dataContext.value;
 
-    var radius = minRadius + value;
-    
-    chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+        var radius = minRadius + value;
+
+        chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
 
 
-    if (countryPolygon) {
-      var geometry = am5map.getGeoCircle(countryPolygon.visualCentroid(), radius);
-      
-        circleSeries.data.push({
-            name: dataContext.name,
-            value: dataContext.value,
-            polygonTemplate: dataContext.polygonTemplate,
-            geometry: geometry
-        });
-      
+        if (countryPolygon) {
+            var geometry = am5map.getGeoCircle(countryPolygon.visualCentroid(), radius);
+
+            circleSeries.data.push({
+                name: dataContext.name,
+                value: dataContext.value,
+                polygonTemplate: dataContext.polygonTemplate,
+                geometry: geometry
+            });
+
+        }
     }
-  }
 })
 
 
