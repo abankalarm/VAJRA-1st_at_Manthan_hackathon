@@ -50,6 +50,7 @@ def get_l2tp_ipsec(ip):
             for port in lport:
                 oports[port] = nm[host][proto][port]
     print(oports)
+    p = ""
     try:
         if(oports[500]['state'] == 'open'):
             print('hello')
