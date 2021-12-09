@@ -1091,7 +1091,10 @@ def attack():
         allData['data'] = []
         allData['js'] = []
         for i in range (0, len(data)):
-            allData['data'].append({'ip': str(data[i][0]), 'js': str(data[i][1]).replace('"', "'"), 'timestamp': str(data[i][2])})
+            if data[i][2] == "Not Attacked":
+                allData['data'].append({'ip': str(data[i][0]), 'js': str(data[i][1]).replace('"', "'"), 'timestamp': str(data[i][2])})
+            else:
+                allData['data'].append({'ip': str(data[i][0]), 'js': str(data[i][1]).replace('"', "'"), 'timestamp': datetime.utcfromtimestamp(int(float(data[i][2]) + 19800)).strftime('%Y-%m-%d %H:%M:%S')})
         allData['cols'] = ['ip', 'js', 'timestamp']
     except:
         allData['data'] = {}
