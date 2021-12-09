@@ -656,7 +656,7 @@ def getRiskVal(allData,search):
 
     try:
         if data["blocked"]==2 :
-            riskData["black "]=100
+            riskData["black"]=100
         else:
             riskData["black"]=0
 
