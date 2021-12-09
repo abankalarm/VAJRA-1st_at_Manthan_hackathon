@@ -763,8 +763,8 @@ def searchpost():
 @blueprint.route('/injection')
 def injection():
     #request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-    ip="111.223.26.202"
-    #ip = request.environ['REMOTE_ADDR']
+    #ip="111.223.26.202"
+    ip = request.environ['REMOTE_ADDR']
     return render_template('home/injection.html', segment='injection', ip=ip)
 
 @blueprint.route('/injection/post', methods=['POST'])
@@ -872,6 +872,7 @@ def getDetailsFromUserAgent():
 @login_required
 def uploadfiles():
     if(request.method == 'POST'):
+        ip = request.environ['REMOTE_ADDR'] + ":443"
         conn = sqlite3.connect('db.sqlite3')
         cur = conn.cursor()
         mode = request.form.get('mode')
@@ -940,7 +941,7 @@ def uploadfiles():
             searchData={}
 
         conn.close()
-        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData, searchData=searchData)
+        return render_template('home/tracking.html', segment='tracking', uploadf=uploadf, name = name, allData=allData, searchData=searchData, ip = ip)
     else:
         try:
             conn = sqlite3.connect('db.sqlite3')

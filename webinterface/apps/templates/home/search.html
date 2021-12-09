@@ -527,37 +527,22 @@
                                     </td>
                                 </tr>
                         </table>
+                        <h2>Attacking</h2>
+                        <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm"></h6>
+                                <p class="text-xs text-secondary mb-0"></p>
+                                <h5><a href="/attack.html" id = "attackIp">This IP has not been attacked</a></h5>
+                            </div>
+                        </div>
                         <h2>Tracking</h2>
-                        <table class="table align-items-center mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm"></h6>
-                                                <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack.html" id = "attackIp">This IP has not been attacked</a></h5>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="text-xs font-weight-bold mb-0"></p>
-                                        <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking.html" id = "trackIp">This has not been tracked</a></h5>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-success"></span>
-                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
-                                    </td>
-                                </tr>
-                        </table>
+                        <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm"></h6>
+                                <p class="text-xs text-secondary mb-0"></p>
+                                <h5><a href="/attack.html" id = "trackIp">This IP has not been tracked</a></h5>
+                            </div>
+                        </div>
 
                         <!-- nmap button -->
 
@@ -574,7 +559,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="title">Edit Profile</h5>
+                    <h5 class="title">Data for this IP</h5>
                 </div>
                 <div class="card-body">
                     <div>
@@ -695,7 +680,7 @@
             <div class="card card-profile">
                 <div class="card-body">
 
-                    <h4 class="card-title">Result</h4>
+                    <h4 class="card-title">Matches</h4>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table tablesorter " id="">
@@ -751,16 +736,15 @@
     var attackIp = document.getElementById("attackIp");
     var trackIp = document.getElementById("trackIp");
     if(Object.keys(related1['attack']).length != 0) {
-        attackIp.innerHTML = "<table class='table tablesorter'><tbody class= 'text-primary'><tr><td>JS Of Attack</td><td>Time Of Attack</td></tr><td>" + related1['attack'][0]['js'] + "</td><td>" + related1['attack'][0]['timestamp'] + "</td></tbody></table>"
+        attackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>JS Of Attack</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Time Of Attack</td></tr></thead><tbody><td>" + related1['attack'][0]['js'] + "</td><td>" + related1['attack'][0]['timestamp'] + "</td></tbody></table>"
     }
     if(Object.keys(related1['track']).length != 0) {
         var one = "";
         for(let i = 0; i < Object.keys(related1['track']).length; i++) {
             one += "<td>" + related1['track'][i]['id'] + "</td><td>" + related1['track'][i]['timestamp'] + "</td>"
         }
-        trackIp.innerHTML = "<table class='table tablesorter'><tbody class= 'text-primary' style = 'text-align: centre'><tr><td>IDs of Attacking Image</td><td>Tracking Logs</td></tr>" + one + "</tbody></table>";
+        trackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>IDs of Attacking Image</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Tracking Logs</td></tr></thead><tbody>" + one + "</tbody></table>";
     }
-    
     
     var related = JSON.parse('{{dataWithThisIp | tojson}}');
     console.log("Here", related)
