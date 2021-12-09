@@ -10,6 +10,7 @@ from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
+from apps.home.vpnproto import *
 from apps.home.asn import *
 import sqlite3
 import json
@@ -773,18 +774,14 @@ def searchpost():
         
         dataWithThisIp = {}
         trackIp = {}
-        
+
         details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
         trackIp=getTrackIP(search)
+
         return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp, trackIp = trackIp)
     else:
-        allDataIP = {}
-        dataWithThisIp = {}
-        allData={}
-        details  = {}
-        riskData={}
-        trackIp = {}
-        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details, trackIp = trackIp)
+
+        return render_template('home/search.html', segment='search',riskData={} ,allData={},  dataWithThisIp = {}, allDataIP = {},details={}, trackIp = {})
 
 
 
@@ -1059,6 +1056,7 @@ def vpnDetails(data):
         data["asn"]=c[0]
     if(len(d)>0):
         data["cn"]=d[0]
+        data["cn"]["country"]=data["cn"]["country"]
     print(a,b,c,d)
     inBad=c[0]['id'] in badASN
     data["bad"]=inBad
@@ -1296,3 +1294,48 @@ def parentDomainDetail(template):
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     conn.close()
     return jsonify(data)
+
+@blueprint.route('/vpn/pptp', methods=['GET','POST'])
+def pptp():  
+    ip = request.form.get("ip")
+    hostname, hoststate, oports = get_pptp(ip)
+    values = {}
+    values["hostname"] = hostname
+    values["hoststate"] = hoststate
+    values["oports"] = oports
+    return jsonify(values)
+
+@blueprint.route('/vpn/l2tp_ipsec', methods=['GET','POST'])
+def l2tp():  
+    ip = request.form.get("ip")
+    hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
+    values = {}
+    values["hostname"] = hostname
+    values["hoststate"] = hoststate
+    values["oports"] = oports
+    values["IKE"] = ike
+    return jsonify(values)
+
+@blueprint.route('/vpn/openvpn', methods=['GET','POST'])
+def ovpn():  
+    ip = request.form.get("ip")
+    isOpenVpn = get_openvpn_tcp(ip)
+    values = {}
+    values["isOpenVpn"] = isOpenVpn
+    return jsonify(values)
+
+@blueprint.route('/vpn/sstp', methods=['GET','POST'])
+def sstp():  
+    ip = request.form.get("ip")
+    _sstp = get_sstp(ip)
+    values = {}
+    values["sstp"] = _sstp
+    return jsonify(values)
+
+@blueprint.route('/vpn/ike', methods=['GET','POST'])
+def ike():  
+    ip = request.form.get("ip")
+    ike = get_IKEv2(ip)
+    values = {}
+    values["ike"] = ike
+    return jsonify(values)
