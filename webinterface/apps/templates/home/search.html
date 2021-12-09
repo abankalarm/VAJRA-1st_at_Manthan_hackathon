@@ -49,10 +49,11 @@
                         <tr>
                             <td>
                                 <h2 class="card-title"><strong> {{ip}}</strong></h2>
+                                
                             </td>
                             <td>
                                 <!--to add -->
-                                <img src="https://flagicons.lipis.dev/flags/1x1/in.svg" class="avatar" />
+                                <img src="https://flagicons.lipis.dev/flags/1x1/{{allData['cn']['country']}}.svg" class="avatar" />
                             </td>
                             <td>
                                 <div class="card-body" id="vpnalert">
@@ -770,14 +771,14 @@
 
 <script type="text/javascript ">
     function notif() {
-        var text = "{{details[isVPN]}}";
+        
         //console.log("$$$$", "{{details}}");
-        if (text == 'False') {
+        if ( int("{{riskData['per']}}")<30 ) {
             var notVpn = "This is not a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
-        } else if (text == 'True') {
+        } else  {
             var isVPN = "This is a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>

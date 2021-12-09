@@ -1036,6 +1036,7 @@ def vpnDetails(data):
         data["asn"]=c[0]
     if(len(d)>0):
         data["cn"]=d[0]
+        data["cn"]["country"]=data["cn"]["country"]
     print(a,b,c,d)
     inBad=c[0]['id'] in badASN
     data["bad"]=inBad
