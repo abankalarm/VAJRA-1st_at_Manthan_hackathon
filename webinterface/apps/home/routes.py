@@ -67,7 +67,7 @@ def storeInTrackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    ##print(col)
+    #print(s)
     cur.execute(s)
     #insert
     s = "INSERT INTO Tracking (" + col + ") VALUES ("
@@ -197,7 +197,7 @@ def storeInDB(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    ##print(col)
+    #print(s)
     cur.execute(s)
     l = getfromdb("Fingerprints", ["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
     if(len(l) == 0):
@@ -281,7 +281,7 @@ def storeInAttackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    #print(col)
+    #print(s)
     cur.execute(s)
     #insert
     l = getfromdb('Attacking', ['ip'], [content['ip']])
@@ -338,6 +338,26 @@ def getJSWithThisIP(ip):
 @blueprint.route('/index')
 @login_required
 def index():
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement, city TEXT, country TEXT, countryCode TEXT, isp TEXT, lat REAL, lon REAL, region TEXT, regionName TEXT, zip TEXT, isVpnTime TEXT, ip TEXT, cookie TEXT, clientID TEXT, parentDomain TEXT, domain TEXT, timestamp TEXT, bookmarked INTEGER, browserLat INTEGER, browserLong INTEGER, userAgent TEXT, webdriver INTEGER, language TEXT, colorDepth INTEGER, deviceMemory INTEGER, hardwareConcurrency INTEGER, screenResolution BLOB, availableScreenResolution BLOB, timezoneOffset INTEGER, timezone TEXT, sessionStorage INTEGER, localStorage INTEGER, indexedDb INTEGER, addBehavior INTEGER, openDatabase INTEGER, cpuClass TEXT, platform TEXT, plugins TEXT, canvas TEXT, webgl TEXT, webglVendorAndRenderer TEXT, hasLiedLanguages INTEGER, hasLiedResolution INTEGER, hasLiedOs INTEGER, hasLiedBrowser INTEGER, touchSupport TEXT, fonts TEXT, audio TEXT, isVpnASN TEXT, isVpnSomething TEXT, openPorts TEXT, isTOR INTEGER);")
+    cur.execute("CREATE TABLE IF NOT EXISTS Attacking (ip TEXT, js TEXT, timestamp TEXT);")
+    cur.execute("CREATE TABLE IF NOT EXISTS Tracking (ip TEXT, id TEXT, timestamp TEXT, userAgent BLOB);")
+    cur.execute("CREATE TABLE IF NOT EXISTS TrackingComments (id TEXT, comment TEXT);")
+    cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
+    l = getfromdb("Countries", ["name"], ["India"])
+    if len(l) == 0:
+        df = pandas.read_csv('countrylist.csv')
+        s = "Insert into Countries values "
+        for i in range (0, len(df['country'])):
+            s += '("' + str(df['country'][i]) + '", "' + str(df['name'][i]) + '", 0), '
+        m = list(s)
+        m[-1] = ';'
+        m[-2] = ' '
+        s = ''.join(m)
+        cur.execute(s)
+        conn.commit()
+    conn.close()
     return redirect("/dashboard", code=302)
 
 @blueprint.route('/nmap')
@@ -388,7 +408,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['domainCount'] = data
     
-    cur.execute("SELECT ip, isVpnTime, parentDomain, timestamp FROM Fingerprints; ")
+    cur.execute("SELECT ip, isVpnTime, isVpnASN, parentDomain, timestamp FROM Fingerprints; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
