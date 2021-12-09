@@ -795,17 +795,18 @@
         console.log("");
         //console.log("$$$$", "{{details}}");
         var data = JSON.parse('{{riskData | tojson}}');
-        if ( data["per"]<30 ) {
-            var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
-                            <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
-                        </div>`;
-        } else  {
-            var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
-                            <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
-                        </div>`;
-        }
+        if (Object.keys(data).length>0)
+            {if ( data["per"]<30 ) {
+                var notVpn = "This is not a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+                                <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
+                            </div>`;
+            } else  {
+                var isVPN = "This is a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
+                            </div>`;
+            }}
     }
 
     notif();
