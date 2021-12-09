@@ -571,8 +571,6 @@ def getAllRelatedIP(search):
 
 
 
-
-
 def getRiskVal(allData,search):
     riskData={}
     try:
@@ -663,10 +661,10 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     riskData["per"]=riskData["Timezone"]+riskData["black"]+riskData["grey"]+ riskData["blacklistedVal"]+riskData["dataCenterVal"]+riskData["badAsnVal"]
     details["ratingcolor"] = "green"
     if(riskData["per"]>30):
-        riskData["ratingcolor"] = "orange"
+        details["ratingcolor"] = "orange"
     if(riskData["per"]>100):
         riskData["per"] = 100
-        riskData["ratingcolor"] = "red"
+        details["ratingcolor"] = "red"
 
 
     try:
@@ -676,24 +674,36 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
         details["isVPN"]="False"
     try:
         details["isp"] = allDataIP[search][0]['isp']
-    except:
-        details["isp"]="Not Available"
-    try:
         details["region"] = allDataIP[search][0]['regionName']
-    except:
-        details["region"]="Not Available"
-    try:
         details["zipcode"] = allDataIP[search][0]['zip']
-    except:
-        details["zipcode"]="Not Available"
-    try:
         details["lat_long"] = str(allDataIP[search][0]["lat"]) + " & " + str(allDataIP[search][0]["lon"])
-    except:
-        details["lat_long"]="Not Available"
-    try:
         details["country"] = allDataIP[search][0]['country']
     except:
-        details["country"]="Not Available"
+        try:
+            
+            GEO_IP_API_URL  = 'http://ip-api.com/json/'
+            req             = urllib.request.Request(GEO_IP_API_URL+search)
+            response        = urllib.request.urlopen(req).read()
+            json_response   = json.loads(response.decode('utf-8'))
+            
+            
+            #details["regionName"] = json_response["regionName"]
+            print(json_response)
+            details["region"] = json_response["region"]
+            #details["city"] = json_response["city"]
+            details["zipcode"] = json_response["zip"]
+            details["country"] = json_response["country"]
+            details["isp"] = json_response["isp"]
+            print("here")
+            details["lat_long"] = str(json_response["lat"])+" & "+str(json_response["lon"])
+        
+        except:
+            print("whyyyyyyy")
+            details["isp"]="Not Available"
+            details["country"]="Not Available"
+            details["region"]="Not Available"
+            details["zipcode"]="Not Available"
+            details["lat_long"]="Not Available"
     #print(allData.keys())
 
     ##print("@@@@@@",Alldata_for_searched_ip)
@@ -707,7 +717,27 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     except:
         dataWithThisIp={}
     return details
-
+def getTrackIP(search):
+    trackIp={}
+    conn = sqlite3.connect('db.sqlite3')
+    cur=conn.cursor()
+    cur.execute("Select * from Attacking where ip ='"+ search +"'")
+    desc = cur.description
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    for i in data:
+        if i['timestamp'] != "Not Attacked":
+            i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+        i['js'] = str(i['js']).replace('"', "'")
+    trackIp['attack'] = data 
+    cur.execute("Select * from Tracking where ip ='"+ search +"'")
+    desc = cur.description
+    column_names = [col[0] for col in desc] 
+    data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+    for i in data:
+        i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+    trackIp['track'] = data
+    return trackIp
 @blueprint.route('/search', methods=['GET','POST'])
 @login_required
 def searchpost():
@@ -721,32 +751,11 @@ def searchpost():
         
         riskData=getRiskVal(allData,search)
         
-        #print(allData)
         dataWithThisIp = {}
         trackIp = {}
+        
         details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
-        print(dataWithThisIp)
-        # Started from here - Vaibhav
-        conn = sqlite3.connect('db.sqlite3')
-        cur=conn.cursor()
-        cur.execute("Select * from Attacking where ip ='"+ search +"'")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        for i in data:
-            if i['timestamp'] != "Not Attacked":
-                i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
-            i['js'] = str(i['js']).replace('"', "'")
-        trackIp['attack'] = data 
-        cur.execute("Select * from Tracking where ip ='"+ search +"'")
-        desc = cur.description
-        column_names = [col[0] for col in desc] 
-        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
-        for i in data:
-            i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
-        trackIp['track'] = data
-        print(trackIp)
+        trackIp=getTrackIP(search)
         return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp, trackIp = trackIp)
     else:
         allDataIP = {}
