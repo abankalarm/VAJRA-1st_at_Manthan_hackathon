@@ -356,7 +356,7 @@
                                     tobeadded.push([cond1 || cond2, allData[allData.keyList[i]][0].countryCode, allData[allData.keyList[i]][0].country, "Point", [allData[allData.keyList[i]][0].lon, allData[allData.keyList[i]][0].lat]])
                                     console.log("hhh", tobeadded);
                                 }
-                                
+
                                 addvalues(tobeadded, cities);
                                 //console.log("aaa", cities)
                             } catch (e) {
@@ -532,7 +532,7 @@
                             <div class="d-flex flex-column justify-content-center">
                                 <h6 class="mb-0 text-sm"></h6>
                                 <p class="text-xs text-secondary mb-0"></p>
-                                <h5><a href="/attack.html" id = "attackIp">This IP has not been attacked</a></h5>
+                                <h5><a href="/attack.html" id="attackIp">This IP has not been attacked</a></h5>
                             </div>
                         </div>
                         <h2>Tracking</h2>
@@ -540,7 +540,7 @@
                             <div class="d-flex flex-column justify-content-center">
                                 <h6 class="mb-0 text-sm"></h6>
                                 <p class="text-xs text-secondary mb-0"></p>
-                                <h5><a href="/attack.html" id = "trackIp">This IP has not been tracked</a></h5>
+                                <h5><a href="/attack.html" id="trackIp">This IP has not been tracked</a></h5>
                             </div>
                         </div>
 
@@ -574,7 +574,7 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-fill btn-primary">Save</button>
+
                 </div>
             </div>
         </div>
@@ -633,7 +633,7 @@
                                         <div class="fill"></div>
                                     </div>
                                     {% else %}
-                                    <span><b>25%</b></span>
+                                    <span><b>0%</b></span>
                                     <div class="slice">
                                         <div class="bar "></div>
                                         <div class="fill "></div>
@@ -735,17 +735,17 @@
     console.log(related1)
     var attackIp = document.getElementById("attackIp");
     var trackIp = document.getElementById("trackIp");
-    if(Object.keys(related1['attack']).length != 0) {
+    if (Object.keys(related1['attack']).length != 0) {
         attackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>JS Of Attack</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Time Of Attack</td></tr></thead><tbody><td>" + related1['attack'][0]['js'] + "</td><td>" + related1['attack'][0]['timestamp'] + "</td></tbody></table>"
     }
-    if(Object.keys(related1['track']).length != 0) {
+    if (Object.keys(related1['track']).length != 0) {
         var one = "";
-        for(let i = 0; i < Object.keys(related1['track']).length; i++) {
+        for (let i = 0; i < Object.keys(related1['track']).length; i++) {
             one += "<td>" + related1['track'][i]['id'] + "</td><td>" + related1['track'][i]['timestamp'] + "</td>"
         }
         trackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>IDs of Attacking Image</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Tracking Logs</td></tr></thead><tbody>" + one + "</tbody></table>";
     }
-    
+
     var related = JSON.parse('{{dataWithThisIp | tojson}}');
     console.log("Here", related)
     var relatedHead = document.getElementById("relatedheads")
