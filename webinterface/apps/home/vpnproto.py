@@ -56,7 +56,7 @@ def get_l2tp_ipsec(ip):
     try:
         if(oports[500]['state'] == 'open'):
             print('hello')
-            sudoPassword = 'ab4nk4l4rm'
+            sudoPassword = 'invalid'
             command = 'sudo ike-scan -M 219.100.37.7'
             result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
             p = result
@@ -100,8 +100,8 @@ def get_sstp(ip):
 # 5. IKEv2
 def get_IKEv2(ip):
     print('hello')
-    sudoPassword = 'ab4nk4l4rm'
-    command = 'sudo ike-scan -M 219.100.37.7'
+    sudoPassword = 'invalid'
+    command = 'sudo ike-scan -M '+ip
     result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
     p = result
     return str(p)
