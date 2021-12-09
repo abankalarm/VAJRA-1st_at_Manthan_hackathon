@@ -227,6 +227,9 @@ var valueHigh = -Infinity;
 
 function setData(d) {
   for(let i = 0; i < Object.keys(d).length; i++) {
+    if(d[i].id == null) {
+      continue;
+    }
     let obj = data.find(o => o.id === d[i].id);
     obj["value"] = d[i]["value"];
     obj["valueSet"] = true
