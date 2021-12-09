@@ -672,7 +672,7 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     try:
         
         if allDataIP[search][0]["isVpnTime"]:
-            riskData["Timezone"]=70
+            riskData["Timezone"]=25
         else:
             riskData["Timezone"]=0
 
@@ -1300,6 +1300,7 @@ def pptp():
     ip = request.args["ip"]
     hostname, hoststate, oports = get_pptp(ip)
     values = {}
+    values["ID"] = "PPTP"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1310,6 +1311,7 @@ def l2tp():
     ip = request.args["ip"]
     hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
     values = {}
+    values["ID"] = "L2TP/IPSEC"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1321,6 +1323,7 @@ def ovpn():
     ip = request.args["ip"]
     isOpenVpn = get_openvpn_tcp(ip)
     values = {}
+    values["ID"] = "OpenVpn"
     values["isOpenVpn"] = isOpenVpn
     return jsonify(values)
 
@@ -1329,6 +1332,7 @@ def sstp():
     ip = request.args["ip"]
     _sstp = get_sstp(ip)
     values = {}
+    values["ID"] = "SSTP"
     values["sstp"] = _sstp
     return jsonify(values)
 
@@ -1337,5 +1341,6 @@ def ike():
     ip = request.args["ip"]
     ike = get_IKEv2(ip)
     values = {}
+    values["ID"] = "IKE"
     values["ike"] = ike
     return jsonify(values)
