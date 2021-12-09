@@ -753,18 +753,14 @@ def searchpost():
         
         dataWithThisIp = {}
         trackIp = {}
-        
+
         details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
         trackIp=getTrackIP(search)
+
         return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp, trackIp = trackIp)
     else:
-        allDataIP = {}
-        dataWithThisIp = {}
-        allData={}
-        details  = {}
-        riskData={}
-        trackIp = {}
-        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details, trackIp = trackIp)
+
+        return render_template('home/search.html', segment='search',riskData={} ,allData={},  dataWithThisIp = {}, allDataIP = {},details={}, trackIp = {})
 
 
 
