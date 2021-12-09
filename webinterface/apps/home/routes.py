@@ -10,6 +10,7 @@ from flask import render_template, request, jsonify, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 from apps.home.offsec import *
+from apps.home.vpnproto import *
 from apps.home.asn import *
 import sqlite3
 import json
@@ -1273,3 +1274,48 @@ def parentDomainDetail(template):
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     conn.close()
     return jsonify(data)
+
+@blueprint.route('/vpn/pptp', methods=['GET','POST'])
+def pptp(template):  
+    ip = request.form.get("ip")
+    hostname, hoststate, oports = get_pptp(ip)
+    values = {}
+    values["hostname"] = hostname
+    values["hoststate"] = hoststate
+    values["oports"] = oports
+    return jsonify(values)
+
+@blueprint.route('/vpn/l2tp_ipsec', methods=['GET','POST'])
+def pptp(template):  
+    ip = request.form.get("ip")
+    hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
+    values = {}
+    values["hostname"] = hostname
+    values["hoststate"] = hoststate
+    values["oports"] = oports
+    values["IKE"] = ike
+    return jsonify(values)
+
+@blueprint.route('/vpn/openvpn', methods=['GET','POST'])
+def pptp(template):  
+    ip = request.form.get("ip")
+    isOpenVpn = get_openvpn_tcp(ip)
+    values = {}
+    values["isOpenVpn"] = isOpenVpn
+    return jsonify(values)
+
+@blueprint.route('/vpn/sstp', methods=['GET','POST'])
+def pptp(template):  
+    ip = request.form.get("ip")
+    _sstp = get_sstp(ip)
+    values = {}
+    values["sstp"] = _sstp
+    return jsonify(values)
+
+@blueprint.route('/vpn/ike', methods=['GET','POST'])
+def pptp(template):  
+    ip = request.form.get("ip")
+    ike = get_IKEv2(ip)
+    values = {}
+    values["ike"] = ike
+    return jsonify(values)
