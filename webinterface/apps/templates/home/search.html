@@ -52,8 +52,10 @@
                                 
                             </td>
                             <td>
+                                {% if allData.keys()|length >0  %}
                                 <!--to add -->
                                 <img src="https://flagicons.lipis.dev/flags/1x1/{{allData['cn']['country']}}.svg" class="avatar" />
+                                {%endif%}
                             </td>
                             <td>
                                 <div class="card-body" id="vpnalert">
@@ -784,9 +786,10 @@
 
 <script type="text/javascript ">
     function notif() {
-        
+        console.log("");
         //console.log("$$$$", "{{details}}");
-        if ( int("{{riskData['per']}}")<30 ) {
+        var data = JSON.parse('{{riskData | tojson}}');
+        if ( data["per"]<30 ) {
             var notVpn = "This is not a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
