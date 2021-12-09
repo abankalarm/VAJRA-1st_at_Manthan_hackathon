@@ -1275,7 +1275,7 @@ def parentDomainDetail(template):
     return jsonify(data)
 
 @blueprint.route('/vpn/pptp', methods=['GET','POST'])
-def pptp(template):  
+def pptp():  
     ip = request.form.get("ip")
     hostname, hoststate, oports = get_pptp(ip)
     values = {}
@@ -1285,7 +1285,7 @@ def pptp(template):
     return jsonify(values)
 
 @blueprint.route('/vpn/l2tp_ipsec', methods=['GET','POST'])
-def pptp(template):  
+def l2tp():  
     ip = request.form.get("ip")
     hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
     values = {}
@@ -1296,7 +1296,7 @@ def pptp(template):
     return jsonify(values)
 
 @blueprint.route('/vpn/openvpn', methods=['GET','POST'])
-def pptp(template):  
+def ovpn():  
     ip = request.form.get("ip")
     isOpenVpn = get_openvpn_tcp(ip)
     values = {}
@@ -1304,7 +1304,7 @@ def pptp(template):
     return jsonify(values)
 
 @blueprint.route('/vpn/sstp', methods=['GET','POST'])
-def pptp(template):  
+def sstp():  
     ip = request.form.get("ip")
     _sstp = get_sstp(ip)
     values = {}
@@ -1312,7 +1312,7 @@ def pptp(template):
     return jsonify(values)
 
 @blueprint.route('/vpn/ike', methods=['GET','POST'])
-def pptp(template):  
+def ike():  
     ip = request.form.get("ip")
     ike = get_IKEv2(ip)
     values = {}
