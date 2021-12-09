@@ -497,12 +497,13 @@
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
                     <script>
-                        async function func1() {
+                        async function sstp() {
                             var xmlhttp = new XMLHttpRequest();
-                            var url = "/api/checkip";
+                            var url = "/vpn/sstp?ip=219.100.37.7";
                             const response = await fetch(url);
                             console.log(await response.text())
                         };
+                        sstp();
                     </script>
                 </h4>
             </div>
