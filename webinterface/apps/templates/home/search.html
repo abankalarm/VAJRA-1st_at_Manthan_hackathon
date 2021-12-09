@@ -525,17 +525,41 @@
                             var url = "/vpn/sstp?ip=" + search_ip;
                             const response = await fetch(url);
                             console.log(await response.text())
+                            return '(response.text())';
                         };
                         sstp();
+                        // async function ike() {
+                        //     var xmlhttp = new XMLHttpRequest();
+                        //     var url = "/vpn/ike?ip=" + search_ip;
+                        //     const response = await fetch(url);
+                        //     console.log(await response.text())
+                        // };
+                        // ike();
                         async function ike() {
+                            var old = console.log;
+                            // var logger = document.getElementById('ike');
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/ike?ip=" + search_ip;
                             const response = await fetch(url);
-                            console.log(await response.text())
-                        };
-                        ike();
+                            // console.log(await response.text())
+                            var message = await response.text()
+                            
+                               console.log("#########", message);
+                                document.getElementById('ike').innerHTML += message + '<br />';
+                                
+                            
+                        }ike();
                     </script>
                 </h4>
+
+                <div>
+                    <table>
+                        <thead>
+                            <tr><td>pptp</td><td>sstp</td><td>openvpn</td><td>l2tp_ipsec</td><td>ike</td></tr>
+                        </thead>
+                            <tr><td>pptp();</td><td> <p id='ike'></p></td><td>openvpn()</td><td>l2tp_ipsec()</td><td>ike()</td></tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
