@@ -394,7 +394,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['distinctIp'] = data
 
-    cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true'; ")
+    cur.execute("SELECT COUNT( DISTINCT ip) as cnt FROM Fingerprints where isVpnTime = 'true' or isVpnASN = 'True'; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -662,7 +662,7 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
 
     riskData["per"]=riskData["Timezone"]+riskData["black"]+riskData["grey"]+ riskData["blacklistedVal"]+riskData["dataCenterVal"]+riskData["badAsnVal"]
     details["ratingcolor"] = "green"
-    if(riskData["per"]>100):
+    if(riskData["per"]>30):
         riskData["ratingcolor"] = "orange"
     if(riskData["per"]>100):
         riskData["per"] = 100
@@ -727,7 +727,7 @@ def searchpost():
         print(dataWithThisIp)
   
      
-        return render_template('home/search.html', allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp)
+        return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp)
     else:
         allDataIP = {}
         dataWithThisIp = {}
