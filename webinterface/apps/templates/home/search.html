@@ -488,14 +488,33 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
             <div class="card-body">
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
-                    <div class="table-responsive p-0">
+                    <script>
+                        var xmlhttp = new XMLHttpRequest();
+                        var url = "/api/checkip";
+
+                        async function func1() {
+                        const response = await fetch(url);
+                        console.log(await response.text())
+                        };
+                    </script>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">
+                    <div class="p-0">
                         <h2>Targeted Attacks</h2>
                         <table class="table align-items-center mb-0">
                             <thead>
@@ -512,18 +531,18 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm"></h6>
                                                 <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack.html">Attacking</a></h5>
+                                                <h5><a href="/attack">Attacking</a></h5>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0"></p>
                                         <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking.html">Tracking</a></h5>
+                                        <h5><a href="/tracking">Tracking</a></h5>
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-success"></span>
-                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
+                                        <h5><a href="/nmaps">Nmaps</a></h5>
                                     </td>
                                 </tr>
                         </table>
@@ -532,7 +551,7 @@
                             <div class="d-flex flex-column justify-content-center">
                                 <h6 class="mb-0 text-sm"></h6>
                                 <p class="text-xs text-secondary mb-0"></p>
-                                <h5><a href="/attack.html" id = "attackIp">This IP has not been attacked</a></h5>
+                                <h5><a href="/attack" id = "attackIp">This IP has not been attacked</a></h5>
                             </div>
                         </div>
                         <h2>Tracking</h2>
@@ -540,7 +559,7 @@
                             <div class="d-flex flex-column justify-content-center">
                                 <h6 class="mb-0 text-sm"></h6>
                                 <p class="text-xs text-secondary mb-0"></p>
-                                <h5><a href="/attack.html" id = "trackIp">This IP has not been tracked</a></h5>
+                                <h5><a href="/attack" id = "trackIp">This IP has not been tracked</a></h5>
                             </div>
                         </div>
 
