@@ -4,13 +4,10 @@ import os
 import subprocess
 
 
-ip = '190.2.147.2'
-pptp_port = '1723'
-l2tp_ipsec_port = '500'
-
 # 1. PPTP
 # nmap –Pn -sSV -p1723 <IP>
-def get_pptp(ip, pptp_port):
+def get_pptp(ip):
+    pptp_port = '1723'
     nm = nmap.PortScanner()
     nm.scan(ip, pptp_port, arguments=' -Pn')
     output = ""
@@ -34,7 +31,8 @@ def get_pptp(ip, pptp_port):
 
 
 # 2. L2TP/IPSec
-def get_l2tp_ipsec(ip, port):
+def get_l2tp_ipsec(ip):
+    port = '500'
     nm = nmap.PortScanner()
     nm.scan(ip, port, arguments=' -Pn -sU')
     output = ""
