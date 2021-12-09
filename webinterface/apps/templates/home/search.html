@@ -497,10 +497,9 @@
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
                     <script>
-                        var xmlhttp = new XMLHttpRequest();
-                        var url = "/api/checkip";
-
                         async function func1() {
+                            var xmlhttp = new XMLHttpRequest();
+                            var url = "/api/checkip";
                             const response = await fetch(url);
                             console.log(await response.text())
                         };

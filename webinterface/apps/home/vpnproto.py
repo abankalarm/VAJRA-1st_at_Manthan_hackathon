@@ -102,4 +102,4 @@ def get_IKEv2(ip):
     p = result
     return str(p)
 
-print(get_IKEv2('219.100.37.7'))
+#print(get_IKEv2('219.100.37.7'))
