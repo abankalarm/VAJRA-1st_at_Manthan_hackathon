@@ -12,7 +12,8 @@ def get_pptp(ip):
     nm.scan(ip, pptp_port, arguments=' -Pn')
     output = ""
     oports = {}
-
+    hostname = ""
+    hoststate = ""
     
     for host in nm.all_hosts():
         host = host
@@ -38,7 +39,8 @@ def get_l2tp_ipsec(ip):
     output = ""
     oports = {}
 
-    
+    hostname = ""
+    hoststate = ""
     for host in nm.all_hosts():
         host = host
         hostname = nm[host].hostname()
@@ -50,6 +52,7 @@ def get_l2tp_ipsec(ip):
             for port in lport:
                 oports[port] = nm[host][proto][port]
     print(oports)
+    p = ""
     try:
         if(oports[500]['state'] == 'open'):
             print('hello')

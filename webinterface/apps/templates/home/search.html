@@ -515,7 +515,7 @@
                         search_ip = '{{ip}}';
                         async function pptp() {
                             var xmlhttp = new XMLHttpRequest();
-                            var url = "/vpn/sstp?ip=" + search_ip;
+                            var url = "/vpn/pptp?ip=" + search_ip;
                             const response = await fetch(url);
                             console.log(await response.text())
                         };

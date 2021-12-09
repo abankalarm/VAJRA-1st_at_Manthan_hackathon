@@ -596,7 +596,7 @@ def getRiskVal(allData,search):
     riskData={}
     try:
         if allData["bad"] :
-            riskData["badAsnVal"]=80
+            riskData["badAsnVal"]=30
             riskData["badAsn"]=" Is a Bad ASN"
         else:
             riskData["badAsnVal"]=0
@@ -607,7 +607,7 @@ def getRiskVal(allData,search):
     
     try:
         if allData["dc"] :
-            riskData["dataCenterVal"]=50
+            riskData["dataCenterVal"]=25
             riskData["dataCenter"]= "Is a Data Center"
         else:
             riskData["dataCenterVal"]=0
@@ -617,7 +617,7 @@ def getRiskVal(allData,search):
         riskData["dataCenter"]="Not a Data Center"
     try:
         if allData["bl"] :
-            riskData["blacklistedVal"]=100
+            riskData["blacklistedVal"]=80
             riskData["blacklisted"]="Blacklisted"
         else:
             riskData["blacklistedVal"]=0
@@ -648,7 +648,7 @@ def getRiskVal(allData,search):
     
     try:   
         if data["blocked"]==1 :
-            riskData["grey"]=50
+            riskData["grey"]=40
         else:
             riskData["grey"]=0
     except:
@@ -656,7 +656,7 @@ def getRiskVal(allData,search):
 
     try:
         if data["blocked"]==2 :
-            riskData["black"]=100
+            riskData["black"]=80
         else:
             riskData["black"]=0
 
@@ -672,7 +672,7 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     try:
         
         if allDataIP[search][0]["isVpnTime"]:
-            riskData["Timezone"]=70
+            riskData["Timezone"]=25
         else:
             riskData["Timezone"]=0
 
@@ -1300,6 +1300,7 @@ def pptp():
     ip = request.args["ip"]
     hostname, hoststate, oports = get_pptp(ip)
     values = {}
+    values["ID"] = "PPTP"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1310,6 +1311,7 @@ def l2tp():
     ip = request.args["ip"]
     hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
     values = {}
+    values["ID"] = "L2TP/IPSEC"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1321,6 +1323,7 @@ def ovpn():
     ip = request.args["ip"]
     isOpenVpn = get_openvpn_tcp(ip)
     values = {}
+    values["ID"] = "OpenVpn"
     values["isOpenVpn"] = isOpenVpn
     return jsonify(values)
 
@@ -1329,6 +1332,7 @@ def sstp():
     ip = request.args["ip"]
     _sstp = get_sstp(ip)
     values = {}
+    values["ID"] = "SSTP"
     values["sstp"] = _sstp
     return jsonify(values)
 
@@ -1337,5 +1341,6 @@ def ike():
     ip = request.args["ip"]
     ike = get_IKEv2(ip)
     values = {}
+    values["ID"] = "IKE"
     values["ike"] = ike
     return jsonify(values)
