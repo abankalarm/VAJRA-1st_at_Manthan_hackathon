@@ -243,9 +243,41 @@
 
                 let data = JSON.stringify(dict);
                 window.parent.postMessage(data, "*");
-
-                if (additional_ip.length() > 3) {
+                //console.log(additional_ip)
+                if (additional_ip.length > 3) {
                     dict['ip'] = additional_ip;
+                    $.post("/api/ip/identity", {
+                        ip: additional_ip,
+                    },
+                    function(data, status) {
+                        //console.log("Here", data);
+                        if (status == 'failed') {
+                            dict['city'] = ""
+                            dict['country'] = ""
+                            dict['countryCode'] = ""
+                            dict['isp'] = ""
+                            dict['lat'] = 404
+                            dict['lon'] = 404
+                            dict['region'] = ""
+                            dict['regionName'] = ""
+                            dict['zip'] = ""
+                        } else {
+                            dict['city'] = data.city
+                            dict['country'] = data.country
+                            dict['countryCode'] = data.countryCode
+                            dict['isp'] = data.isp
+                            dict['lat'] = data.lat
+                            dict['lon'] = data.lon
+                            dict['region'] = data.region
+                            dict['regionName'] = data.regionName
+                            dict['zip'] = data.zip
+                        }
+                        var xmlhttp = new XMLHttpRequest();
+                        xmlhttp.open("POST", "/injection/post");
+                        xmlhttp.setRequestHeader("Content-Type", "application/json");
+                        xmlhttp.send(JSON.stringify(dict));
+
+                    });
                     var xmlhttp = new XMLHttpRequest();
 
                     xmlhttp.open("POST", "/injection/post");
