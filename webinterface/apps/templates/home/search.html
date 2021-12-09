@@ -348,7 +348,7 @@
                             }
                             try {
                                 var allData = JSON.parse('{{allDataIP | tojson}}');
-                                console.log("here", allData);
+                                //console.log("here", allData);
                                 var tobeadded = [];
                                 for (let i = 0; i < Object.keys(allData.keyList).length; i++) {
                                     let cond1 = allData[allData.keyList[i]][0].isVpnASN || allData[allData.keyList[i]][0].isVpnASN === 'True';
@@ -358,7 +358,7 @@
                                 }
                                 
                                 addvalues(tobeadded, cities);
-                                console.log("aaa", cities)
+                                //console.log("aaa", cities)
                             } catch (e) {
                                 console.log(e);
                             }
@@ -428,7 +428,7 @@
                                     destinations.push(myObj.id);
                                 };
                             }
-                            console.log(destinations);
+                            //console.log(destinations);
 
                             var originLongitude = -0.1262;
                             var originLatitude = 51.5002;
@@ -543,14 +543,14 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm"></h6>
                                                 <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack.html">Attacking</a></h5>
+                                                <h5><a href="/attack.html" id = "attackIp">This IP has not been attacked</a></h5>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0"></p>
                                         <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking.html">Tracking</a></h5>
+                                        <h5><a href="/tracking.html" id = "trackIp">This has not been tracked</a></h5>
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-success"></span>
@@ -746,8 +746,24 @@
 
 <script>
     /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+    var related1 = JSON.parse('{{trackIp | tojson}}');
+    console.log(related1)
+    var attackIp = document.getElementById("attackIp");
+    var trackIp = document.getElementById("trackIp");
+    if(Object.keys(related1['attack']).length != 0) {
+        attackIp.innerHTML = "<table class='table tablesorter'><tbody class= 'text-primary'><tr><td>JS Of Attack</td><td>Time Of Attack</td></tr><td>" + related1['attack'][0]['js'] + "</td><td>" + related1['attack'][0]['timestamp'] + "</td></tbody></table>"
+    }
+    if(Object.keys(related1['track']).length != 0) {
+        var one = "";
+        for(let i = 0; i < Object.keys(related1['track']).length; i++) {
+            one += "<td>" + related1['track'][i]['id'] + "</td><td>" + related1['track'][i]['timestamp'] + "</td>"
+        }
+        trackIp.innerHTML = "<table class='table tablesorter'><tbody class= 'text-primary' style = 'text-align: centre'><tr><td>IDs of Attacking Image</td><td>Tracking Logs</td></tr>" + one + "</tbody></table>";
+    }
+    
+    
     var related = JSON.parse('{{dataWithThisIp | tojson}}');
-    console.log(related)
+    console.log("Here", related)
     var relatedHead = document.getElementById("relatedheads")
     var relatedBody = document.getElementById("relatedbody");
     var one = "";
@@ -771,7 +787,7 @@
 <script type="text/javascript ">
     function notif() {
         var text = "{{details[isVPN]}}";
-        console.log("$$$$", "{{details}}");
+        //console.log("$$$$", "{{details}}");
         if (text == 'False') {
             var notVpn = "This is not a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">

@@ -718,23 +718,44 @@ def searchpost():
         allDataIP=getAllRelatedIP(search)
 
         allData=json.loads(vpnDetails(search).data)
+        
         riskData=getRiskVal(allData,search)
+        
         #print(allData)
         dataWithThisIp = {}
-        
+        trackIp = {}
         details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
         print(dataWithThisIp)
-  
-     
-        return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp)
+        # Started from here - Vaibhav
+        conn = sqlite3.connect('db.sqlite3')
+        cur=conn.cursor()
+        cur.execute("Select * from Attacking where ip ='"+ search +"'")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        for i in data:
+            if i['timestamp'] != "Not Attacked":
+                i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+            i['js'] = str(i['js']).replace('"', "'")
+        trackIp['attack'] = data 
+        cur.execute("Select * from Tracking where ip ='"+ search +"'")
+        desc = cur.description
+        column_names = [col[0] for col in desc] 
+        data = [dict(zip(column_names, row)) for row in cur.fetchall()]
+        for i in data:
+            i['timestamp'] = datetime.utcfromtimestamp(int(float(i['timestamp']) + 19800)).strftime('%Y-%m-%d %H:%M:%S')
+        trackIp['track'] = data
+        print(trackIp)
+        return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp, trackIp = trackIp)
     else:
         allDataIP = {}
         dataWithThisIp = {}
         allData={}
         details  = {}
         riskData={}
-        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details)
+        trackIp = {}
+        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details, trackIp = trackIp)
 
 
 
