@@ -79,8 +79,29 @@ def get_openvpn_tcp(ip):
 
     return False
 
-print(get_openvpn_tcp('219.100.37.7'))
+#print(get_openvpn_tcp('219.100.37.7'))
 
 # 4. SSTP
+def get_sstp(ip):
+
+    command = 'nmap --script sstp-discover -p443 -Pn '+ip
+    result = subprocess.getoutput(command)
+    p = result
+    success_arr = p.split('SSTP is supported.')
+    if len(success_arr)>=2:
+            return True
+
+    return False
+
+#print(get_openvpn_tcp('219.100.37.7'))
 
 # 5. IKEv2
+def get_IKEv2(ip):
+    print('hello')
+    sudoPassword = 'ab4nk4l4rm'
+    command = 'sudo ike-scan -M 219.100.37.7'
+    result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
+    p = result
+    return str(p)
+
+print(get_IKEv2('219.100.37.7'))
