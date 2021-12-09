@@ -12,7 +12,8 @@ def get_pptp(ip):
     nm.scan(ip, pptp_port, arguments=' -Pn')
     output = ""
     oports = {}
-
+    hostname = ""
+    hoststate = ""
     
     for host in nm.all_hosts():
         host = host
@@ -38,7 +39,8 @@ def get_l2tp_ipsec(ip):
     output = ""
     oports = {}
 
-    
+    hostname = ""
+    hoststate = ""
     for host in nm.all_hosts():
         host = host
         hostname = nm[host].hostname()
@@ -50,10 +52,11 @@ def get_l2tp_ipsec(ip):
             for port in lport:
                 oports[port] = nm[host][proto][port]
     print(oports)
+    p = ""
     try:
         if(oports[500]['state'] == 'open'):
             print('hello')
-            sudoPassword = 'ab4nk4l4rm'
+            sudoPassword = 'invalid'
             command = 'sudo ike-scan -M 219.100.37.7'
             result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
             p = result
@@ -97,8 +100,8 @@ def get_sstp(ip):
 # 5. IKEv2
 def get_IKEv2(ip):
     print('hello')
-    sudoPassword = 'ab4nk4l4rm'
-    command = 'sudo ike-scan -M 219.100.37.7'
+    sudoPassword = 'invalid'
+    command = 'sudo ike-scan -M '+ip
     result = subprocess.getoutput('echo %s|sudo -S %s' % (sudoPassword, command))
     p = result
     return str(p)

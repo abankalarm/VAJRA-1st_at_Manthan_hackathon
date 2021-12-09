@@ -68,7 +68,7 @@ def storeInTrackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    ##print(col)
+    #print(s)
     cur.execute(s)
     #insert
     s = "INSERT INTO Tracking (" + col + ") VALUES ("
@@ -198,7 +198,7 @@ def storeInDB(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    ##print(col)
+    #print(s)
     cur.execute(s)
     l = getfromdb("Fingerprints", ["clientID", "cookie", "ip"], [content["clientID"], content["cookie"], content["ip"]])
     if(len(l) == 0):
@@ -282,7 +282,7 @@ def storeInAttackingTable(content):
     anotherList = list(col)
     anotherList = anotherList[: -2]
     col = ''.join(anotherList)
-    #print(col)
+    #print(s)
     cur.execute(s)
     #insert
     l = getfromdb('Attacking', ['ip'], [content['ip']])
@@ -339,6 +339,26 @@ def getJSWithThisIP(ip):
 @blueprint.route('/index')
 @login_required
 def index():
+    conn = sqlite3.connect('db.sqlite3')
+    cur = conn.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS Fingerprints ( _id INTEGER PRIMARY KEY autoincrement, city TEXT, country TEXT, countryCode TEXT, isp TEXT, lat REAL, lon REAL, region TEXT, regionName TEXT, zip TEXT, isVpnTime TEXT, ip TEXT, cookie TEXT, clientID TEXT, parentDomain TEXT, domain TEXT, timestamp TEXT, bookmarked INTEGER, browserLat INTEGER, browserLong INTEGER, userAgent TEXT, webdriver INTEGER, language TEXT, colorDepth INTEGER, deviceMemory INTEGER, hardwareConcurrency INTEGER, screenResolution BLOB, availableScreenResolution BLOB, timezoneOffset INTEGER, timezone TEXT, sessionStorage INTEGER, localStorage INTEGER, indexedDb INTEGER, addBehavior INTEGER, openDatabase INTEGER, cpuClass TEXT, platform TEXT, plugins TEXT, canvas TEXT, webgl TEXT, webglVendorAndRenderer TEXT, hasLiedLanguages INTEGER, hasLiedResolution INTEGER, hasLiedOs INTEGER, hasLiedBrowser INTEGER, touchSupport TEXT, fonts TEXT, audio TEXT, isVpnASN TEXT, isVpnSomething TEXT, openPorts TEXT, isTOR INTEGER);")
+    cur.execute("CREATE TABLE IF NOT EXISTS Attacking (ip TEXT, js TEXT, timestamp TEXT);")
+    cur.execute("CREATE TABLE IF NOT EXISTS Tracking (ip TEXT, id TEXT, timestamp TEXT, userAgent BLOB);")
+    cur.execute("CREATE TABLE IF NOT EXISTS TrackingComments (id TEXT, comment TEXT);")
+    cur.execute("Create table if not exists Countries (id text, name text, blocked integer);")
+    l = getfromdb("Countries", ["name"], ["India"])
+    if len(l) == 0:
+        df = pandas.read_csv('countrylist.csv')
+        s = "Insert into Countries values "
+        for i in range (0, len(df['country'])):
+            s += '("' + str(df['country'][i]) + '", "' + str(df['name'][i]) + '", 0), '
+        m = list(s)
+        m[-1] = ';'
+        m[-2] = ' '
+        s = ''.join(m)
+        cur.execute(s)
+        conn.commit()
+    conn.close()
     return redirect("/dashboard", code=302)
 
 @blueprint.route('/nmap')
@@ -389,7 +409,7 @@ def dash():
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
     allData['domainCount'] = data
     
-    cur.execute("SELECT ip, isVpnTime, parentDomain, timestamp FROM Fingerprints; ")
+    cur.execute("SELECT ip, isVpnTime, isVpnASN, parentDomain, timestamp FROM Fingerprints; ")
     desc = cur.description 
     column_names = [col[0] for col in desc] 
     data = [dict(zip(column_names, row)) for row in cur.fetchall()]
@@ -576,7 +596,7 @@ def getRiskVal(allData,search):
     riskData={}
     try:
         if allData["bad"] :
-            riskData["badAsnVal"]=80
+            riskData["badAsnVal"]=30
             riskData["badAsn"]=" Is a Bad ASN"
         else:
             riskData["badAsnVal"]=0
@@ -587,7 +607,7 @@ def getRiskVal(allData,search):
     
     try:
         if allData["dc"] :
-            riskData["dataCenterVal"]=50
+            riskData["dataCenterVal"]=25
             riskData["dataCenter"]= "Is a Data Center"
         else:
             riskData["dataCenterVal"]=0
@@ -597,7 +617,7 @@ def getRiskVal(allData,search):
         riskData["dataCenter"]="Not a Data Center"
     try:
         if allData["bl"] :
-            riskData["blacklistedVal"]=100
+            riskData["blacklistedVal"]=80
             riskData["blacklisted"]="Blacklisted"
         else:
             riskData["blacklistedVal"]=0
@@ -628,7 +648,7 @@ def getRiskVal(allData,search):
     
     try:   
         if data["blocked"]==1 :
-            riskData["grey"]=50
+            riskData["grey"]=40
         else:
             riskData["grey"]=0
     except:
@@ -636,7 +656,7 @@ def getRiskVal(allData,search):
 
     try:
         if data["blocked"]==2 :
-            riskData["black"]=100
+            riskData["black"]=80
         else:
             riskData["black"]=0
 
@@ -652,7 +672,7 @@ def getAllIpDetails(allDataIP,search,riskData,dataWithThisIp):
     try:
         
         if allDataIP[search][0]["isVpnTime"]:
-            riskData["Timezone"]=70
+            riskData["Timezone"]=25
         else:
             riskData["Timezone"]=0
 
@@ -1280,6 +1300,7 @@ def pptp():
     ip = request.args["ip"]
     hostname, hoststate, oports = get_pptp(ip)
     values = {}
+    values["ID"] = "PPTP"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1290,6 +1311,7 @@ def l2tp():
     ip = request.args["ip"]
     hostname, hoststate, oports, ike = get_l2tp_ipsec(ip)
     values = {}
+    values["ID"] = "L2TP/IPSEC"
     values["hostname"] = hostname
     values["hoststate"] = hoststate
     values["oports"] = oports
@@ -1301,6 +1323,7 @@ def ovpn():
     ip = request.args["ip"]
     isOpenVpn = get_openvpn_tcp(ip)
     values = {}
+    values["ID"] = "OpenVpn"
     values["isOpenVpn"] = isOpenVpn
     return jsonify(values)
 
@@ -1309,6 +1332,7 @@ def sstp():
     ip = request.args["ip"]
     _sstp = get_sstp(ip)
     values = {}
+    values["ID"] = "SSTP"
     values["sstp"] = _sstp
     return jsonify(values)
 
@@ -1317,5 +1341,6 @@ def ike():
     ip = request.args["ip"]
     ike = get_IKEv2(ip)
     values = {}
+    values["ID"] = "IKE"
     values["ike"] = ike
     return jsonify(values)

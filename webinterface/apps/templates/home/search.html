@@ -364,7 +364,21 @@
                             } catch (e) {
                                 console.log(e);
                             }
-
+                            try {
+                                var allData = JSON.parse('{{details | tojson}}');
+                                console.log("her1e", allData);
+                                var tobeadded = [];
+                                let cond1 = allData.isVPN || allData.isVPN === 'True';
+                                
+                                let lat = allData.lat_long.split(" & ");
+                                
+                                tobeadded.push([cond1, allData.region, allData.country, "Point", [lat[1], lat[0]]]);
+                                console.log("hhh", tobeadded);
+                                addvalues(tobeadded, cities);
+                                //console.log("aaa", cities)
+                            } catch (e) {
+                                console.log(e);
+                            }
 
                             /*dump1 = [
                                 [true, "india", "india", "point", [80, 40]], //VPN, ID, TITLE, Point, Coordinates{Lat, Long}
@@ -501,7 +515,7 @@
                         search_ip = '{{ip}}';
                         async function pptp() {
                             var xmlhttp = new XMLHttpRequest();
-                            var url = "/vpn/sstp?ip=" + search_ip;
+                            var url = "/vpn/pptp?ip=" + search_ip;
                             const response = await fetch(url);
                             console.log(await response.text())
                         };
