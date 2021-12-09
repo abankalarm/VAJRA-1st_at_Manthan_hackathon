@@ -519,36 +519,7 @@
                 <h4 class="card-title">
                     <div class="p-0">
                         <h2>Targeted Attacks</h2>
-                        <table class="table align-items-center mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm"></h6>
-                                                <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack">Attacking</a></h5>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="text-xs font-weight-bold mb-0"></p>
-                                        <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking">Tracking</a></h5>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-success"></span>
-                                        <h5><a href="/nmaps">Nmaps</a></h5>
-                                    </td>
-                                </tr>
-                        </table>
+                       
                         <h2>Attacking</h2>
                         <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
@@ -795,17 +766,18 @@
         console.log("");
         //console.log("$$$$", "{{details}}");
         var data = JSON.parse('{{riskData | tojson}}');
-        if ( data["per"]<30 ) {
-            var notVpn = "This is not a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
-                            <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
-                        </div>`;
-        } else  {
-            var isVPN = "This is a VPN ip ";
-            document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
-                            <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
-                        </div>`;
-        }
+        if (Object.keys(data).length>0)
+            {if ( data["per"]<30 ) {
+                var notVpn = "This is not a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
+                                <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
+                            </div>`;
+            } else  {
+                var isVPN = "This is a VPN ip ";
+                document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
+                            </div>`;
+            }}
     }
 
     notif();
