@@ -19,9 +19,9 @@
     }
     domainsDetected += "</table>"
     document.getElementById("domainsDetected").innerHTML = domainsDetected
-    var ipsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>IP</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>Is VPN by timezone</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>ParentDomain</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>TimeStamp</th></tr>";
+    var ipsDetected = "<table><tr><th class='col-md-3 text-uppercase text-secondary text-xxs'>IP</th><th class='col-md-1 text-uppercase text-secondary text-xxs'>__</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>ParentDomain</th><th class='col-md-3 text-uppercase text-secondary text-xxs'>TimeStamp</th></tr>";
     for (let i = 0; i < Math.min(10, Object.keys(allData['distinctIp']).length); i++) {
-        ipsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><form action = '/search' method = 'POST'><input style='text-align:right' id='search' name='search' type='submit' value='" + allData['distinctIp'][i]['ip'] + "'></form></td> <td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['isVpnTime'] + "</td>" + "<td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['parentDomain'] + "</td><td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['timestamp'] + "</td>" + "</tr>"
+        ipsDetected += "<tr><td class ='text-uppercase text-secondary text-xxs'><form action = '/search' method = 'POST'><input style='text-align:right' id='search' name='search' type='submit' value='" + allData['distinctIp'][i]['ip'] + "'></form></td> <td class ='text-uppercase text-secondary text-xxs'>" + "__" + "</td>" + "<td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['parentDomain'] + "</td><td class ='text-uppercase text-secondary text-xxs'>" + allData['distinctIp'][i]['timestamp'] + "</td>" + "</tr>"
 
         // + allData['domainCount'][i]['parentDomain'] + "</td><td>" + allData['timeStamp']
     }
