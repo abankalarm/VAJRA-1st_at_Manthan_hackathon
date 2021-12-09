@@ -49,10 +49,11 @@
                         <tr>
                             <td>
                                 <h2 class="card-title"><strong> {{ip}}</strong></h2>
+                                
                             </td>
                             <td>
                                 <!--to add -->
-                                <img src="https://flagicons.lipis.dev/flags/1x1/in.svg" class="avatar" />
+                                <img src="https://flagicons.lipis.dev/flags/1x1/{{allData['cn']['country']}}.svg" class="avatar" />
                             </td>
                             <td>
                                 <div class="card-body" id="vpnalert">
@@ -60,6 +61,8 @@
                             </td>
                         </tr>
                     </table>
+
+                    {%if riskData.keys() | length >0%}
                     <table class="table " id="">
                         <thead class=" text-primary">
                             <tr>
@@ -80,10 +83,10 @@
                                     ASN
                                 </td>
                                 <td>
-                                    {{asn}}
+                                    {{allData["asn"]["id"]}}
                                 </td>
                                 <td>
-                                    {{ASN_name}}
+                                    {{allData["asn"]["name"]}}
                                 </td>
                             </tr>
                             <tr>
@@ -91,7 +94,7 @@
                                     Blacklisted
                                 </td>
                                 <td>
-                                    {{blacklisted}}
+                                    {{riskData['blacklisted']}}
                                 </td>
                                 <td>
 
@@ -102,7 +105,7 @@
                                     DataCentre
                                 </td>
                                 <td>
-                                    {{datacentre}}
+                                    {{riskData['dataCenter']}}
                                 </td>
                                 <td>
 
@@ -113,14 +116,15 @@
                                     Bad asn
                                 </td>
                                 <td>
-                                    {{badASN}}
+                                    {{riskData['badAsn']}}
                                 </td>
                                 <td>
-                                    Current ASN: {{ASN_name}}
+
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    {%endif%} {% if details.keys() | length >0%}
                     <div>
                         <div>
                             <h4>IP Details:</h4><b></b>
@@ -128,7 +132,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>ISP</label>
-                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{isp}}" readonly>
+                                        <input type="text" class="form-control" placeholder="Home Address" style="background-color:skyblue;" value="{{details['isp']}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -136,25 +140,25 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>latitude and longitude</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{lat_long}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="lat and long" value="{{details['lat_long']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Region or city</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{region}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="City" value="{{details['region']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Country</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{country}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="Country" value="{{details['country']}}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Postal Code</label>
-                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{zipcode}}" readonly>
+                                        <input type="text" class="form-control" style="background-color:skyblue;" placeholder="ZIP Code" value="{{details['zipcode']}}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -164,6 +168,7 @@
                         <div>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -332,7 +337,7 @@
                                     myDictionary.title = dump[i][2];
                                     myDictionary.geometry["type"] = "Point";
                                     myDictionary.geometry["coordinates"] = dump[i][4];
-                                    if (dump[i][0] == true) {
+                                    if (dump[i][0] == 'True') {
                                         myDictionary.isVPN = true;
                                     } else {
                                         myDictionary.isVPN = false;
@@ -344,17 +349,21 @@
                             }
                             try {
                                 var allData = JSON.parse('{{allDataIP | tojson}}');
-                                console.log("here", allData);
+                                //console.log("here", allData);
                                 var tobeadded = [];
                                 for (let i = 0; i < Object.keys(allData.keyList).length; i++) {
-                                    tobeadded.push([allData[allData.keyList[i]][0].isVpnASN || allData[allData.keyList[i]][0].isVPNTime, allData[allData.keyList[i]][0].countryCode, allData[allData.keyList[i]][0].country, "Point", [allData[allData.keyList[i]][0].lat, allData[allData.keyList[i]][0].lon]])
+                                    let cond1 = allData[allData.keyList[i]][0].isVpnASN || allData[allData.keyList[i]][0].isVpnASN === 'True';
+                                    let cond2 = allData[allData.keyList[i]][0].isVPNTime || allData[allData.keyList[i]][0].isVPNTime === 'True';
+                                    tobeadded.push([cond1 || cond2, allData[allData.keyList[i]][0].countryCode, allData[allData.keyList[i]][0].country, "Point", [allData[allData.keyList[i]][0].lon, allData[allData.keyList[i]][0].lat]])
+                                    console.log("hhh", tobeadded);
                                 }
-                                console.log("hhh", tobeadded);
+                                
                                 addvalues(tobeadded, cities);
-                                console.log("aaa", cities)
+                                //console.log("aaa", cities)
                             } catch (e) {
                                 console.log(e);
                             }
+
 
                             /*dump1 = [
                                 [true, "india", "india", "point", [80, 40]], //VPN, ID, TITLE, Point, Coordinates{Lat, Long}
@@ -420,7 +429,7 @@
                                     destinations.push(myObj.id);
                                 };
                             }
-                            console.log(destinations);
+                            //console.log(destinations);
 
                             var originLongitude = -0.1262;
                             var originLatitude = 51.5002;
@@ -480,14 +489,33 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-md-12">
         <div class="card card-profile">
             <div class="card-body">
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
-                    <div class="table-responsive p-0">
+                    <script>
+                        var xmlhttp = new XMLHttpRequest();
+                        var url = "/api/checkip";
+
+                        async function func1() {
+                        const response = await fetch(url);
+                        console.log(await response.text())
+                        };
+                    </script>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-profile">
+            <div class="card-body">
+                <h6 class="card-category text-gray"></h6>
+                <h4 class="card-title">
+                    <div class="p-0">
                         <h2>Targeted Attacks</h2>
                         <table class="table align-items-center mb-0">
                             <thead>
@@ -504,52 +532,37 @@
                                             <div class="d-flex flex-column justify-content-center">
                                                 <h6 class="mb-0 text-sm"></h6>
                                                 <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack.html">Attacking</a></h5>
+                                                <h5><a href="/attack">Attacking</a></h5>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <p class="text-xs font-weight-bold mb-0"></p>
                                         <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking.html">Tracking</a></h5>
+                                        <h5><a href="/tracking">Tracking</a></h5>
                                     </td>
                                     <td class="align-middle text-center text-sm">
                                         <span class="badge badge-sm bg-gradient-success"></span>
-                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
+                                        <h5><a href="/nmaps">Nmaps</a></h5>
                                     </td>
                                 </tr>
                         </table>
+                        <h2>Attacking</h2>
+                        <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm"></h6>
+                                <p class="text-xs text-secondary mb-0"></p>
+                                <h5><a href="/attack" id = "attackIp">This IP has not been attacked</a></h5>
+                            </div>
+                        </div>
                         <h2>Tracking</h2>
-                        <table class="table align-items-center mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Targeted Attacks</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tracking</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nmaps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex px-2 py-1">
-                                            <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-sm"></h6>
-                                                <p class="text-xs text-secondary mb-0"></p>
-                                                <h5><a href="/attack.html">Attacking</a></h5>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="text-xs font-weight-bold mb-0"></p>
-                                        <p class="text-xs text-secondary mb-0"></p>
-                                        <h5><a href="/tracking.html">Tracking</a></h5>
-                                    </td>
-                                    <td class="align-middle text-center text-sm">
-                                        <span class="badge badge-sm bg-gradient-success"></span>
-                                        <h5><a href="/nmaps.html">Nmaps</a></h5>
-                                    </td>
-                                </tr>
-                        </table>
+                        <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm"></h6>
+                                <p class="text-xs text-secondary mb-0"></p>
+                                <h5><a href="/attack" id = "trackIp">This IP has not been tracked</a></h5>
+                            </div>
+                        </div>
 
                         <!-- nmap button -->
 
@@ -566,7 +579,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="title">Edit Profile</h5>
+                    <h5 class="title">Data for this IP</h5>
                 </div>
                 <div class="card-body">
                     <div>
@@ -615,8 +628,6 @@
                     document.getElementsById('riskbar').className = "c100 p100 red";
                 }
             }
-
-
         }
     </script> -->
 
@@ -633,51 +644,36 @@
                             <div class="block block-three"></div>
                             <div class="block block-four"></div>
 
+                            <td>
+                                <div id='riskbar' class="c100 p{{riskData['per']}} {{details['ratingcolor']}} dark">
+                                    {% if riskData %}
+                                    <span><b>{{riskData["per"]}}%</b></span>
+                                    <div class="slice">
+                                        <div class="bar"></div>
+                                        <div class="fill"></div>
+                                    </div>
+                                    {% else %}
+                                    <span><b>25%</b></span>
+                                    <div class="slice">
+                                        <div class="bar "></div>
+                                        <div class="fill "></div>
+                                    </div>
+                                    {% endif %}
+                                </div>
 
-                        </a>
-                        <thead class="text-primary">
-                            <tr>
-                                <th>
-                                    Rating
-                                </th>
-                                <th>
-                                    Parameter
-                                </th>
-                                <th>
-                                    Value
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="center clearfix" style="justify-content: center;  ">
-                                        <!-- available colors green, orange, red-->
+                            </td>
+                            <td>
+                                Is VPN by Timezone<br><br> Blacklisted Country<br><br>Grey Country<br><br>From Data Center<br><br>Bad ASN <br><br> Blacklisted ASN
+                            </td>
+                            <td>{{riskData["Timezone"]}}
+                                <br><br>{{riskData["black"]}}<br><br>{{riskData["grey"]}}<br><br>{{riskData["dataCenterVal"]}}<br><br>{{riskData["badAsnVal"]}} <br><br>{{riskData["blacklistedVal"]}}
 
+                            </td>
 
-                                        <div id='riskbar' class="c100 p{{allData['per']}} {{ratingcolor}} dark">
-                                            {% if allData %}
-                                            <span><b>{{allData["per"]}}%</b></span>
-                                            <div class="slice">
-                                                <div class="bar"></div>
-                                                <div class="fill"></div>
-                                            </div>
-                                            {% else %}
-                                            <span><b>25%</b></span>
-                                            <div class="slice">
-                                                <div class="bar "></div>
-                                                <div class="fill "></div>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                </td>
-                                <td>
-                                    ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123<br><br>ID AS123123
-
-                                </td>
+                            </td>
                             </tr>
 
-                        </tbody>
+                            </tbody>
                     </table>
                     <div>
                         <p class="card-text">
@@ -695,27 +691,26 @@
                     <div class="card-footer ">
                         hello
                     </div>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-profile">
-                    <div class="card-body">
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-profile">
+                <div class="card-body">
 
-                        <h4 class="card-title">Result</h4>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table tablesorter " id="">
-                                    <thead class=" text-primary">
-                                        <tr id="resultheads">
-                                        </tr>
-                                    </thead>
-                                    <tbody id="resultbody">
-                                    </tbody>
-                                </table>
-                            </div>
+                    <h4 class="card-title">Matches</h4>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table tablesorter " id="">
+                                <thead class=" text-primary">
+                                    <tr id="resultheads">
+                                    </tr>
+                                </thead>
+                                <tbody id="resultbody">
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -723,12 +718,14 @@
         </div>
     </div>
 </div>
+</div>
 {%if result | length >1%} {% for key, value in result.items() %} {{key}} {{value}} <br> {% endfor %} {% endif %}
 <script>
     document.write(`
         {{result}}
         `)
 </script>
+
 {% endblock content %} {% block javascripts %}
 <script>
     /* This is for Result display*/
@@ -754,7 +751,23 @@
 
 <script>
     /* This is for all data with this IPs display if this is an array when testing then put array keys in keylist and do as above*/
+    var related1 = JSON.parse('{{trackIp | tojson}}');
+    console.log(related1)
+    var attackIp = document.getElementById("attackIp");
+    var trackIp = document.getElementById("trackIp");
+    if(Object.keys(related1['attack']).length != 0) {
+        attackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>JS Of Attack</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Time Of Attack</td></tr></thead><tbody><td>" + related1['attack'][0]['js'] + "</td><td>" + related1['attack'][0]['timestamp'] + "</td></tbody></table>"
+    }
+    if(Object.keys(related1['track']).length != 0) {
+        var one = "";
+        for(let i = 0; i < Object.keys(related1['track']).length; i++) {
+            one += "<td>" + related1['track'][i]['id'] + "</td><td>" + related1['track'][i]['timestamp'] + "</td>"
+        }
+        trackIp.innerHTML = "<table class='table align-items-center mb-0'><thead><tr><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>IDs of Attacking Image</td><td class='text-uppercase text-secondary text-xxs font-weight-bolder opacity-7'>Tracking Logs</td></tr></thead><tbody>" + one + "</tbody></table>";
+    }
+    
     var related = JSON.parse('{{dataWithThisIp | tojson}}');
+    console.log("Here", related)
     var relatedHead = document.getElementById("relatedheads")
     var relatedBody = document.getElementById("relatedbody");
     var one = "";
@@ -763,10 +776,12 @@
         one += "<th>" + related['cols'][i] + "</th>";
     }
     one += "<th>Further Analysis</th>";
-    for (let j = 0; j < Object.keys(related['cols']).length; j++) {
-        two += "<td>" + related['data'][related['cols'][j]] + "</td>";
+    for (let i = 0; i < Object.keys(related['data']).length; i++) {
+        for (let j = 0; j < Object.keys(related['cols']).length; j++) {
+            two += "<td>" + related['data'][i][related['cols'][j]] + "</td>";
+        }
+        two += "<td><a href = '/cookieDetail/" + related['data'][i]['cookie'] + "'>Here</a></td></tr>"
     }
-    two += "<td><a href = '/cookieDetail/" + related['data']['cookie'] + "'>Here</a></td></tr>"
     relatedHead.innerHTML = one;
     relatedBody.innerHTML = two;
     //console.log("here", related)
@@ -775,13 +790,14 @@
 
 <script type="text/javascript ">
     function notif() {
-        var text = "{{isVPN}}";
-        if (text == 'False') {
+        
+        //console.log("$$$$", "{{details}}");
+        if ( int("{{riskData['per']}}")<30 ) {
             var notVpn = "This is not a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-success ">
                             <span><b> ` + notVpn + ` - </b> The ip is not masking itself.</span>
                         </div>`;
-        } else if (text == 'True') {
+        } else  {
             var isVPN = "This is a VPN ip ";
             document.getElementById("vpnalert").innerHTML = `<div class="alert alert-danger ">
                             <span><b> ` + isVPN + ` </b> The ip seems to be masking itself.</span>
