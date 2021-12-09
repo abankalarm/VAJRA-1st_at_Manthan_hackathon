@@ -754,18 +754,14 @@ def searchpost():
         
         dataWithThisIp = {}
         trackIp = {}
-        
+
         details=getAllIpDetails(allDataIP,search,riskData,dataWithThisIp)
         trackIp=getTrackIP(search)
+
         return render_template('home/search.html', ip = str(search), allDataIP=allDataIP,  segment='search',riskData=riskData,details=details,allData=allData, dataWithThisIp = dataWithThisIp, trackIp = trackIp)
     else:
-        allDataIP = {}
-        dataWithThisIp = {}
-        allData={}
-        details  = {}
-        riskData={}
-        trackIp = {}
-        return render_template('home/search.html', segment='search',riskData=riskData ,allData=allData,  dataWithThisIp = dataWithThisIp, allDataIP = allDataIP,details=details, trackIp = trackIp)
+
+        return render_template('home/search.html', segment='search',riskData={} ,allData={},  dataWithThisIp = {}, allDataIP = {},details={}, trackIp = {})
 
 
 
@@ -1040,6 +1036,7 @@ def vpnDetails(data):
         data["asn"]=c[0]
     if(len(d)>0):
         data["cn"]=d[0]
+        data["cn"]["country"]=data["cn"]["country"]
     print(a,b,c,d)
     inBad=c[0]['id'] in badASN
     data["bad"]=inBad
