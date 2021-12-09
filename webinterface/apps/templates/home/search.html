@@ -517,29 +517,42 @@
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/pptp?ip=" + search_ip;
                             const response = await fetch(url);
-                            console.log(await response.text())
+                            var message = await response.text();
+                            
+                               console.log("#########", message);
+                               document.getElementById('pptp').innerHTML += message + '<br />';
                         };
                         pptp();
                         async function l2tp_ipsec() {
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/l2tp_ipsec?ip=" + search_ip;
                             const response = await fetch(url);
-                            console.log(await response.text())
+                            var message = await response.text();
+                            
+                               console.log("#########", message);
+                               document.getElementById('l2tp_ipsec').innerHTML += message + '<br />';
                         };
                         l2tp_ipsec();
                         async function openvpn() {
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/openvpn?ip=" + search_ip;
                             const response = await fetch(url);
-                            console.log(await response.text())
+                            var message = await response.text();
+                            
+                            console.log("#########", message);
+                            document.getElementById('openvpn').innerHTML += message + '<br />';
                         };
                         openvpn();
                         async function sstp() {
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/sstp?ip=" + search_ip;
                             const response = await fetch(url);
-                            console.log(await response.text())
-                            return '(response.text())';
+                            // console.log(await response.text())
+                            var message = await response.text();
+                            
+                               console.log("#########", message);
+                               document.getElementById('sstp').innerHTML += message + '<br />';
+                            
                         };
                         sstp();
                         // async function ike() {
@@ -556,10 +569,16 @@
                             var url = "/vpn/ike?ip=" + search_ip;
                             const response = await fetch(url);
                             // console.log(await response.text())
-                            var message = await response.text()
+                            var message = await response.text();
                             
-                               console.log("#########", message);
-                                document.getElementById('ike').innerHTML += message + '<br />';
+                            console.log("#########", message);
+                               const myArray = message.split('\\n');
+                               var printer = ""
+                               
+                               for (let i = 0; i < myArray.length; i++) {
+                                    printer += myArray[i] + '<br />';
+                              }
+                               document.getElementById('ike').innerHTML += printer + '<br />';
                                 
                             
                         }ike();
@@ -567,12 +586,38 @@
                 </h4>
 
                 <div>
-                    <table>
-                        <thead>
-                            <tr><td>pptp</td><td>sstp</td><td>openvpn</td><td>l2tp_ipsec</td><td>ike</td></tr>
-                        </thead>
-                            <tr><td>pptp();</td><td> <p id='ike'></p></td><td>openvpn()</td><td>l2tp_ipsec()</td><td>ike()</td></tr>
-                    </table>
+                    
+                            <div class="card card-profile" style="background-color: #1d1d29;">
+                                <div class="card-body">
+                                    <p id='pptp'></p>
+                                </div>
+                                    
+                            </div>
+                            <div class="card card-profile"  style="background-color: #1d1d29;">
+                                <div class="card-body">
+                                    <p id='sstp'></p>
+                                </div>
+                                    
+                            </div>
+                            <div class="card card-profile" style="background-color: #1d1d29;">
+                                <div class="card-body" >
+                                    <p id='ike'></p>
+                                </div>
+                                    
+                            </div>
+                            <div class="card card-profile"  style="background-color: #1d1d29;">
+                                <div class="card-body">
+                                    <p id='openvpn'></p>
+                                </div>
+                                    
+                            </div>
+                            <div class="card card-profile"  style="background-color: #1d1d29;">
+                                <div class="card-body">
+                                    <p id='l2tp_ipsec'></p>
+                                </div>
+                                    
+                            </div>
+                        
                 </div>
             </div>
         </div>
