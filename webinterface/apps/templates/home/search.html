@@ -59,10 +59,16 @@
                             <td>
                                 <div class="card-body" id="vpnalert">
                                 </div>
+
                             </td>
                         </tr>
                     </table>
+                    <div class="card-body" id="vpnprotoalert">
+                        <div class="alert alert-success ">
+                            <span><b> System does not support a VPN protocol: </b> The ip has not been configured to be used as a vpn.</span>
+                        </div>
 
+                    </div>
                     {%if riskData.keys() | length >0%}
                     <table class="table " id="">
                         <thead class=" text-primary">
@@ -369,9 +375,9 @@
                                 console.log("her1e", allData);
                                 var tobeadded = [];
                                 let cond1 = allData.isVPN || allData.isVPN === 'True';
-                                
+
                                 let lat = allData.lat_long.split(" & ");
-                                
+
                                 tobeadded.push([cond1, allData.region, allData.country, "Point", [lat[1], lat[0]]]);
                                 console.log("hhh", tobeadded);
                                 addvalues(tobeadded, cities);
@@ -511,16 +517,38 @@
                 <h6 class="card-category text-gray"></h6>
                 <h4 class="card-title">
                     <script>
-                        var search_ip = '219.100.37.7';
+                        var pptp_status = 0;
+                        var l2tp_ipsec_status = 0;
+                        var openvpn_status = 0;
+                        var sstp_status = 0;
+                        var ike_status = 0;
+                        var ike_ip = '219.100.37.7';
                         search_ip = '{{ip}}';
                         async function pptp() {
                             var xmlhttp = new XMLHttpRequest();
                             var url = "/vpn/pptp?ip=" + search_ip;
                             const response = await fetch(url);
                             var message = await response.text();
-                            
-                               console.log("#########", message);
-                               document.getElementById('pptp').innerHTML += message + '<br />';
+                            console.log("#########", message);
+                            if (JSON.parse(message)['oports']['1723']['state'] == 'open') {
+                                pptp_status = 1;
+
+                            }
+
+                            if (pptp_status == 1) {
+                                document.getElementById('pptp_stat').innerHTML = '<h4 style="color: green">PPTP is accessible.<h4>';
+                            } else {
+                                document.getElementById('pptp_stat').innerHTML = '<h4 style="color: red">PPTP is not accessible.<h4>';
+                            }
+                            if (pptp_status = 1) {
+                                var notVpn = "System supports a VPN protocol";
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
+                            </div>`;
+                            }
+                            document.getElementById('pptp').innerHTML += message + '<br />';
+
+
                         };
                         pptp();
                         async function l2tp_ipsec() {
@@ -528,9 +556,23 @@
                             var url = "/vpn/l2tp_ipsec?ip=" + search_ip;
                             const response = await fetch(url);
                             var message = await response.text();
-                            
-                               console.log("#########", message);
-                               document.getElementById('l2tp_ipsec').innerHTML += message + '<br />';
+                            if (JSON.parse(message)['oports']['500']['state'] == 'open') {
+                                l2tp_ipsec_status = 1;
+
+                            }
+                            if (l2tp_ipsec_status == 1) {
+                                document.getElementById('l2tp_stat').innerHTML = '<h4 style="color: green">L2TP/IPSEC or IPSEC is accessible.<h4>';
+                            } else {
+                                document.getElementById('l2tp_stat').innerHTML = '<h4 style="color: red">L2TP/IPSEC or IPSEC is not accessible.<h4>';
+                            }
+                            console.log("#########", message);
+                            document.getElementById('l2tp_ipsec').innerHTML += message + '<br />';
+                            if (l2tp_ipsec_status = 1) {
+                                var notVpn = "System supports a VPN protocol";
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
+                            </div>`;
+                            }
                         };
                         l2tp_ipsec();
                         async function openvpn() {
@@ -538,9 +580,22 @@
                             var url = "/vpn/openvpn?ip=" + search_ip;
                             const response = await fetch(url);
                             var message = await response.text();
-                            
+                            if (JSON.parse(message)['oports']['1194']['state'] == 'open') {
+                                openvpn_status = 1;
+                            }
+                            if (openvpn_status == 1) {
+                                document.getElementById('openvpn_stat').innerHTML = '<h4 style="color: green">openvpn is accessible.<h4>';
+                            } else {
+                                document.getElementById('openvpn_stat').innerHTML = '<h4 style="color: red">openvpnis not accessible.<h4>';
+                            }
                             console.log("#########", message);
                             document.getElementById('openvpn').innerHTML += message + '<br />';
+                            if (openvpn_status = 1) {
+                                var notVpn = "System supports a VPN protocol";
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
+                            </div>`;
+                            }
                         };
                         openvpn();
                         async function sstp() {
@@ -549,10 +604,23 @@
                             const response = await fetch(url);
                             // console.log(await response.text())
                             var message = await response.text();
-                            
-                               console.log("#########", message);
-                               document.getElementById('sstp').innerHTML += message + '<br />';
-                            
+                            if (JSON.parse(message)['sstp'] != false) {
+                                sstp_status = 1;
+                            }
+                            if (sstp_status == 1) {
+                                document.getElementById('sstp_stat').innerHTML = '<h4 style="color: green">SSTP is accessible.<h4>';
+                            } else {
+                                document.getElementById('sstp_stat').innerHTML = '<h4 style="color: red">SSTP not accessible.<h4>';
+                            }
+                            console.log("#########", message);
+                            document.getElementById('sstp').innerHTML += message + '<br />';
+
+                            if (sstp_status = 1) {
+                                var notVpn = "System supports a VPN protocol";
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
+                            </div>`;
+                            }
                         };
                         sstp();
                         // async function ike() {
@@ -570,63 +638,85 @@
                             const response = await fetch(url);
                             // console.log(await response.text())
                             var message = await response.text();
-                            
+
                             console.log("#########", message);
-                               const myArray = message.split('\\n');
-                               var printer = ""
-                               
-                               for (let i = 0; i < myArray.length; i++) {
-                                    printer += myArray[i] + '<br />';
-                              }
-                               document.getElementById('ike').innerHTML += printer + '<br />';
-                                
-                            
-                        }ike();
+                            const myArray = message.split('\\n');
+                            var printer = ""
+
+                            for (let i = 0; i < myArray.length; i++) {
+                                printer += myArray[i] + '<br />';
+                            }
+                            if (JSON.parse(message)['ike'].length > 250) {
+                                ike_status = 1;
+                            }
+                            if (ike_status == 1) {
+                                document.getElementById('ike_stat').innerHTML = '<h4 style="color: green">IKE is accessible.<h4>';
+                            } else {
+                                document.getElementById('ike_stat').innerHTML = '<h4 style="color: red">IKE not accessible.<h4>';
+                            }
+                            console.log("####ike", ike_status);
+                            document.getElementById('ike').innerHTML += printer + '<br />';
+                            if (ike_status = 1) {
+                                var notVpn = "System supports a VPN protocol";
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
+                            </div>`;
+                            }
+
+
+                        }
+                        ike();
                     </script>
                 </h4>
-
+                <h3>All protocols available</h3>
                 <div>
-                            <h3>pptp</h3>
-                            <div class="card card-profile" style="background-color: #1d1d29;">
-                                
-                                <div class="card-body">
-                                    <p id='pptp'></p>
-                                </div>
-                                    
-                            </div>
-                            <h3>sstp</h3>
-                            <div class="card card-profile"  style="background-color: #1d1d29;">
-                                
-                                <div class="card-body">
-                                    <p id='sstp'></p>
-                                </div>
-                                    
-                            </div>
-                            <h3>ike</h3>
-                            <div class="card card-profile" style="background-color: #1d1d29;">
-                                
-                                <div class="card-body" >
-                                    <p id='ike'></p>
-                                </div>
-                                    
-                            </div>
-                            <h3>openvpn</h3>
-                            <div class="card card-profile"  style="background-color: #1d1d29;">
-                                
-                                <div class="card-body">
-                                    <p id='openvpn'></p>
-                                </div>
-                                    
-                            </div>
-                            <h3>l2tp_ipsec</h3>
-                            <div class="card card-profile"  style="background-color: #1d1d29;">
-                                
-                                <div class="card-body">
-                                    <p id='l2tp_ipsec'></p>
-                                </div>
-                                    
-                            </div>
-                        
+
+                    <h3>pptp</h3>
+                    <div id='pptp_stat'></div>
+                    <div class="card card-profile" style="background-color: #1d1d29;">
+
+                        <div class="card-body">
+                            <p id='pptp'></p>
+                        </div>
+
+                    </div>
+                    <h3>sstp</h3>
+                    <div id='sstp_stat'></div>
+                    <div class="card card-profile" style="background-color: #1d1d29;">
+
+                        <div class="card-body">
+                            <p id='sstp'></p>
+                        </div>
+
+                    </div>
+                    <h3>ike</h3>
+                    <div id='ike_stat'></div>
+                    <div class="card card-profile" style="background-color: #1d1d29;">
+
+                        <div class="card-body">
+                            <p id='ike'></p>
+                        </div>
+
+                    </div>
+                    <h3>openvpn</h3>
+                    <div id='openvpn_stat'></div>
+                    <div class="card card-profile" style="background-color: #1d1d29;">
+
+                        <div class="card-body">
+                            <p id='openvpn'></p>
+                        </div>
+
+                    </div>
+                    <h3>l2tp/ipsec</h3>
+                    <div id='l2tp_stat'></div>
+                    <div class="card card-profile" style="background-color: #1d1d29;">
+
+                        <div class="card-body">
+                            <p id='l2tp_ipsec'></p>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>

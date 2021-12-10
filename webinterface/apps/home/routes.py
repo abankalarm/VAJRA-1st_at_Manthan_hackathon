@@ -1321,10 +1321,12 @@ def l2tp():
 @blueprint.route('/vpn/openvpn', methods=['GET','POST'])
 def ovpn():  
     ip = request.args["ip"]
-    isOpenVpn = get_openvpn_tcp(ip)
+    hostname, hoststate, oports = get_openvpn_tcp(ip)
     values = {}
     values["ID"] = "OpenVpn"
-    values["isOpenVpn"] = isOpenVpn
+    values["hostname"] = hostname
+    values["hoststate"] = hoststate
+    values["oports"] = oports
     return jsonify(values)
 
 @blueprint.route('/vpn/sstp', methods=['GET','POST'])

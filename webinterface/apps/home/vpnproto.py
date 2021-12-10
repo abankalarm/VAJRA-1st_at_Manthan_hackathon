@@ -67,19 +67,40 @@ def get_l2tp_ipsec(ip):
 #print(get_l2tp_ipsec('219.100.37.7', l2tp_ipsec_port))
 
 # 3. OpenVPN
+
 def get_openvpn_tcp(ip):
+    oVPN_port = '1194'
+    nm = nmap.PortScanner()
+    nm.scan(ip, oVPN_port, arguments=' -Pn -sU')
+    output = ""
+    oports = {}
+    hostname = ""
+    hoststate = ""
+    
+    for host in nm.all_hosts():
+        host = host
+        hostname = nm[host].hostname()
+        hoststate = nm[host].state()
 
-    print('hello')
-    command = 'echo "test" | nc -Nnv -w 2 ' + ip + ' 443'
-    result = subprocess.getoutput(command)
-    p = result
-    success_arr = p.split('succeeded')
-    line_arr = p.split('\n')
-    if len(success_arr)==2:
-        if len(line_arr)==1:
-            return True
+        for proto in nm[host].all_protocols():
+            lport = sorted(nm[host][proto].keys())
+            
+            for port in lport:
+                oports[port] = nm[host][proto][port]
 
-    return False
+    return hostname, hoststate, oports
+    # 1194
+    # print('hello')
+    # command = 'echo "test" | nc -Nnv -w 2 ' + ip + ' 443'
+    # result = subprocess.getoutput(command)
+    # p = result
+    # success_arr = p.split('succeeded')
+    # line_arr = p.split('\n')
+    # if len(success_arr)==2:
+    #     if len(line_arr)==1:
+    #         return True
+
+    # return False
 
 #print(get_openvpn_tcp('219.100.37.7'))
 
