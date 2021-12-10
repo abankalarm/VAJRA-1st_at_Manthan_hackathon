@@ -848,7 +848,7 @@ def vpn_time():
     if(json_response['timezone'] == browser_timzone):
         return jsonify("false")
     elif( json_response['timezone'] != browser_timzone and len(browser_timzone)>5):
-        return jsonify("false")
+        return jsonify("true")
 
 
     return jsonify("unknown")
@@ -1008,7 +1008,7 @@ def vpnIsASN():
         conn.close()
         #print("->>>",c)
         if len(c)>0 :
-            return "True"
+            return "true"
     return "false"
 
 @blueprint.route('/api/vpnDetails')
