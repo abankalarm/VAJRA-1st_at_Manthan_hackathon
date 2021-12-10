@@ -540,9 +540,9 @@
                             } else {
                                 document.getElementById('pptp_stat').innerHTML = '<h4 style="color: red">PPTP is not accessible.<h4>';
                             }
-                            if (pptp_status = 1) {
+                            if (pptp_status == 1) {
                                 var notVpn = "System supports a VPN protocol";
-                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
+                                document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-warning ">
                                 <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
                             </div>`;
                             }
@@ -567,7 +567,7 @@
                             }
                             console.log("#########", message);
                             document.getElementById('l2tp_ipsec').innerHTML += message + '<br />';
-                            if (l2tp_ipsec_status = 1) {
+                            if (l2tp_ipsec_status == 1) {
                                 var notVpn = "System supports a VPN protocol";
                                 document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
                                 <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
@@ -590,7 +590,7 @@
                             }
                             console.log("#########", message);
                             document.getElementById('openvpn').innerHTML += message + '<br />';
-                            if (openvpn_status = 1) {
+                            if (openvpn_status == 1) {
                                 var notVpn = "System supports a VPN protocol";
                                 document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
                                 <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
@@ -615,7 +615,7 @@
                             console.log("#########", message);
                             document.getElementById('sstp').innerHTML += message + '<br />';
 
-                            if (sstp_status = 1) {
+                            if (sstp_status == 1) {
                                 var notVpn = "System supports a VPN protocol";
                                 document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
                                 <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
@@ -656,7 +656,7 @@
                             }
                             console.log("####ike", ike_status);
                             document.getElementById('ike').innerHTML += printer + '<br />';
-                            if (ike_status = 1) {
+                            if (ike_status == 1) {
                                 var notVpn = "System supports a VPN protocol";
                                 document.getElementById("vpnprotoalert").innerHTML = `<div class="alert alert-danger ">
                                 <span><b> ` + notVpn + ` - </b> The ip has been configured to be used as a vpn.</span>
