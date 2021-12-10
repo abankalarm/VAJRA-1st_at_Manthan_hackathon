@@ -29,6 +29,7 @@ except KeyError:
 app = create_app(app_config)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 Migrate(app, db)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 if DEBUG:
     app.logger.info('DEBUG       = ' + str(DEBUG))
