@@ -3,20 +3,20 @@
     "version": "1.0.0",
     "description": "Generic Builder",
     "main": "gulpfile.js",
-    "author": "AppSeed",
+    "author": "Indra",
     "keywords": [
         "css",
         "sass",
         "gulp",
         "web"
     ],
-    "homepage": "https://appseed.us",
+    "homepage": "",
     "repository": {
         "type": "git",
         "url": "https://github.com/app-generator"
     },
     "bugs": {
-        "email": "support@appseed.us"
+        "email": "bamalkaranbamal@gmail.com"
     },
     "license": "MIT License",
     "devDependencies": {
