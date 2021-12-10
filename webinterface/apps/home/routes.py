@@ -999,6 +999,9 @@ def uploadfiles():
 def vpnIsASN():
     if request.method == 'POST':
         ip = request.form['ip']
+        if ipaddress.ip_address(str(ip)).is_private:
+            print("Internal IP")
+            return "false"
         intip=int(ipaddress.ip_address(ip))
         s="SELECT * FROM blacklisted WHERE start ="+ ip.split(".")[0]+ " AND " + str(intip)+" between first AND last LIMIT 1"
         conn = sqlite3.connect('ip-index.db')
