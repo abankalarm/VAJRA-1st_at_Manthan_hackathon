@@ -29,6 +29,65 @@ Getting hidden IP:
 # A simple overview using a diagram
 ![Functioning](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/Network%20diagram%20example.png)
 
+# Amount of info[REDACTED] accumulated for each visitor
+```
+[
+  {
+    "_id": 1, 
+    "addBehavior": 0, 
+    "audio": "124.04347527516074", 
+    "availableScreenResolution": "[824, 1536]", 
+    "bookmarked": 0, 
+    "browserLat": 404, 
+    "browserLong": 404, 
+    "canvas": "canvas winding:yes,canvas fp:data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB9AAAADICAYAAACwGnoBAAAAAXNSR0IArs4c6QAAIABJREFUeF7s3Xl8XXWd//HXSdJ9A1qgLdBSSssmWwVEBkXUEQUXGBUcBa0shQFBmRGdGWVE0RkVHRUUoSx2Rp2Hy8yAg6AwjKDwQ0AEC7JT6AZlaaEb3ZLc83t8Tu5Jb25vknuTmzShr+/jwSNN7vku53luwh/v+/l+EwZ4S0l3AfYH9gGmA1OBScCE4r8r3cEiYDmwDIh/LwAeBR5KSJ7NO6Sko4B9gf1Kvm4PjACGF7/Gv/P/ouv6sv82FL9/BXgYeCT/mpC82r6.....................VRAgQIECBAgAABAgQIECBAgAABAgQIECBAgAABAgQIECgpIKCX1DWbAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAAECBKoRENCrOZVFCRAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQKCkgIBeUtdsAgQIECBAgAABAgQIECBAgAABAgQIECBAgAABAgQIEKhGQECv5lQWJUCAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAIGSAgJ6SV2zCRAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQKAaAQG9mlNZlAABAgQIECBAgAABAgQIECBAgAABAgQIECBAgAABAgRKCgjoJXXNJkCAAAECBAgQIECAAAECBAgQIECAAAECBAgQIECAAIFqBAT0ak5lUQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAoKfAxezO2TxnqrJ4AAAAASUVORK5CYII=", 
+    "city": "Delhi", 
+    "clientID": "20de5b3fc1607c8eab366427bba71bb9", 
+    "colorDepth": 24, 
+    "cookie": "20de5b3fc1607c8eab366427bba71bb9", 
+    "country": "India", 
+    "countryCode": "IN", 
+    "cpuClass": "not available", 
+    "deviceMemory": 4, 
+    "domain": "http://127.0.0.1:5000/injection", 
+    "fonts": "ArialArial BlackArial NarrowBook AntiquaBookman Old StyleCalibriCambriaCambria MathCenturyCentury GothicCentury SchoolbookComic Sans MSConsolasCourierCourier NewGeorgiaHelveticaImpactLucida BrightLucida CalligraphyLucida ConsoleLucida FaxLucida HandwritingLucida SansLucida Sans TypewriterLucida Sans UnicodeMicrosoft Sans SerifMonotype CorsivaMS GothicMS PGothicMS Reference Sans SerifMS Sans SerifMS SerifPalatino LinotypeSegoe PrintSegoe ScriptSegoe UISegoe UI LightSegoe UI SemiboldSegoe UI SymbolTahomaTimesTimes New RomanTrebuchet MSVerdanaWingdingsWingdings 2Wingdings 3", 
+    "hardwareConcurrency": 8, 
+    "hasLiedBrowser": 0, 
+    "hasLiedLanguages": 0, 
+    "hasLiedOs": 0, 
+    "hasLiedResolution": 0, 
+    "indexedDb": 1, 
+    "ip": "11xxxxx02", 
+    "isTOR": 0, 
+    "isVpnASN": "false", 
+    "isVpnSomething": "NA", 
+    "isVpnTime": "false", 
+    "isp": "Bencxxxxtech", 
+    "language": "en-IN", 
+    "lat": 2xxx2, 
+    "localStorage": 1, 
+    "lon": 7xxxxx73, 
+    "openDatabase": 1, 
+    "openPorts": "80, 21, 22", 
+    "parentDomain": "127.0.0.1", 
+    "platform": "Win32", 
+    "plugins": "gAWVEgIAA...............................................kZpRlZWVlLg==", 
+    "region": "DL", 
+    "regionName": "National Capital Territory of Delhi", 
+    "screenResolution": "[864, 1536]", 
+    "sessionStorage": 1, 
+    "timestamp": "Wed Dec 08 2021 15:20:31 GMT+0530 (India Standard Time)", 
+    "timezone": "Asia/Calcutta", 
+    "timezoneOffset": -330, 
+    "touchSupport": "2,False,False", 
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", 
+    "webdriver": 0, 
+    "webgl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACW.............................................sion:0,webgl fragment shader medium int precision rangeMin:31,webgl fragment shader medium int precision rangeMax:30,webgl fragment shader low int precision:0,webgl fragment shader low int precision rangeMin:31,webgl fragment shader low int precision rangeMax:30", 
+    "webglVendorAndRenderer": "Google........14046.3)", 
+    "zip": "11...4"
+  },
+```
+
 # Pictures
 
 ## A safe ip with info about a vpn used previously in graph
