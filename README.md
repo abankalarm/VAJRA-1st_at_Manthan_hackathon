@@ -9,6 +9,7 @@ It is a complete solution that has been deployed and tested live, other than jus
 It also provides a map like approach which gives a pictorial representation of how the connection was tunneled across web with source and destination arrows.
 
 Other features:
+- Attack unseen ips and search for them
 - country wise black listing (as well as grey lists)
 - Internal network scan
 - Port scan through browser
@@ -101,6 +102,9 @@ Below is just few ss that I put together quickly without simulating any scenrios
 
 ## Scanning for protocols
 ![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/protocols.png)
+
+## Design 
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/menu.png)
 
 ## Tacking pixels 
 ![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/pixels.png)
