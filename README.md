@@ -89,6 +89,17 @@ Getting hidden IP:
 ```
 
 # Pictures
+## Dashboard
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/dash.png)
 
-## A safe ip with info about a vpn used previously in graph
+## A safe ip with info in map about a vpn used previously in graph
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/whitelist.jpg)
 
+## Scanning for protocols
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/protocols.png)
+
+## Tacking pixels 
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/pixels.png)
+
+## Attack page
+![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/attack%20page.png)
