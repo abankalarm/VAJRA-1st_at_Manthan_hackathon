@@ -1,5 +1,5 @@
 # VAJRA BY TEAM INDRA
-## **(WINNERS (1st RANK)** AT MANTHAN 2021 Organised BY: The Bureau of Police Research and Development, Ministry of Education's Innovation Cell (MIC) & AICTE (India)
+### **WINNERS (1st RANK)** AT MANTHAN 2021 Organised BY: The Bureau of Police Research and Development, Ministry of Education's Innovation Cell (MIC) & AICTE (India)
 
 ### Novel Approach
 The solution creates a c2 server that can be integrated with N number of websites, this allows the authority to track any visitor irrespective of whether they use a vpn or not. 
