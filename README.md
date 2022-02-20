@@ -89,6 +89,10 @@ Getting hidden IP:
 ```
 
 # Pictures
+
+Vajra is well capable and was tested with more than 20 ips linked in a complex relationship, and 100 ips in total. 
+Below is just few ss that I put together quickly without simulating any scenrios.
+
 ## Dashboard
 ![](https://github.com/abankalarm/VAJRA-1st_at_Manthan_hackathon/blob/main/pics/dash.png)
 
