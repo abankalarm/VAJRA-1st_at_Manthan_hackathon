@@ -1,4 +1,4 @@
-# VAJRA BY TEAM INDRA
+# VAJRA BY TEAM INDRA - Rendering VPNs obsolete
 ### *WINNERS (1st RANK)* AT MANTHAN 2021 Organised BY: The Bureau of Police Research and Development, Ministry of Education's Innovation Cell (MIC) & AICTE (India)
 
 ### Novel Approach
